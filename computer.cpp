@@ -1,0 +1,98 @@
+#include "computer.hpp"
+#include <QTimer>
+#include <QQmlEngine>
+#include <QJSEngine>
+#include <sstream>
+
+
+Computer::Computer(QObject *parent) : QObject(parent)
+{
+    QObject::connect(&_cpu, &CPU::readSignal,
+                     &_bus, &Bus::read);
+    QObject::connect(&_bus,    &Bus::readSignal,
+                     &_memory, &RamBusDevice::read);
+    _clock.setInterval(250);
+    _clock.setSingleShot(false);
+    QObject::connect(&_clock, &QTimer::timeout,
+                     this,    &Computer::timerTimeout);
+    loadProgram();
+}
+
+void Computer::startClock()
+{
+    _clock.start(250);
+}
+
+void Computer::stopClock()
+{
+    _clock.stop();
+}
+
+void Computer::stepClock()
+{
+    _cpu.clock();
+}
+
+void Computer::timerTimeout()
+{
+    stepClock();
+}
+
+void Computer::loadProgram()
+{
+    // Load Program (assembled at https://www.masswerk.at/6502/assembler.html)
+    /*
+       *=$8000
+       LDX #10
+       STX $0000
+       LDX #3
+       STX $0001
+       LDY $0000
+       LDA #0
+       CLC
+       loop
+       ADC $0001
+       DEY
+       BNE loop
+       STA $0002
+       NOP
+       NOP
+       NOP
+   */
+
+    // Convert hex string into bytes for RAM
+    std::stringstream ss;
+
+    ss << "A2 0A 8E 00 00 A2 03 8E 01 00 AC 00 00 A9 00 18 6D 01 00 88 D0 FA 8D 02 00 EA EA EA";
+
+    for (uint16_t nOffset = 0x8000; !ss.eof(); ++nOffset)
+    {
+        std::string b;
+
+        ss >> b;
+        _memory.write(nOffset, (uint8_t)std::stoul(b, nullptr, 16));
+    }
+
+    // Set Reset Vector
+    _memory.write(0xFFFC, 0x00);
+    _memory.write(0xFFFD, 0x80);
+
+    // Reset
+    _cpu.reset();
+}
+
+void Computer::RegisterType()
+{
+    qmlRegisterSingletonType<Computer>("Qt.example.computer",
+                                       1,
+                                       0,
+                                       "Computer",
+                                       [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject *
+                                       {
+                                           Q_UNUSED(engine)
+                                           Q_UNUSED(scriptEngine)
+
+                                           return new Computer();
+                                       });
+    CPU::RegisterType();
+}
