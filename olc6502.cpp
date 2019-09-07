@@ -1,11 +1,11 @@
-#include "cpu.hpp"
+#include "olc6502.hpp"
 #include <QtQml>
 #include <QDebug>
 #include <ostream>
 
 #define LOGMODE 1
 
-CPU::CPU(QObject *parent) : QObject(parent)
+olc6502::olc6502(QObject *parent) : QObject(parent)
 {
     // Assembles the translation table. It's big, it's ugly, but it yields a convenient way
     // to emulate the 6502. I'm certain there are some "code-golf" strategies to reduce this
@@ -18,7 +18,7 @@ CPU::CPU(QObject *parent) : QObject(parent)
     // or else it will be much much larger :D
 
     // The table is one big initializer list of initializer lists...
-    using a = CPU;
+    using a = olc6502;
     _lookup =
     {
         { "BRK", &a::BRK, &a::IMM, 7 },{ "ORA", &a::ORA, &a::IZX, 6 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 8 },{ "???", &a::NOP, &a::IMP, 3 },{ "ORA", &a::ORA, &a::ZP0, 3 },{ "ASL", &a::ASL, &a::ZP0, 5 },{ "???", &a::XXX, &a::IMP, 5 },{ "PHP", &a::PHP, &a::IMP, 3 },{ "ORA", &a::ORA, &a::IMM, 2 },{ "ASL", &a::ASL, &a::IMP, 2 },{ "???", &a::XXX, &a::IMP, 2 },{ "???", &a::NOP, &a::IMP, 4 },{ "ORA", &a::ORA, &a::ABS, 4 },{ "ASL", &a::ASL, &a::ABS, 6 },{ "???", &a::XXX, &a::IMP, 6 },
@@ -40,17 +40,17 @@ CPU::CPU(QObject *parent) : QObject(parent)
     };
 }
 
-void CPU::RegisterType()
+void olc6502::RegisterType()
 {
-    qmlRegisterType<CPU>();
+    qmlRegisterType<olc6502>();
 }
 
-uint8_t CPU::read(addressType address, bool read_only)
+uint8_t olc6502::read(addressType address, bool read_only)
 {
     return emit readSignal(address, read_only);
 }
 
-void CPU::write(addressType address, uint8_t data)
+void olc6502::write(addressType address, uint8_t data)
 {
     emit writeSignal(address, data);
 }
@@ -62,7 +62,7 @@ void CPU::write(addressType address, uint8_t data)
 // allows the programmer to jump to a known and programmable location in the
 // memory to start executing from. Typically the programmer would set the value
 // at location 0xFFFC at compile time.
-void CPU::reset()
+void olc6502::reset()
 {
     // Get address to set program counter to
     _addr_abs = 0xFFFC;
@@ -102,7 +102,7 @@ void CPU::reset()
 // has happened, in a similar way to a reset, a programmable address
 // is read form hard coded location 0xFFFE, which is subsequently
 // set to the program counter.
-void CPU::irq()
+void olc6502::irq()
 {
     // If interrupts are allowed
     if (GetFlag(I) == 0)
@@ -136,7 +136,7 @@ void CPU::irq()
 // A Non-Maskable Interrupt cannot be ignored. It behaves in exactly the
 // same way as a regular IRQ, but reads the new program counter address
 // form location 0xFFFA.
-void CPU::nmi()
+void olc6502::nmi()
 {
     write(0x0100 + _stkp, (_pc >> 8) & 0x00FF);
     _stkp--;
@@ -158,7 +158,7 @@ void CPU::nmi()
 }
 
 // Perform one clock cycles worth of emulation
-void CPU::clock()
+void olc6502::clock()
 {
     // Each instruction requires a variable number of clock cycles to execute.
     // In my emulation, I only care about the final result and so I perform
@@ -257,12 +257,12 @@ void CPU::clock()
     _cycles--;
 }
 
-uint8_t CPU::GetFlag(FLAGS6502 f)
+uint8_t olc6502::GetFlag(FLAGS6502 f)
 {
     return ((_status & static_cast<uint8_t>(f)) > 0) ? 1 : 0;
 }
 
-void CPU::SetFlag(FLAGS6502 f, bool v)
+void olc6502::SetFlag(FLAGS6502 f, bool v)
 {
     if (v)
         _status |= static_cast<uint8_t>(f);
@@ -285,7 +285,7 @@ void CPU::SetFlag(FLAGS6502 f, bool v)
 // There is no additional data required for this instruction. The instruction
 // does something very simple like like sets a status bit. However, we will
 // target the accumulator, for instructions like PHA
-uint8_t CPU::IMP()
+uint8_t olc6502::IMP()
 {
     _fetched = _a;
     return 0;
@@ -294,7 +294,7 @@ uint8_t CPU::IMP()
 // Address Mode: Immediate
 // The instruction expects the next byte to be used as a value, so we'll prep
 // the read address to point to the next byte
-uint8_t CPU::IMM()
+uint8_t olc6502::IMM()
 {
     _addr_abs = _pc++;
     return 0;
@@ -304,7 +304,7 @@ uint8_t CPU::IMM()
 // To save program bytes, zero page addressing allows you to absolutely address
 // a location in first 0xFF bytes of address range. Clearly this only requires
 // one byte instead of the usual two.
-uint8_t CPU::ZP0()
+uint8_t olc6502::ZP0()
 {
     _addr_abs = read(_pc);
     _pc++;
@@ -316,7 +316,7 @@ uint8_t CPU::ZP0()
 // Fundamentally the same as Zero Page addressing, but the contents of the X Register
 // is added to the supplied single byte address. This is useful for iterating through
 // ranges within the first page.
-uint8_t CPU::ZPX()
+uint8_t olc6502::ZPX()
 {
     _addr_abs = (read(_pc) + _x);
     _pc++;
@@ -326,7 +326,7 @@ uint8_t CPU::ZPX()
 
 // Address Mode: Zero Page with Y Offset
 // Same as above but uses Y Register for offset
-uint8_t CPU::ZPY()
+uint8_t olc6502::ZPY()
 {
     _addr_abs = (read(_pc) + _y);
     _pc++;
@@ -338,7 +338,7 @@ uint8_t CPU::ZPY()
 // This address mode is exclusive to branch instructions. The address
 // must reside within -128 to +127 of the branch instruction, i.e.
 // you cant directly branch to any address in the addressable range.
-uint8_t CPU::REL()
+uint8_t olc6502::REL()
 {
     _addr_rel = read(_pc);
     _pc++;
@@ -349,7 +349,7 @@ uint8_t CPU::REL()
 
 // Address Mode: Absolute
 // A full 16-bit address is loaded and used
-uint8_t CPU::ABS()
+uint8_t olc6502::ABS()
 {
     uint16_t lo = read(_pc);
     _pc++;
@@ -364,7 +364,7 @@ uint8_t CPU::ABS()
 // Fundamentally the same as absolute addressing, but the contents of the X Register
 // is added to the supplied two byte address. If the resulting address changes
 // the page, an additional clock cycle is required
-uint8_t CPU::ABX()
+uint8_t olc6502::ABX()
 {
     uint16_t lo = read(_pc);
     _pc++;
@@ -384,7 +384,7 @@ uint8_t CPU::ABX()
 // Fundamentally the same as absolute addressing, but the contents of the Y Register
 // is added to the supplied two byte address. If the resulting address changes
 // the page, an additional clock cycle is required
-uint8_t CPU::ABY()
+uint8_t olc6502::ABY()
 
 {
     uint16_t lo = read(_pc);
@@ -412,7 +412,7 @@ uint8_t CPU::ABY()
 // we need to cross a page boundary. This doesnt actually work on the chip as
 // designed, instead it wraps back around in the same page, yielding an
 // invalid actual address
-uint8_t CPU::IND()
+uint8_t olc6502::IND()
 {
     uint16_t ptr_lo = read(_pc);
     _pc++;
@@ -436,7 +436,7 @@ uint8_t CPU::IND()
 // The supplied 8-bit address is offset by X Register to index
 // a location in page 0x00. The actual 16-bit address is read
 // from this location
-uint8_t CPU::IZX()
+uint8_t olc6502::IZX()
 {
     uint16_t t = read(_pc);
     _pc++;
@@ -454,7 +454,7 @@ uint8_t CPU::IZX()
 // here the actual 16-bit address is read, and the contents of
 // Y Register is added to it to offset it. If the offset causes a
 // change in page then an additional clock cycle is required.
-uint8_t CPU::IZY()
+uint8_t olc6502::IZY()
 {
     uint16_t t = read(_pc);
     _pc++;
@@ -483,9 +483,9 @@ uint8_t CPU::IZY()
 // 256, i.e. no far reaching memory fetch is required. "fetched"
 // is a variable global to the CPU, and is set by calling this
 // function. It also returns it for convenience.
-uint8_t CPU::fetch()
+uint8_t olc6502::fetch()
 {
-    if (!(_lookup[_opcode].addrmode == &CPU::IMP))
+    if (!(_lookup[_opcode].addrmode == &olc6502::IMP))
         _fetched = read(_addr_abs);
     return _fetched;
 }
@@ -561,7 +561,7 @@ uint8_t CPU::fetch()
 //       Positive Number + Positive Number = Positive Result -> OK! No Overflow
 //       Negative Number + Negative Number = Negative Result -> OK! NO Overflow
 
-uint8_t CPU::ADC()
+uint8_t olc6502::ADC()
 {
     // Grab the data that we are adding to the accumulator
     fetch();
@@ -615,7 +615,7 @@ uint8_t CPU::ADC()
 // of M, the data(!) therfore we can simply add, exactly the same way we did
 // before.
 
-uint8_t CPU::SBC()
+uint8_t olc6502::SBC()
 {
     fetch();
 
@@ -647,7 +647,7 @@ uint8_t CPU::SBC()
 // Instruction: Bitwise Logic AND
 // Function:    A = A & M
 // Flags Out:   N, Z
-uint8_t CPU::AND()
+uint8_t olc6502::AND()
 {
     fetch();
     _a = _a & _fetched;
@@ -660,14 +660,14 @@ uint8_t CPU::AND()
 // Instruction: Arithmetic Shift Left
 // Function:    A = C <- (A << 1) <- 0
 // Flags Out:   N, Z, C
-uint8_t CPU::ASL()
+uint8_t olc6502::ASL()
 {
     fetch();
     _temp = (uint16_t)_fetched << 1;
     SetFlag(C, (_temp & 0xFF00) > 0);
     SetFlag(Z, (_temp & 0x00FF) == 0x00);
     SetFlag(N, _temp & 0x80);
-    if (_lookup[_opcode].addrmode == &CPU::IMP)
+    if (_lookup[_opcode].addrmode == &olc6502::IMP)
         _a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
@@ -677,7 +677,7 @@ uint8_t CPU::ASL()
 
 // Instruction: Branch if Carry Clear
 // Function:    if(C == 0) pc = address
-uint8_t CPU::BCC()
+uint8_t olc6502::BCC()
 {
     if (GetFlag(C) == 0)
     {
@@ -695,7 +695,7 @@ uint8_t CPU::BCC()
 
 // Instruction: Branch if Carry Set
 // Function:    if(C == 1) pc = address
-uint8_t CPU::BCS()
+uint8_t olc6502::BCS()
 {
     if (GetFlag(C) == 1)
     {
@@ -712,7 +712,7 @@ uint8_t CPU::BCS()
 
 // Instruction: Branch if Equal
 // Function:    if(Z == 1) pc = address
-uint8_t CPU::BEQ()
+uint8_t olc6502::BEQ()
 {
     if (GetFlag(Z) == 1)
     {
@@ -727,7 +727,7 @@ uint8_t CPU::BEQ()
     return 0;
 }
 
-uint8_t CPU::BIT()
+uint8_t olc6502::BIT()
 {
     fetch();
     _temp = _a & _fetched;
@@ -739,7 +739,7 @@ uint8_t CPU::BIT()
 
 // Instruction: Branch if Negative
 // Function:    if(N == 1) pc = address
-uint8_t CPU::BMI()
+uint8_t olc6502::BMI()
 {
     if (GetFlag(N) == 1)
     {
@@ -757,7 +757,7 @@ uint8_t CPU::BMI()
 
 // Instruction: Branch if Not Equal
 // Function:    if(Z == 0) pc = address
-uint8_t CPU::BNE()
+uint8_t olc6502::BNE()
 {
     if (GetFlag(Z) == 0)
     {
@@ -774,7 +774,7 @@ uint8_t CPU::BNE()
 
 // Instruction: Branch if Positive
 // Function:    if(N == 0) pc = address
-uint8_t CPU::BPL()
+uint8_t olc6502::BPL()
 {
     if (GetFlag(N) == 0)
     {
@@ -791,7 +791,7 @@ uint8_t CPU::BPL()
 
 // Instruction: Break
 // Function:    Program Sourced Interrupt
-uint8_t CPU::BRK()
+uint8_t olc6502::BRK()
 {
     _pc++;
 
@@ -812,7 +812,7 @@ uint8_t CPU::BRK()
 
 // Instruction: Branch if Overflow Clear
 // Function:    if(V == 0) pc = address
-uint8_t CPU::BVC()
+uint8_t olc6502::BVC()
 {
     if (GetFlag(V) == 0)
     {
@@ -829,7 +829,7 @@ uint8_t CPU::BVC()
 
 // Instruction: Branch if Overflow Set
 // Function:    if(V == 1) pc = address
-uint8_t CPU::BVS()
+uint8_t olc6502::BVS()
 {
     if (GetFlag(V) == 1)
     {
@@ -846,7 +846,7 @@ uint8_t CPU::BVS()
 
 // Instruction: Clear Carry Flag
 // Function:    C = 0
-uint8_t CPU::CLC()
+uint8_t olc6502::CLC()
 {
     SetFlag(C, false);
     return 0;
@@ -854,7 +854,7 @@ uint8_t CPU::CLC()
 
 // Instruction: Clear Decimal Flag
 // Function:    D = 0
-uint8_t CPU::CLD()
+uint8_t olc6502::CLD()
 {
     SetFlag(D, false);
     return 0;
@@ -862,7 +862,7 @@ uint8_t CPU::CLD()
 
 // Instruction: Disable Interrupts / Clear Interrupt Flag
 // Function:    I = 0
-uint8_t CPU::CLI()
+uint8_t olc6502::CLI()
 {
     SetFlag(I, false);
     return 0;
@@ -871,7 +871,7 @@ uint8_t CPU::CLI()
 
 // Instruction: Clear Overflow Flag
 // Function:    V = 0
-uint8_t CPU::CLV()
+uint8_t olc6502::CLV()
 {
     SetFlag(V, false);
     return 0;
@@ -880,7 +880,7 @@ uint8_t CPU::CLV()
 // Instruction: Compare Accumulator
 // Function:    C <- A >= M      Z <- (A - M) == 0
 // Flags Out:   N, C, Z
-uint8_t CPU::CMP()
+uint8_t olc6502::CMP()
 {
     fetch();
     _temp = (uint16_t)_a - (uint16_t)_fetched;
@@ -894,7 +894,7 @@ uint8_t CPU::CMP()
 // Instruction: Compare X Register
 // Function:    C <- X >= M      Z <- (X - M) == 0
 // Flags Out:   N, C, Z
-uint8_t CPU::CPX()
+uint8_t olc6502::CPX()
 {
     fetch();
     _temp = (uint16_t)_x - (uint16_t)_fetched;
@@ -907,7 +907,7 @@ uint8_t CPU::CPX()
 // Instruction: Compare Y Register
 // Function:    C <- Y >= M      Z <- (Y - M) == 0
 // Flags Out:   N, C, Z
-uint8_t CPU::CPY()
+uint8_t olc6502::CPY()
 {
     fetch();
     _temp = (uint16_t)_y - (uint16_t)_fetched;
@@ -920,7 +920,7 @@ uint8_t CPU::CPY()
 // Instruction: Decrement Value at Memory Location
 // Function:    M = M - 1
 // Flags Out:   N, Z
-uint8_t CPU::DEC()
+uint8_t olc6502::DEC()
 {
     fetch();
     _temp = _fetched - 1;
@@ -933,7 +933,7 @@ uint8_t CPU::DEC()
 // Instruction: Decrement X Register
 // Function:    X = X - 1
 // Flags Out:   N, Z
-uint8_t CPU::DEX()
+uint8_t olc6502::DEX()
 {
     _x--;
     SetFlag(Z, _x == 0x00);
@@ -945,7 +945,7 @@ uint8_t CPU::DEX()
 // Instruction: Decrement Y Register
 // Function:    Y = Y - 1
 // Flags Out:   N, Z
-uint8_t CPU::DEY()
+uint8_t olc6502::DEY()
 {
     _y--;
     SetFlag(Z, _y == 0x00);
@@ -957,7 +957,7 @@ uint8_t CPU::DEY()
 // Instruction: Bitwise Logic XOR
 // Function:    A = A xor M
 // Flags Out:   N, Z
-uint8_t CPU::EOR()
+uint8_t olc6502::EOR()
 {
     fetch();
     _a = _a ^ _fetched;
@@ -969,7 +969,7 @@ uint8_t CPU::EOR()
 // Instruction: Increment Value at Memory Location
 // Function:    M = M + 1
 // Flags Out:   N, Z
-uint8_t CPU::INC()
+uint8_t olc6502::INC()
 {
     fetch();
     _temp = _fetched + 1;
@@ -983,7 +983,7 @@ uint8_t CPU::INC()
 // Instruction: Increment X Register
 // Function:    X = X + 1
 // Flags Out:   N, Z
-uint8_t CPU::INX()
+uint8_t olc6502::INX()
 {
     _x++;
     SetFlag(Z, _x == 0x00);
@@ -995,7 +995,7 @@ uint8_t CPU::INX()
 // Instruction: Increment Y Register
 // Function:    Y = Y + 1
 // Flags Out:   N, Z
-uint8_t CPU::INY()
+uint8_t olc6502::INY()
 {
     _y++;
     SetFlag(Z, _y == 0x00);
@@ -1006,7 +1006,7 @@ uint8_t CPU::INY()
 
 // Instruction: Jump To Location
 // Function:    pc = address
-uint8_t CPU::JMP()
+uint8_t olc6502::JMP()
 {
     _pc = _addr_abs;
     return 0;
@@ -1015,7 +1015,7 @@ uint8_t CPU::JMP()
 
 // Instruction: Jump To Sub-Routine
 // Function:    Push current pc to stack, pc = address
-uint8_t CPU::JSR()
+uint8_t olc6502::JSR()
 {
     _pc--;
 
@@ -1031,7 +1031,7 @@ uint8_t CPU::JSR()
 // Instruction: Load The Accumulator
 // Function:    A = M
 // Flags Out:   N, Z
-uint8_t CPU::LDA()
+uint8_t olc6502::LDA()
 {
     fetch();
     _a = _fetched;
@@ -1044,7 +1044,7 @@ uint8_t CPU::LDA()
 // Instruction: Load The X Register
 // Function:    X = M
 // Flags Out:   N, Z
-uint8_t CPU::LDX()
+uint8_t olc6502::LDX()
 {
     fetch();
     _x = _fetched;
@@ -1057,7 +1057,7 @@ uint8_t CPU::LDX()
 // Instruction: Load The Y Register
 // Function:    Y = M
 // Flags Out:   N, Z
-uint8_t CPU::LDY()
+uint8_t olc6502::LDY()
 {
     fetch();
     _y = _fetched;
@@ -1066,21 +1066,21 @@ uint8_t CPU::LDY()
     return 1;
 }
 
-uint8_t CPU::LSR()
+uint8_t olc6502::LSR()
 {
     fetch();
     SetFlag(C, _fetched & 0x0001);
     _temp = _fetched >> 1;
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
-    if (_lookup[_opcode].addrmode == &CPU::IMP)
+    if (_lookup[_opcode].addrmode == &olc6502::IMP)
         _a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
 }
 
-uint8_t CPU::NOP()
+uint8_t olc6502::NOP()
 {
     // Sadly not all NOPs are equal, Ive added a few here
     // based on https://wiki.nesdev.com/w/index.php/CPU_unofficial_opcodes
@@ -1102,7 +1102,7 @@ uint8_t CPU::NOP()
 // Instruction: Bitwise Logic OR
 // Function:    A = A | M
 // Flags Out:   N, Z
-uint8_t CPU::ORA()
+uint8_t olc6502::ORA()
 {
     fetch();
     _a = _a | _fetched;
@@ -1114,7 +1114,7 @@ uint8_t CPU::ORA()
 
 // Instruction: Push Accumulator to Stack
 // Function:    A -> stack
-uint8_t CPU::PHA()
+uint8_t olc6502::PHA()
 {
     write(0x0100 + _stkp, _a);
     _stkp--;
@@ -1125,7 +1125,7 @@ uint8_t CPU::PHA()
 // Instruction: Push Status Register to Stack
 // Function:    status -> stack
 // Note:        Break flag is set to 1 before push
-uint8_t CPU::PHP()
+uint8_t olc6502::PHP()
 {
     write(0x0100 + _stkp, _status | B | U);
     SetFlag(B, 0);
@@ -1137,7 +1137,7 @@ uint8_t CPU::PHP()
 // Instruction: Pop Accumulator off Stack
 // Function:    A <- stack
 // Flags Out:   N, Z
-uint8_t CPU::PLA()
+uint8_t olc6502::PLA()
 {
     _stkp++;
     _a = read(0x0100 + _stkp);
@@ -1149,7 +1149,7 @@ uint8_t CPU::PLA()
 
 // Instruction: Pop Status Register off Stack
 // Function:    Status <- stack
-uint8_t CPU::PLP()
+uint8_t olc6502::PLP()
 {
     _stkp++;
     _status = read(0x0100 + _stkp);
@@ -1157,35 +1157,35 @@ uint8_t CPU::PLP()
     return 0;
 }
 
-uint8_t CPU::ROL()
+uint8_t olc6502::ROL()
 {
     fetch();
     _temp = (uint16_t)(_fetched << 1) | GetFlag(C);
     SetFlag(C, _temp & 0xFF00);
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
-    if (_lookup[_opcode].addrmode == &CPU::IMP)
+    if (_lookup[_opcode].addrmode == &olc6502::IMP)
         _a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
 }
 
-uint8_t CPU::ROR()
+uint8_t olc6502::ROR()
 {
     fetch();
     _temp = (uint16_t)(GetFlag(C) << 7) | (_fetched >> 1);
     SetFlag(C, _fetched & 0x01);
     SetFlag(Z, (_temp & 0x00FF) == 0x00);
     SetFlag(N, _temp & 0x0080);
-    if (_lookup[_opcode].addrmode == &CPU::IMP)
+    if (_lookup[_opcode].addrmode == &olc6502::IMP)
         _a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
 }
 
-uint8_t CPU::RTI()
+uint8_t olc6502::RTI()
 {
     _stkp++;
     _status = read(0x0100 + _stkp);
@@ -1199,7 +1199,7 @@ uint8_t CPU::RTI()
     return 0;
 }
 
-uint8_t CPU::RTS()
+uint8_t olc6502::RTS()
 {
     _stkp++;
     _pc = (uint16_t)read(0x0100 + _stkp);
@@ -1212,7 +1212,7 @@ uint8_t CPU::RTS()
 
 // Instruction: Set Carry Flag
 // Function:    C = 1
-uint8_t CPU::SEC()
+uint8_t olc6502::SEC()
 {
     SetFlag(C, true);
     return 0;
@@ -1221,7 +1221,7 @@ uint8_t CPU::SEC()
 
 // Instruction: Set Decimal Flag
 // Function:    D = 1
-uint8_t CPU::SED()
+uint8_t olc6502::SED()
 {
     SetFlag(D, true);
     return 0;
@@ -1230,7 +1230,7 @@ uint8_t CPU::SED()
 
 // Instruction: Set Interrupt Flag / Enable Interrupts
 // Function:    I = 1
-uint8_t CPU::SEI()
+uint8_t olc6502::SEI()
 {
     SetFlag(I, true);
     return 0;
@@ -1239,7 +1239,7 @@ uint8_t CPU::SEI()
 
 // Instruction: Store Accumulator at Address
 // Function:    M = A
-uint8_t CPU::STA()
+uint8_t olc6502::STA()
 {
     write(_addr_abs, _a);
     return 0;
@@ -1248,7 +1248,7 @@ uint8_t CPU::STA()
 
 // Instruction: Store X Register at Address
 // Function:    M = X
-uint8_t CPU::STX()
+uint8_t olc6502::STX()
 {
     write(_addr_abs, _x);
     return 0;
@@ -1257,7 +1257,7 @@ uint8_t CPU::STX()
 
 // Instruction: Store Y Register at Address
 // Function:    M = Y
-uint8_t CPU::STY()
+uint8_t olc6502::STY()
 {
     write(_addr_abs, _y);
     return 0;
@@ -1266,7 +1266,7 @@ uint8_t CPU::STY()
 // Instruction: Transfer Accumulator to X Register
 // Function:    X = A
 // Flags Out:   N, Z
-uint8_t CPU::TAX()
+uint8_t olc6502::TAX()
 {
     _x = _a;
     SetFlag(Z, _x == 0x00);
@@ -1278,7 +1278,7 @@ uint8_t CPU::TAX()
 // Instruction: Transfer Accumulator to Y Register
 // Function:    Y = A
 // Flags Out:   N, Z
-uint8_t CPU::TAY()
+uint8_t olc6502::TAY()
 {
     _y = _a;
     SetFlag(Z, _y == 0x00);
@@ -1290,7 +1290,7 @@ uint8_t CPU::TAY()
 // Instruction: Transfer Stack Pointer to X Register
 // Function:    X = stack pointer
 // Flags Out:   N, Z
-uint8_t CPU::TSX()
+uint8_t olc6502::TSX()
 {
     _x = _stkp;
     SetFlag(Z, _x == 0x00);
@@ -1302,7 +1302,7 @@ uint8_t CPU::TSX()
 // Instruction: Transfer X Register to Accumulator
 // Function:    A = X
 // Flags Out:   N, Z
-uint8_t CPU::TXA()
+uint8_t olc6502::TXA()
 {
     _a = _x;
     SetFlag(Z, _a == 0x00);
@@ -1313,7 +1313,7 @@ uint8_t CPU::TXA()
 
 // Instruction: Transfer X Register to Stack Pointer
 // Function:    stack pointer = X
-uint8_t CPU::TXS()
+uint8_t olc6502::TXS()
 {
     _stkp = _x;
     return 0;
@@ -1322,7 +1322,7 @@ uint8_t CPU::TXS()
 // Instruction: Transfer Y Register to Accumulator
 // Function:    A = Y
 // Flags Out:   N, Z
-uint8_t CPU::TYA()
+uint8_t olc6502::TYA()
 {
     _a = _y;
     SetFlag(Z, _a == 0x00);
@@ -1332,12 +1332,12 @@ uint8_t CPU::TYA()
 
 
 // This function captures illegal opcodes
-uint8_t CPU::XXX()
+uint8_t olc6502::XXX()
 {
     return 0;
 }
 
-bool CPU::complete()
+bool olc6502::complete()
 {
     return _cycles == 0;
 }

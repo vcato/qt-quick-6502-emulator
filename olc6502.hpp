@@ -5,7 +5,7 @@
 #include <QPointer>
 #include <string>
 
-class CPU : public QObject
+class olc6502 : public QObject
 {
     Q_OBJECT
 
@@ -31,7 +31,7 @@ public:
     };
     Q_ENUM(FLAGS6502)
 
-    explicit CPU(QObject *parent = nullptr);
+    explicit olc6502(QObject *parent = nullptr);
 
     static void RegisterType();
 
@@ -100,8 +100,8 @@ private:
     struct INSTRUCTION
     {
         std::string name;
-        uint8_t (CPU::*operate)(void)  = nullptr;
-        uint8_t (CPU::*addrmode)(void) = nullptr;
+        uint8_t (olc6502::*operate)(void)  = nullptr;
+        uint8_t (olc6502::*addrmode)(void) = nullptr;
         uint8_t cycles = 0;
     };
 

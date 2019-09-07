@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
-#include "cpu.hpp"
+#include "olc6502.hpp"
 #include "bus.hpp"
 #include "rambusdevice.hpp"
 
@@ -12,7 +12,7 @@ class Computer : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(CPU *cpu READ cpu CONSTANT FINAL)
+    Q_PROPERTY(olc6502 *cpu READ cpu CONSTANT FINAL)
 public:
     explicit Computer(QObject *parent = nullptr);
 
@@ -23,7 +23,7 @@ public slots:
     void stopClock();
     void stepClock();
 
-    CPU *cpu() { return &_cpu; }
+    olc6502 *cpu() { return &_cpu; }
 
 signals:
 
@@ -31,7 +31,7 @@ private slots:
     void timerTimeout();
 
 private:
-    CPU _cpu;
+    olc6502 _cpu;
     Bus _bus;
     RamBusDevice _memory;
     QTimer       _clock;

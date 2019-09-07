@@ -15,8 +15,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         bus.cpp \
         computer.cpp \
-        cpu.cpp \
         ibusdevice.cpp \
+        olc6502.cpp \
         rambusdevice.cpp \
         main.cpp
 
@@ -36,8 +36,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     bus.hpp \
     computer.hpp \
-    cpu.hpp \
     ibusdevice.hpp \
+    olc6502.hpp \
     rambusdevice.hpp
 
 DISTFILES += \

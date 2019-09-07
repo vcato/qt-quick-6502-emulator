@@ -7,7 +7,7 @@
 
 Computer::Computer(QObject *parent) : QObject(parent)
 {
-    QObject::connect(&_cpu, &CPU::readSignal,
+    QObject::connect(&_cpu, &olc6502::readSignal,
                      &_bus, &Bus::read);
     QObject::connect(&_bus,    &Bus::readSignal,
                      &_memory, &RamBusDevice::read);
@@ -94,5 +94,5 @@ void Computer::RegisterType()
 
                                            return new Computer();
                                        });
-    CPU::RegisterType();
+    olc6502::RegisterType();
 }
