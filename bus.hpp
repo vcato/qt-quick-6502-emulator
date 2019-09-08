@@ -15,15 +15,15 @@ public:
 
     static constexpr addressType bitWidth()   { return 16; }
     static constexpr addressType minAddress() { return 0x00; }
-    static constexpr addressType maxAddress() { return static_cast<addressType>(1 << bitWidth()); }
+    static constexpr addressType maxAddress() { return static_cast<addressType>(1 << (bitWidth() - 1)); }
 
 public slots:
     void    write(addressType address, uint8_t data);
     uint8_t read(addressType address, bool read_only);
 
 signals:
-    void    writeSignal(addressType address, uint8_t data);
-    uint8_t readSignal(addressType address, bool read_only);
+    void    busWritten(addressType address, uint8_t data);
+    uint8_t busRead(addressType address, bool read_only);
 };
 
 #endif // BUS_HPP

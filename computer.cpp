@@ -7,11 +7,18 @@
 
 Computer::Computer(QObject *parent) : QObject(parent)
 {
+    // Read signals
     QObject::connect(&_cpu, &olc6502::readSignal,
                      &_bus, &Bus::read);
-    QObject::connect(&_bus,    &Bus::readSignal,
+    QObject::connect(&_bus,    &Bus::busRead,
                      &_memory, &RamBusDevice::read);
-    _clock.setInterval(250);
+
+    // Write signals
+    QObject::connect(&_cpu, &olc6502::writeSignal,
+                     &_bus, &Bus::write);
+    QObject::connect(&_bus,    &Bus::busWritten,
+                     &_memory, &RamBusDevice::write);
+    _clock.setInterval(128);
     _clock.setSingleShot(false);
     QObject::connect(&_clock, &QTimer::timeout,
                      this,    &Computer::timerTimeout);
@@ -20,7 +27,7 @@ Computer::Computer(QObject *parent) : QObject(parent)
 
 void Computer::startClock()
 {
-    _clock.start(250);
+    _clock.start(128);
 }
 
 void Computer::stopClock()
@@ -95,4 +102,5 @@ void Computer::RegisterType()
                                            return new Computer();
                                        });
     olc6502::RegisterType();
+    RamBusDevice::RegisterType();
 }

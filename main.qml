@@ -3,11 +3,12 @@ import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.0
 import Qt.example.computer 1.0
+import Qt.example.rambusdeviceview 1.0
 
 Window {
     visible: true
-    width: 640
-    height: 480
+    width: 800
+    height: 600
     title: qsTr("Hello World")
 
     RowLayout {
@@ -103,6 +104,25 @@ Window {
             Label {
                 text: Computer.cpu.stackPointer
             }
+        }
+    }
+    ColumnLayout {
+        id: memory_views
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: clock_control_row.top
+
+        RamBusDeviceView {
+            id: zero_page_ram_view
+
+            model: Computer.ram
+            page: 0x00
+        }
+        RamBusDeviceView {
+            id: program_page_ram_view
+
+            model: Computer.ram
+            page: 0x80
         }
     }
 }

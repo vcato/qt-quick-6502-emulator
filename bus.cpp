@@ -8,10 +8,10 @@ Bus::Bus(QObject *parent)
 
 void Bus::write(addressType address, uint8_t data)
 {
-    emit writeSignal(address, data);
+    emit busWritten(address, data);
 }
 
 uint8_t Bus::read(addressType address, bool read_only)
 {
-    return emit readSignal(address, read_only);
+    return emit busRead(address, read_only);
 }

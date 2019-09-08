@@ -18,7 +18,8 @@ SOURCES += \
         ibusdevice.cpp \
         olc6502.cpp \
         rambusdevice.cpp \
-        main.cpp
+        main.cpp \
+        rambusdeviceview.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,7 +39,8 @@ HEADERS += \
     computer.hpp \
     ibusdevice.hpp \
     olc6502.hpp \
-    rambusdevice.hpp
+    rambusdevice.hpp \
+    rambusdeviceview.hpp
 
 DISTFILES += \
     README.md

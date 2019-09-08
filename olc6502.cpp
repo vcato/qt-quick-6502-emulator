@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <ostream>
 
-#define LOGMODE 1
+#define LOGMODE 0
 
 olc6502::olc6502(QObject *parent) : QObject(parent)
 {

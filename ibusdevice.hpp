@@ -23,6 +23,7 @@ public:
     addressType upperAddress() const { return _upper_address_range; }
 
     bool handlesAddress(addressType address) const;
+
 signals:
 
 public slots:

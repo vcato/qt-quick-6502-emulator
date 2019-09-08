@@ -12,7 +12,8 @@ class Computer : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(olc6502 *cpu READ cpu CONSTANT FINAL)
+    Q_PROPERTY(olc6502      *cpu READ cpu CONSTANT FINAL)
+    Q_PROPERTY(RamBusDevice *ram READ ram CONSTANT FINAL)
 public:
     explicit Computer(QObject *parent = nullptr);
 
@@ -23,7 +24,8 @@ public slots:
     void stopClock();
     void stepClock();
 
-    olc6502 *cpu() { return &_cpu; }
+    olc6502      *cpu() { return &_cpu; }
+    RamBusDevice *ram() { return &_memory; }
 
 signals:
 
@@ -32,7 +34,7 @@ private slots:
 
 private:
     olc6502 _cpu;
-    Bus _bus;
+    Bus     _bus;
     RamBusDevice _memory;
     QTimer       _clock;
 
