@@ -1,5 +1,6 @@
 #include "computer.hpp"
 #include <QTimer>
+#include <QtQml>
 #include <QQmlEngine>
 #include <QJSEngine>
 #include <sstream>
