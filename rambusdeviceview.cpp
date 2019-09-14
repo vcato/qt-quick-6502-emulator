@@ -66,7 +66,8 @@ RamBusDeviceView::RamBusDeviceView(QQuickItem *parent)
     QQuickPaintedItem(parent)
 {
     QFontMetrics metrics(_font);
-    QSize        window_size(LineNumberOfCells * metrics.averageCharWidth(), 16 * metrics.height());
+    QSize        window_size(LineNumberOfCells * metrics.averageCharWidth(),
+                             16 * metrics.height());
 
     setImplicitWidth(window_size.width());
     setImplicitHeight(window_size.height());
