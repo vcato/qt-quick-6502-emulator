@@ -49,7 +49,7 @@ QString generateLineOfText(const RamBusDevice::memory_type &memory, uint16_t add
     return line_address.append( dataAsHexChars(memory, address) );
 }
 
-QString generatePageOfText(const RamBusDevice::memory_type &memory, uint16_t /*address*/, int page)
+QString generatePageOfText(const RamBusDevice::memory_type &memory, int page)
 {
     QString text;
 
@@ -90,8 +90,15 @@ void RamBusDeviceView::setModel(RamBusDevice *new_model)
         _model->disconnect(_model, &RamBusDevice::memoryChanged,
                            this,   &RamBusDeviceView::onMemoryChanged);
         _model = new_model;
-        new_model->connect(new_model, &RamBusDevice::memoryChanged,
-                           this,      &RamBusDeviceView::onMemoryChanged);
+
+        if (new_model)
+        {
+            new_model->connect(new_model, &RamBusDevice::memoryChanged,
+                               this,      &RamBusDeviceView::onMemoryChanged);
+
+            // Let's go ahead and fill in the content to display...
+            _content = generatePageOfText(model()->memory(), page());
+        }
         emit modelChanged();
     }
 }
@@ -110,6 +117,7 @@ void RamBusDeviceView::onMemoryChanged(RamBusDevice::addressType address, uint8_
     Q_UNUSED(address);
     Q_UNUSED(value);
 
+    _content = generatePageOfText(model()->memory(), page());
     QQuickPaintedItem::update();
 }
 
@@ -119,7 +127,5 @@ void RamBusDeviceView::paint(QPainter *painter)
         return;
     painter->setPen(_pen);
     painter->setFont(_font);
-    QString content = generatePageOfText(model()->memory(), addressOfLine(page(), 0), page());
-
-    painter->drawText(boundingRect(), content);
+    painter->drawText(boundingRect(), _content);
 }

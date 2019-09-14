@@ -69,6 +69,7 @@ private:
     int           _page  = 0x00;
     QPen          _pen   { Qt::GlobalColor::white };
     QFont         _font  { "Lucida Console", 12 };
+    QString       _content;
 
 private slots:
     /** Catched the memoryChanged signal from @c RamBusDevice
