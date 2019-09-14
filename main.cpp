@@ -5,7 +5,9 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // This is not available with Qt 5.5.  Maybe there is another way
+    // to do it?
+    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     // This is what allows QML to have access to our type.
     Computer::RegisterType();

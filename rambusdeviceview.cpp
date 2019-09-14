@@ -17,11 +17,29 @@ uint16_t addressOfLine(int page, int linenumber)
     return static_cast<uint16_t>((page << 8) + (16 * linenumber));
 }
 
+
+QString separate(const QString &s,char c)
+{
+  QString result = "";
+  int n = s.length();
+
+  for (int i=0; i!=n; i+=2) {
+    if (i!=0) {
+      result += c;
+    }
+
+    result += s.mid(i,2);
+  }
+
+  return result;
+}
+
+
 QString dataAsHexChars(const RamBusDevice::memory_type &memory, uint16_t address)
 {
     QByteArray x(reinterpret_cast<const char *>(memory.data() + address), 16);
 
-    return x.toHex(' ');
+    return separate(x.toHex(),' ');
 }
 
 QString generateLineOfText(const RamBusDevice::memory_type &memory, uint16_t address)
@@ -31,7 +49,7 @@ QString generateLineOfText(const RamBusDevice::memory_type &memory, uint16_t add
     return line_address.append( dataAsHexChars(memory, address) );
 }
 
-QString generatePageOfText(const RamBusDevice::memory_type &memory, uint16_t address, int page)
+QString generatePageOfText(const RamBusDevice::memory_type &memory, uint16_t /*address*/, int page)
 {
     QString text;
 
