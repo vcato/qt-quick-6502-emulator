@@ -6,11 +6,9 @@
 
 namespace
 {
-const int DisplayCellsOfByte = 3;
-const int DisplayCellsOfAddress = 4;
-const char AddressPrefixChar = '$';
-const char AddressPostfixChar = ':';
-const int LineNumberOfCells = DisplayCellsOfAddress + 2 + 16 * DisplayCellsOfByte;
+constexpr int DisplayCellsOfByte    = 3;
+constexpr int DisplayCellsOfAddress = 4;
+constexpr int LineNumberOfCells     = DisplayCellsOfAddress + 2 + 16 * DisplayCellsOfByte;
 
 uint16_t addressOfLine(int page, int linenumber)
 {
@@ -87,8 +85,11 @@ void RamBusDeviceView::setModel(RamBusDevice *new_model)
 {
     if (new_model != _model)
     {
-        _model->disconnect(_model, &RamBusDevice::memoryChanged,
-                           this,   &RamBusDeviceView::onMemoryChanged);
+        if (_model)
+        {
+            _model->disconnect(_model, &RamBusDevice::memoryChanged,
+                               this,   &RamBusDeviceView::onMemoryChanged);
+        }
         _model = new_model;
 
         if (new_model)
