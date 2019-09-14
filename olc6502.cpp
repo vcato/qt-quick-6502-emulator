@@ -185,9 +185,7 @@ void olc6502::clock()
         // how to implement the instruction
         _opcode = read(_pc);
 
-#ifdef LOGMODE
-        uint16_t log_pc = _pc;
-#endif
+        uint16_t log_pc = _pc; // For logging
 
         // Always set the unused status flag bit to 1
         SetFlag(U, true);
@@ -212,28 +210,18 @@ void olc6502::clock()
         // Always set the unused status flag bit to 1
         SetFlag(U, true);
 
-#ifdef LOGMODE
-#if 0
-        // This logger dumps every cycle the entire processor state for analysis.
-        // This can be used for debugging the emulation, but has little utility
-        // during emulation. Its also very slow, so only use if you have to.
-        if (logfile == nullptr)	logfile = fopen("olc6502.txt", "wt");
-        if (logfile != nullptr)
+        if (log())
         {
-            fprintf(logfile, "%10d:%02d PC:%04X %s A:%02X X:%02X Y:%02X %s%s%s%s%s%s%s%s STKP:%02X\n",
-                    clock_count, 0, log_pc, "XXX", a, x, y,
-                    GetFlag(N) ? "N" : ".",	GetFlag(V) ? "V" : ".",	GetFlag(U) ? "U" : ".",
-                    GetFlag(B) ? "B" : ".",	GetFlag(D) ? "D" : ".",	GetFlag(I) ? "I" : ".",
-                    GetFlag(Z) ? "Z" : ".",	GetFlag(C) ? "C" : ".",	stkp);
+            // This logger dumps every cycle the entire processor state for analysis.
+            // This can be used for debugging the emulation, but has little utility
+            // during emulation. Its also very slow, so only use if you have to.
+            qDebug("%10d:%02d PC:%04X %s A:%02X X:%02X Y:%02X %s%s%s%s%s%s%s%s STKP:%02X\n",
+                   _clock_count, 0, log_pc, "XXX", _a, _x, _y,
+                   GetFlag(N) ? "N" : ".",	GetFlag(V) ? "V" : ".",	GetFlag(U) ? "U" : ".",
+                   GetFlag(B) ? "B" : ".",	GetFlag(D) ? "D" : ".",	GetFlag(I) ? "I" : ".",
+                   GetFlag(Z) ? "Z" : ".",	GetFlag(C) ? "C" : ".",	_stkp);
         }
-#else
-    qDebug("%10d:%02d PC:%04X %s A:%02X X:%02X Y:%02X %s%s%s%s%s%s%s%s STKP:%02X\n",
-           _clock_count, 0, log_pc, "XXX", _a, _x, _y,
-           GetFlag(N) ? "N" : ".",	GetFlag(V) ? "V" : ".",	GetFlag(U) ? "U" : ".",
-           GetFlag(B) ? "B" : ".",	GetFlag(D) ? "D" : ".",	GetFlag(I) ? "I" : ".",
-           GetFlag(Z) ? "Z" : ".",	GetFlag(C) ? "C" : ".",	_stkp);
-#endif
-#endif
+
         // Find out what has changed and emit the appropriate signals...
         if (_pc != pc_before)
             pcChanged(_pc);
@@ -1340,4 +1328,13 @@ uint8_t olc6502::XXX()
 bool olc6502::complete()
 {
     return _cycles == 0;
+}
+
+void olc6502::setLog(bool value)
+{
+    if (value != _log)
+    {
+        _log = value;
+        emit logChanged();
+    }
 }

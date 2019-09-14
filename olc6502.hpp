@@ -15,6 +15,8 @@ class olc6502 : public QObject
     Q_PROPERTY(int stackPointer READ property_stkp   NOTIFY stackPointerChanged)
     Q_PROPERTY(int pc           READ property_pc     NOTIFY pcChanged)
     Q_PROPERTY(int status       READ property_status NOTIFY statusChanged)
+
+    Q_PROPERTY(bool log         READ log             WRITE setLog NOTIFY logChanged)
 public:
     using addressType = uint16_t;
 
@@ -81,6 +83,9 @@ public:
     uint8_t  stackPointer() const { return _stkp; }
     uint8_t  status() const { return _status; }
 
+    bool log() const { return _log; }
+    void setLog(bool value);
+
 public slots:
     uint8_t read(addressType address, bool read_only = false);
     void    write(addressType address, uint8_t data);
@@ -95,6 +100,8 @@ signals:
     void stackPointerChanged(uint8_t new_value);
     void pcChanged(uint16_t new_value);
     void statusChanged(uint8_t new_value);
+
+    void logChanged();
 
 private:
     struct INSTRUCTION
@@ -119,6 +126,7 @@ private:
     uint8_t  _cycles = 0;
     uint32_t _clock_count = 0;
     std::vector<INSTRUCTION> _lookup;
+    bool     _log = false;
 
     uint8_t GetFlag(FLAGS6502 f);
     void    SetFlag(FLAGS6502 f, bool v);
