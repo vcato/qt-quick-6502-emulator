@@ -19,7 +19,7 @@ Computer::Computer(QObject *parent) : QObject(parent)
                      &_bus, &Bus::write);
     QObject::connect(&_bus,    &Bus::busWritten,
                      &_memory, &RamBusDevice::write);
-    _clock.setInterval(128);
+    _clock.setInterval(8);
     _clock.setSingleShot(false);
     QObject::connect(&_clock, &QTimer::timeout,
                      this,    &Computer::timerTimeout);
@@ -28,7 +28,7 @@ Computer::Computer(QObject *parent) : QObject(parent)
 
 void Computer::startClock()
 {
-    _clock.start(128);
+    _clock.start();
 }
 
 void Computer::stopClock()

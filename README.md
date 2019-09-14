@@ -1,3 +1,7 @@
+This project is GREATLY inspired by OneLoneCoder's olcNES project
+and is an attempt to see what it would be like to write it in a
+Qt friendly way.
+
 # olcNES
 NES Emulator, and Tutorial Video Code
 
