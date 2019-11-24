@@ -78,8 +78,6 @@ private slots:
      *  @param value   The value it was changed to
      */
     void onMemoryChanged(RamBusDevice::addressType address, uint8_t value);
-
-private:
 };
 
 #endif // RAMBUSDEVICEVIEW_HPP

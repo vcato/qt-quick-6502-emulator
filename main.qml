@@ -1,15 +1,29 @@
-import QtQuick 2.05
-import QtQuick.Layouts 1.0
-import QtQuick.Window 2.0
-import QtQuick.Controls 1.2
+//import QtQuick 2.05
+import QtQuick 2.12
+
+//import QtQuick.Layouts 1.0
+import QtQuick.Layouts 1.3
+
+//import QtQuick.Window 2.0
+import QtQuick.Window 2.3
+
+//import QtQuick.Controls 1.2
+import QtQuick.Controls 1.4
 import Qt.example.computer 1.0
 import Qt.example.rambusdeviceview 1.0
+import Qt.example.rambusdevicetablemodel 1.0
 
 Window {
     visible: true
-    width: 800
-    height: 600
+    width: registers.width + memory_views.width + 20
+    height: 1400
     title: qsTr("Hello World")
+
+    RamBusDeviceTableModel {
+        id: zero_page_ram_table_model
+        memorymodel: Computer.ram
+        page: 0x00
+    }
 
     RowLayout {
         id: clock_control_row
@@ -19,10 +33,12 @@ Window {
 
         Button {
             text: "Start Clock"
+            Layout.margins: 10
             onClicked: Computer.startClock()
         }
         Button {
             text: "Stop Clock"
+            Layout.margins: 10
             onClicked: Computer.stopClock()
         }
     }
@@ -37,6 +53,7 @@ Window {
             spacing: 10
             Layout.alignment: Qt.AlignLeft | Qt.AlignRight
             Layout.fillWidth: true
+            Layout.margins: 10
 
             Label {
                 text: "STATUS:"
@@ -49,6 +66,7 @@ Window {
             id: pc_row
             Layout.alignment: Qt.AlignLeft | Qt.AlignRight
             Layout.fillWidth: true
+            Layout.margins: 10
 
             Label {
                 text: "PC:"
@@ -61,6 +79,7 @@ Window {
             id: accumulator_row
             Layout.alignment: Qt.AlignLeft | Qt.AlignRight
             Layout.fillWidth: true
+            Layout.margins: 10
 
             Label {
                 text: "A:"
@@ -73,6 +92,7 @@ Window {
             id: x_register_row
             Layout.alignment: Qt.AlignLeft | Qt.AlignRight
             Layout.fillWidth: true
+            Layout.margins: 10
 
             Label {
                 text: "X:"
@@ -85,6 +105,7 @@ Window {
             id: y_register_row
             Layout.alignment: Qt.AlignLeft | Qt.AlignRight
             Layout.fillWidth: true
+            Layout.margins: 10
 
             Label {
                 text: "Y:"
@@ -97,6 +118,7 @@ Window {
             id: stack_pointer_row
             Layout.alignment: Qt.AlignLeft | Qt.AlignRight
             Layout.fillWidth: true
+            Layout.margins: 10
 
             Label {
                 text: "STACK P:"
@@ -112,8 +134,32 @@ Window {
         anchors.top: parent.top
         anchors.bottom: clock_control_row.top
 
-        RamBusDeviceView {
+        TableView {
             id: zero_page_ram_view
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.margins: 10
+            model: zero_page_ram_table_model
+
+            TableViewColumn {
+                id: addressColumn
+                title: "Address"
+                role: "address"
+                resizable: true
+            }
+
+            TableViewColumn {
+                id: memoryColumn
+                title: "Memory"
+                role: "memory"
+                resizable: true
+                width: zero_page_ram_view.width - memoryColumn.width
+            }
+        }
+
+        RamBusDeviceView {
+            id: zero_page_ram_view2
 
             model: Computer.ram
             page: 0x00
