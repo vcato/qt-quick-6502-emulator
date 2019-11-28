@@ -16,7 +16,7 @@ import Qt.example.rambusdevicetablemodel 1.0
 Window {
     visible: true
     width: registers.width + memory_views.width + 20
-    height: 1400
+    height: 1100
     title: qsTr("Hello World")
 
     RamBusDeviceTableModel {
@@ -158,12 +158,6 @@ Window {
             }
         }
 
-        RamBusDeviceView {
-            id: zero_page_ram_view2
-
-            model: Computer.ram
-            page: 0x00
-        }
         RamBusDeviceView {
             id: program_page_ram_view
 
