@@ -1409,3 +1409,125 @@ void olc6502::setLog(bool value)
         emit logChanged();
     }
 }
+
+auto olc6502::disassemble(addressType start, addressType stop) -> disassemblyType
+{
+    size_t  addr = start; // MUST be a value type that holds more values than start!
+    uint8_t value = 0x00, lo = 0x00, hi = 0x00;
+    size_t  line_addr = 0;
+    disassemblyType mapLines;
+
+    // A convenient utility to convert variables into
+    // hex strings because "modern C++"'s method with
+    // streams is atrocious
+    auto hex = [](size_t n, uint8_t d)
+    {
+        std::string s(d, '0');
+
+        for (; d > 0; --d, n >>= 4)
+            s[d - 1] = "0123456789ABCDEF"[n & 0xF];
+        return s;
+    };
+
+    // Starting at the specified address we read an instruction
+    // byte, which in turn yields information from the lookup table
+    // as to how many additional bytes we need to read and what the
+    // addressing mode is. I need this info to assemble human readable
+    // syntax, which is different depending upon the addressing mode
+
+    // As the instruction is decoded, a std::string is assembled
+    // with the readable output
+    while (addr <= stop)
+    {
+        line_addr = addr;
+
+        // Prefix line with instruction address
+        std::string sInst = "$" + hex(addr, 4) + ": ";
+
+        // Read instruction, and get its readable name
+        uint8_t opcode = readSignal(addr, true); addr++;
+        sInst += _lookup[opcode].name + " ";
+
+        // Get oprands from desired locations, and form the
+        // instruction based upon its addressing mode. These
+        // routines mimmick the actual fetch routine of the
+        // 6502 in order to get accurate data as part of the
+        // instruction
+        if (_lookup[opcode].addrmode == &olc6502::IMP)
+        {
+            sInst += " {IMP}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::IMM)
+        {
+            value = readSignal(addr, true); addr++;
+            sInst += "#$" + hex(value, 2) + " {IMM}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::ZP0)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = 0x00;
+            sInst += "$" + hex(lo, 2) + " {ZP0}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::ZPX)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = 0x00;
+            sInst += "$" + hex(lo, 2) + ", X {ZPX}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::ZPY)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = 0x00;
+            sInst += "$" + hex(lo, 2) + ", Y {ZPY}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::IZX)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = 0x00;
+            sInst += "($" + hex(lo, 2) + ", X) {IZX}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::IZY)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = 0x00;
+            sInst += "($" + hex(lo, 2) + "), Y {IZY}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::ABS)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = readSignal(addr, true); addr++;
+            sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + " {ABS}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::ABX)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = readSignal(addr, true); addr++;
+            sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + ", X {ABX}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::ABY)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = readSignal(addr, true); addr++;
+            sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + ", Y {ABY}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::IND)
+        {
+            lo = readSignal(addr, true); addr++;
+            hi = readSignal(addr, true); addr++;
+            sInst += "($" + hex((uint16_t)(hi << 8) | lo, 4) + ") {IND}";
+        }
+        else if (_lookup[opcode].addrmode == &olc6502::REL)
+        {
+            value = readSignal(addr, true); addr++;
+            sInst += "$" + hex(value, 2) + " [$" + hex(addr + value, 4) + "] {REL}";
+        }
+
+        // Add the formed string to a std::map, using the instruction's
+        // address as the key. This makes it convenient to look for later
+        // as the instructions are variable in length, so a straight up
+        // incremental index is not sufficient.
+        mapLines[line_addr] = sInst;
+    }
+
+    return mapLines;
+}

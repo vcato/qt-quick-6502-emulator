@@ -1,5 +1,5 @@
 QT += quick
-CONFIG += c++14
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -19,6 +19,7 @@ SOURCES += \
         olc6502.cpp \
         rambusdevice.cpp \
         main.cpp \
+        rambusdevicedisassemblymodel.cpp \
         rambusdevicetablemodel.cpp \
         rambusdeviceview.cpp
 
@@ -41,6 +42,7 @@ HEADERS += \
     ibusdevice.hpp \
     olc6502.hpp \
     rambusdevice.hpp \
+    rambusdevicedisassemblymodel.hpp \
     rambusdevicetablemodel.hpp \
     rambusdeviceview.hpp
 

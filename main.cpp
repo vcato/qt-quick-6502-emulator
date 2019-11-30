@@ -3,6 +3,7 @@
 #include "computer.hpp"
 #include "rambusdeviceview.hpp"
 #include "rambusdevicetablemodel.hpp"
+#include "rambusdevicedisassemblymodel.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -14,7 +15,7 @@ int main(int argc, char *argv[])
     Computer::RegisterType();
     RamBusDeviceView::RegisterType();
     RamBusDeviceTableModel::RegisterType();
-
+    RamBusDeviceDisassemblyModel::RegisterType();
 
     QGuiApplication app(argc, argv);
 

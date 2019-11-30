@@ -77,6 +77,7 @@
 #include <QObject>
 #include <QPointer>
 #include <string>
+#include <map>
 
 class olc6502 : public QObject
 {
@@ -92,6 +93,7 @@ class olc6502 : public QObject
     Q_PROPERTY(bool log         READ log             WRITE setLog NOTIFY logChanged)
 public:
     using addressType = uint16_t;
+    using disassemblyType = std::map<addressType, std::string>;
 
     enum FLAGS6502
     {
@@ -174,7 +176,6 @@ public:
     // functionally identical to a NOP
     uint8_t XXX();
 
-    void clock();
     void reset();
     void irq();
     void nmi();
@@ -200,7 +201,10 @@ public:
     bool log() const { return _log; }
     void setLog(bool value);
 
+    auto disassemble(addressType start, addressType stop) -> disassemblyType;
 public slots:
+    void clock(); ///< Executes one clock tick
+
     uint8_t read(addressType address, bool read_only = false);
     void    write(addressType address, uint8_t data);
 
