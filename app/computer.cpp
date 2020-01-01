@@ -19,7 +19,7 @@ Computer::Computer(QObject *parent) : QObject(parent)
                      &_bus, &Bus::write);
     QObject::connect(&_bus,    &Bus::busWritten,
                      &_memory, &RamBusDevice::write);
-    _clock.setInterval(250);
+    _clock.setInterval(16);
     _clock.setSingleShot(false);
     QObject::connect(&_clock, &QTimer::timeout,
                      this,    &Computer::timerTimeout);
