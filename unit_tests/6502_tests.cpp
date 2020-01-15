@@ -84,14 +84,37 @@ TEST(CPU, ResetTakesDeterminateNumberOfCycles)
 
     cpu.reset();
 
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should set complete() to false";
+
+    cpu.clock();
+
     EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
 
     cpu.clock();
-    cpu.clock();
-    cpu.clock();
-    cpu.clock();
-    cpu.clock();
+
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
+
     cpu.clock();
 
-    EXPECT_THAT(cpu.complete(), Eq(true)) << "A CPU reset should take 6 cycles";
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
+
+    cpu.clock();
+
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
+
+    cpu.clock();
+
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
+
+    cpu.clock();
+
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
+
+    cpu.clock();
+
+    EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should take 8 cycles";
+
+    cpu.clock();
+
+    EXPECT_THAT(cpu.complete(), Eq(true)) << "A CPU reset should take 8 cycles";
 }
