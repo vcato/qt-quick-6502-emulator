@@ -198,6 +198,8 @@ public:
     uint8_t  stackPointer() const { return _stkp; }
     uint8_t  status() const { return _status; }
 
+    uint32_t clockTicks() const { return _clock_count; }
+
     bool log() const { return _log; }
     void setLog(bool value);
 
