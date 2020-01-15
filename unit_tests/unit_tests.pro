@@ -1,5 +1,5 @@
 # Use a relative path so we can just use it as a submodule from git.
-GOOGLETEST_DIR = ../googletest
+#GOOGLETEST_DIR = ../googletest
 
 include(gtest_dependency.pri)
 
