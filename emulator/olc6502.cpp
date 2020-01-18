@@ -244,12 +244,7 @@ void olc6502::clock()
     if (complete())
     {
         // Let's remember the previous values so we may only emit a single signal for whatever changed.
-        auto a_before = _registers.a;
-        auto x_before = _registers.x;
-        auto y_before = _registers.y;
-        auto stkptr_before = _registers.stack_pointer;
-        auto pc_before = _registers.program_counter;
-        auto status_before = _registers.status;
+        auto registers_before = _registers;
 
         // Read next instruction byte. This 8-bit value is used to index
         // the translation table to get the relevant information about
@@ -294,17 +289,17 @@ void olc6502::clock()
         }
 
         // Find out what has changed and emit the appropriate signals...
-        if (_registers.program_counter != pc_before)
+        if (_registers.program_counter != registers_before.program_counter)
             pcChanged(_registers.program_counter);
-        if (_registers.status != status_before)
+        if (_registers.status != registers_before.status)
             statusChanged(_registers.status);
-        if (_registers.stack_pointer != stkptr_before)
+        if (_registers.stack_pointer != registers_before.stack_pointer)
             stackPointerChanged(_registers.stack_pointer);
-        if (_registers.a != a_before)
+        if (_registers.a != registers_before.a)
             aChanged(_registers.a);
-        if (_registers.x != x_before)
+        if (_registers.x != registers_before.x)
             xChanged(_registers.x);
-        if (_registers.y != y_before)
+        if (_registers.y != registers_before.y)
             yChanged(_registers.y);
     }
 

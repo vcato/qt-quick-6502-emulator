@@ -258,14 +258,6 @@ private:
 
     // Assisstive variables to facilitate emulation
     Registers _registers;
-#if 0
-    uint8_t  _a = 0x00;
-    uint8_t  _x = 0x00;
-    uint8_t  _y = 0x00;
-    uint8_t  _stkp = 0x00;
-    uint16_t _pc = 0x0000;
-    uint8_t  _status = 0x00; // status register
-#endif
     uint8_t  _fetched = 0x00; // Represents the working input value to the ALU
     uint16_t _temp = 0x0000; // A convenience variable used everywhere
     uint16_t _addr_abs = 0x0000; // All used memory addresses end up in here
