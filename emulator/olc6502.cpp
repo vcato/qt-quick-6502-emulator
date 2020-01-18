@@ -141,14 +141,14 @@ void olc6502::reset()
     uint16_t hi = read(_addr_abs + 1);
 
     // Set it
-    _pc = (hi << 8) | lo;
+    _registers.program_counter = (hi << 8) | lo;
 
     // Reset internal registers
-    _a = 0;
-    _x = 0;
-    _y = 0;
-    _stkp = 0xFD;
-    _status = 0x00 | U;
+    _registers.a = 0;
+    _registers.x = 0;
+    _registers.y = 0;
+    _registers.stack_pointer = 0xFD;
+    _registers.status = 0x00 | U;
 
     // Clear internal helper variables
     _addr_rel = 0x0000;
@@ -180,23 +180,23 @@ void olc6502::irq()
     {
         // Push the program counter to the stack. It's 16-bits dont
         // forget so that takes two pushes
-        write(0x0100 + _stkp, (_pc >> 8) & 0x00FF);
-        _stkp--;
-        write(0x0100 + _stkp, _pc & 0x00FF);
-        _stkp--;
+        write(0x0100 + _registers.stack_pointer, (_registers.program_counter >> 8) & 0x00FF);
+        _registers.stack_pointer--;
+        write(0x0100 + _registers.stack_pointer, _registers.program_counter & 0x00FF);
+        _registers.stack_pointer--;
 
         // Then Push the status register to the stack
         SetFlag(B, 0);
         SetFlag(U, 1);
         SetFlag(I, 1);
-        write(0x0100 + _stkp, _status);
-        _stkp--;
+        write(0x0100 + _registers.stack_pointer, _registers.status);
+        _registers.stack_pointer--;
 
         // Read new program counter location from fixed address
         _addr_abs = 0xFFFE;
         uint16_t lo = read(_addr_abs + 0);
         uint16_t hi = read(_addr_abs + 1);
-        _pc = (hi << 8) | lo;
+        _registers.program_counter = (hi << 8) | lo;
 
         // IRQs take time
         _cycles = 7;
@@ -209,21 +209,21 @@ void olc6502::irq()
 // form location 0xFFFA.
 void olc6502::nmi()
 {
-    write(0x0100 + _stkp, (_pc >> 8) & 0x00FF);
-    _stkp--;
-    write(0x0100 + _stkp, _pc & 0x00FF);
-    _stkp--;
+    write(0x0100 + _registers.stack_pointer, (_registers.program_counter >> 8) & 0x00FF);
+    _registers.stack_pointer--;
+    write(0x0100 + _registers.stack_pointer, _registers.program_counter & 0x00FF);
+    _registers.stack_pointer--;
 
     SetFlag(B, 0);
     SetFlag(U, 1);
     SetFlag(I, 1);
-    write(0x0100 + _stkp, _status);
-    _stkp--;
+    write(0x0100 + _registers.stack_pointer, _registers.status);
+    _registers.stack_pointer--;
 
     _addr_abs = 0xFFFA;
     uint16_t lo = read(_addr_abs + 0);
     uint16_t hi = read(_addr_abs + 1);
-    _pc = (hi << 8) | lo;
+    _registers.program_counter = (hi << 8) | lo;
 
     _cycles = 8;
 }
@@ -244,25 +244,25 @@ void olc6502::clock()
     if (complete())
     {
         // Let's remember the previous values so we may only emit a single signal for whatever changed.
-        auto a_before = _a;
-        auto x_before = _x;
-        auto y_before = _y;
-        auto stkptr_before = _stkp;
-        auto pc_before = _pc;
-        auto status_before = _status;
+        auto a_before = _registers.a;
+        auto x_before = _registers.x;
+        auto y_before = _registers.y;
+        auto stkptr_before = _registers.stack_pointer;
+        auto pc_before = _registers.program_counter;
+        auto status_before = _registers.status;
 
         // Read next instruction byte. This 8-bit value is used to index
         // the translation table to get the relevant information about
         // how to implement the instruction
-        _opcode = read(_pc);
+        _opcode = read(_registers.program_counter);
 
-        uint16_t log_pc = _pc; // For logging
+        uint16_t log_pc = _registers.program_counter; // For logging
 
         // Always set the unused status flag bit to 1
         SetFlag(U, true);
 
         // Increment program counter, we read the opcode byte
-        _pc++;
+        _registers.program_counter++;
 
         // Get Starting number of cycles
         _cycles = _lookup[_opcode].cycles;
@@ -287,25 +287,25 @@ void olc6502::clock()
             // This can be used for debugging the emulation, but has little utility
             // during emulation. Its also very slow, so only use if you have to.
             qDebug("%10d:%02d PC:%04X %s A:%02X X:%02X Y:%02X %s%s%s%s%s%s%s%s STKP:%02X\n",
-                   _clock_count, 0, log_pc, "XXX", _a, _x, _y,
+                   _clock_count, 0, log_pc, "XXX", _registers.a, _registers.x, _registers.y,
                    GetFlag(N) ? "N" : ".",	GetFlag(V) ? "V" : ".",	GetFlag(U) ? "U" : ".",
                    GetFlag(B) ? "B" : ".",	GetFlag(D) ? "D" : ".",	GetFlag(I) ? "I" : ".",
-                   GetFlag(Z) ? "Z" : ".",	GetFlag(C) ? "C" : ".",	_stkp);
+                   GetFlag(Z) ? "Z" : ".",	GetFlag(C) ? "C" : ".",	_registers.stack_pointer);
         }
 
         // Find out what has changed and emit the appropriate signals...
-        if (_pc != pc_before)
-            pcChanged(_pc);
-        if (_status != status_before)
-            statusChanged(_status);
-        if (_stkp != stkptr_before)
-            stackPointerChanged(_stkp);
-        if (_a != a_before)
-            aChanged(_a);
-        if (_x != x_before)
-            xChanged(_x);
-        if (_y != y_before)
-            yChanged(_y);
+        if (_registers.program_counter != pc_before)
+            pcChanged(_registers.program_counter);
+        if (_registers.status != status_before)
+            statusChanged(_registers.status);
+        if (_registers.stack_pointer != stkptr_before)
+            stackPointerChanged(_registers.stack_pointer);
+        if (_registers.a != a_before)
+            aChanged(_registers.a);
+        if (_registers.x != x_before)
+            xChanged(_registers.x);
+        if (_registers.y != y_before)
+            yChanged(_registers.y);
     }
 
     // Increment global clock count - This is actually unused unless logging is enabled
@@ -318,15 +318,15 @@ void olc6502::clock()
 
 uint8_t olc6502::GetFlag(FLAGS6502 f)
 {
-    return ((_status & static_cast<uint8_t>(f)) > 0) ? 1 : 0;
+    return ((_registers.status & static_cast<uint8_t>(f)) > 0) ? 1 : 0;
 }
 
 void olc6502::SetFlag(FLAGS6502 f, bool v)
 {
     if (v)
-        _status |= static_cast<uint8_t>(f);
+        _registers.status |= static_cast<uint8_t>(f);
     else
-        _status &= ~static_cast<uint8_t>(f);
+        _registers.status &= ~static_cast<uint8_t>(f);
 }
 
 // The 6502 can address between 0x0000 - 0xFFFF. The high byte is often referred
@@ -346,7 +346,7 @@ void olc6502::SetFlag(FLAGS6502 f, bool v)
 // target the accumulator, for instructions like PHA
 uint8_t olc6502::IMP()
 {
-    _fetched = _a;
+    _fetched = _registers.a;
     return 0;
 }
 
@@ -355,7 +355,7 @@ uint8_t olc6502::IMP()
 // the read address to point to the next byte
 uint8_t olc6502::IMM()
 {
-    _addr_abs = _pc++;
+    _addr_abs = _registers.program_counter++;
     return 0;
 }
 
@@ -365,8 +365,8 @@ uint8_t olc6502::IMM()
 // one byte instead of the usual two.
 uint8_t olc6502::ZP0()
 {
-    _addr_abs = read(_pc);
-    _pc++;
+    _addr_abs = read(_registers.program_counter);
+    _registers.program_counter++;
     _addr_abs &= 0x00FF;
     return 0;
 }
@@ -377,8 +377,8 @@ uint8_t olc6502::ZP0()
 // ranges within the first page.
 uint8_t olc6502::ZPX()
 {
-    _addr_abs = (read(_pc) + _x);
-    _pc++;
+    _addr_abs = (read(_registers.program_counter) + _registers.x);
+    _registers.program_counter++;
     _addr_abs &= 0x00FF;
     return 0;
 }
@@ -387,8 +387,8 @@ uint8_t olc6502::ZPX()
 // Same as above but uses Y Register for offset
 uint8_t olc6502::ZPY()
 {
-    _addr_abs = (read(_pc) + _y);
-    _pc++;
+    _addr_abs = (read(_registers.program_counter) + _registers.y);
+    _registers.program_counter++;
     _addr_abs &= 0x00FF;
     return 0;
 }
@@ -399,8 +399,8 @@ uint8_t olc6502::ZPY()
 // you cant directly branch to any address in the addressable range.
 uint8_t olc6502::REL()
 {
-    _addr_rel = read(_pc);
-    _pc++;
+    _addr_rel = read(_registers.program_counter);
+    _registers.program_counter++;
     if (_addr_rel & 0x80)
         _addr_rel |= 0xFF00;
     return 0;
@@ -410,10 +410,10 @@ uint8_t olc6502::REL()
 // A full 16-bit address is loaded and used
 uint8_t olc6502::ABS()
 {
-    uint16_t lo = read(_pc);
-    _pc++;
-    uint16_t hi = read(_pc);
-    _pc++;
+    uint16_t lo = read(_registers.program_counter);
+    _registers.program_counter++;
+    uint16_t hi = read(_registers.program_counter);
+    _registers.program_counter++;
     _addr_abs = (hi << 8) | lo;
 
     return 0;
@@ -425,13 +425,13 @@ uint8_t olc6502::ABS()
 // the page, an additional clock cycle is required
 uint8_t olc6502::ABX()
 {
-    uint16_t lo = read(_pc);
-    _pc++;
-    uint16_t hi = read(_pc);
-    _pc++;
+    uint16_t lo = read(_registers.program_counter);
+    _registers.program_counter++;
+    uint16_t hi = read(_registers.program_counter);
+    _registers.program_counter++;
 
     _addr_abs = (hi << 8) | lo;
-    _addr_abs += _x;
+    _addr_abs += _registers.x;
 
     if ((_addr_abs & 0xFF00) != (hi << 8))
         return 1;
@@ -446,14 +446,14 @@ uint8_t olc6502::ABX()
 uint8_t olc6502::ABY()
 
 {
-    uint16_t lo = read(_pc);
-    _pc++;
-    uint16_t hi = read(_pc);
-    _pc++;
+    uint16_t lo = read(_registers.program_counter);
+    _registers.program_counter++;
+    uint16_t hi = read(_registers.program_counter);
+    _registers.program_counter++;
 
     _addr_abs = (hi << 8) | lo;
 
-    _addr_abs += _y;
+    _addr_abs += _registers.y;
 
     if ((_addr_abs & 0xFF00) != (hi << 8))
         return 1;
@@ -473,10 +473,10 @@ uint8_t olc6502::ABY()
 // invalid actual address
 uint8_t olc6502::IND()
 {
-    uint16_t ptr_lo = read(_pc);
-    _pc++;
-    uint16_t ptr_hi = read(_pc);
-    _pc++;
+    uint16_t ptr_lo = read(_registers.program_counter);
+    _registers.program_counter++;
+    uint16_t ptr_hi = read(_registers.program_counter);
+    _registers.program_counter++;
 
     uint16_t ptr = (ptr_hi << 8) | ptr_lo;
 
@@ -497,11 +497,11 @@ uint8_t olc6502::IND()
 // from this location
 uint8_t olc6502::IZX()
 {
-    uint16_t t = read(_pc);
-    _pc++;
+    uint16_t t = read(_registers.program_counter);
+    _registers.program_counter++;
 
-    uint16_t lo = read((uint16_t)(t + (uint16_t)_x) & 0x00FF);
-    uint16_t hi = read((uint16_t)(t + (uint16_t)_x + 1) & 0x00FF);
+    uint16_t lo = read((uint16_t)(t + (uint16_t)_registers.x) & 0x00FF);
+    uint16_t hi = read((uint16_t)(t + (uint16_t)_registers.x + 1) & 0x00FF);
 
     _addr_abs = (hi << 8) | lo;
 
@@ -515,14 +515,14 @@ uint8_t olc6502::IZX()
 // change in page then an additional clock cycle is required.
 uint8_t olc6502::IZY()
 {
-    uint16_t t = read(_pc);
-    _pc++;
+    uint16_t t = read(_registers.program_counter);
+    _registers.program_counter++;
 
     uint16_t lo = read(t & 0x00FF);
     uint16_t hi = read((t + 1) & 0x00FF);
 
     _addr_abs = (hi << 8) | lo;
-    _addr_abs += _y;
+    _addr_abs += _registers.y;
 
     if ((_addr_abs & 0xFF00) != (hi << 8))
         return 1;
@@ -627,7 +627,7 @@ uint8_t olc6502::ADC()
 
     // Add is performed in 16-bit domain for emulation to capture any
     // carry bit, which will exist in bit 8 of the 16-bit word
-    _temp = (uint16_t)_a + (uint16_t)_fetched + (uint16_t)GetFlag(C);
+    _temp = (uint16_t)_registers.a + (uint16_t)_fetched + (uint16_t)GetFlag(C);
 
     // The carry flag out exists in the high byte bit 0
     SetFlag(C, _temp > 255);
@@ -636,13 +636,13 @@ uint8_t olc6502::ADC()
     SetFlag(Z, (_temp & 0x00FF) == 0);
 
     // The signed Overflow flag is set based on all that up there! :D
-    SetFlag(V, (~((uint16_t)_a ^ (uint16_t)_fetched) & ((uint16_t)_a ^ (uint16_t)_temp)) & 0x0080);
+    SetFlag(V, (~((uint16_t)_registers.a ^ (uint16_t)_fetched) & ((uint16_t)_registers.a ^ (uint16_t)_temp)) & 0x0080);
 
     // The negative flag is set to the most significant bit of the result
     SetFlag(N, _temp & 0x80);
 
     // Load the result into the accumulator (it's 8-bit dont forget!)
-    _a = _temp & 0x00FF;
+    _registers.a = _temp & 0x00FF;
 
     // This instruction has the potential to require an additional clock cycle
     return 1;
@@ -684,12 +684,12 @@ uint8_t olc6502::SBC()
     uint16_t value = ((uint16_t)_fetched) ^ 0x00FF;
 
     // Notice this is exactly the same as addition from here!
-    _temp = (uint16_t)_a + value + (uint16_t)GetFlag(C);
+    _temp = (uint16_t)_registers.a + value + (uint16_t)GetFlag(C);
     SetFlag(C, _temp & 0xFF00);
     SetFlag(Z, ((_temp & 0x00FF) == 0));
-    SetFlag(V, (_temp ^ (uint16_t)_a) & (_temp ^ value) & 0x0080);
+    SetFlag(V, (_temp ^ (uint16_t)_registers.a) & (_temp ^ value) & 0x0080);
     SetFlag(N, _temp & 0x0080);
-    _a = _temp & 0x00FF;
+    _registers.a = _temp & 0x00FF;
     return 1;
 }
 
@@ -709,9 +709,9 @@ uint8_t olc6502::SBC()
 uint8_t olc6502::AND()
 {
     fetch();
-    _a = _a & _fetched;
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.a = _registers.a & _fetched;
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 1;
 }
 
@@ -727,7 +727,7 @@ uint8_t olc6502::ASL()
     SetFlag(Z, (_temp & 0x00FF) == 0x00);
     SetFlag(N, _temp & 0x80);
     if (_lookup[_opcode].addrmode == &olc6502::IMP)
-        _a = _temp & 0x00FF;
+        _registers.a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
@@ -741,12 +741,12 @@ uint8_t olc6502::BCC()
     if (GetFlag(C) == 0)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -759,12 +759,12 @@ uint8_t olc6502::BCS()
     if (GetFlag(C) == 1)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -776,12 +776,12 @@ uint8_t olc6502::BEQ()
     if (GetFlag(Z) == 1)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -789,7 +789,7 @@ uint8_t olc6502::BEQ()
 uint8_t olc6502::BIT()
 {
     fetch();
-    _temp = _a & _fetched;
+    _temp = _registers.a & _fetched;
     SetFlag(Z, (_temp & 0x00FF) == 0x00);
     SetFlag(N, _fetched & (1 << 7));
     SetFlag(V, _fetched & (1 << 6));
@@ -803,12 +803,12 @@ uint8_t olc6502::BMI()
     if (GetFlag(N) == 1)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -821,12 +821,12 @@ uint8_t olc6502::BNE()
     if (GetFlag(Z) == 0)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -838,12 +838,12 @@ uint8_t olc6502::BPL()
     if (GetFlag(N) == 0)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -852,20 +852,20 @@ uint8_t olc6502::BPL()
 // Function:    Program Sourced Interrupt
 uint8_t olc6502::BRK()
 {
-    _pc++;
+    _registers.program_counter++;
 
     SetFlag(I, 1);
-    write(0x0100 + _stkp, (_pc >> 8) & 0x00FF);
-    _stkp--;
-    write(0x0100 + _stkp, _pc & 0x00FF);
-    _stkp--;
+    write(0x0100 + _registers.stack_pointer, (_registers.program_counter >> 8) & 0x00FF);
+    _registers.stack_pointer--;
+    write(0x0100 + _registers.stack_pointer, _registers.program_counter & 0x00FF);
+    _registers.stack_pointer--;
 
     SetFlag(B, 1);
-    write(0x0100 + _stkp, _status);
-    _stkp--;
+    write(0x0100 + _registers.stack_pointer, _registers.status);
+    _registers.stack_pointer--;
     SetFlag(B, 0);
 
-    _pc = (uint16_t)read(0xFFFE) | ((uint16_t)read(0xFFFF) << 8);
+    _registers.program_counter = (uint16_t)read(0xFFFE) | ((uint16_t)read(0xFFFF) << 8);
     return 0;
 }
 
@@ -876,12 +876,12 @@ uint8_t olc6502::BVC()
     if (GetFlag(V) == 0)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -893,12 +893,12 @@ uint8_t olc6502::BVS()
     if (GetFlag(V) == 1)
     {
         _cycles++;
-        _addr_abs = _pc + _addr_rel;
+        _addr_abs = _registers.program_counter + _addr_rel;
 
-        if ((_addr_abs & 0xFF00) != (_pc & 0xFF00))
+        if ((_addr_abs & 0xFF00) != (_registers.program_counter & 0xFF00))
             _cycles++;
 
-        _pc = _addr_abs;
+        _registers.program_counter = _addr_abs;
     }
     return 0;
 }
@@ -942,8 +942,8 @@ uint8_t olc6502::CLV()
 uint8_t olc6502::CMP()
 {
     fetch();
-    _temp = (uint16_t)_a - (uint16_t)_fetched;
-    SetFlag(C, _a >= _fetched);
+    _temp = (uint16_t)_registers.a - (uint16_t)_fetched;
+    SetFlag(C, _registers.a >= _fetched);
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
     return 1;
@@ -956,8 +956,8 @@ uint8_t olc6502::CMP()
 uint8_t olc6502::CPX()
 {
     fetch();
-    _temp = (uint16_t)_x - (uint16_t)_fetched;
-    SetFlag(C, _x >= _fetched);
+    _temp = (uint16_t)_registers.x - (uint16_t)_fetched;
+    SetFlag(C, _registers.x >= _fetched);
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
     return 0;
@@ -969,8 +969,8 @@ uint8_t olc6502::CPX()
 uint8_t olc6502::CPY()
 {
     fetch();
-    _temp = (uint16_t)_y - (uint16_t)_fetched;
-    SetFlag(C, _y >= _fetched);
+    _temp = (uint16_t)_registers.y - (uint16_t)_fetched;
+    SetFlag(C, _registers.y >= _fetched);
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
     return 0;
@@ -994,9 +994,9 @@ uint8_t olc6502::DEC()
 // Flags Out:   N, Z
 uint8_t olc6502::DEX()
 {
-    _x--;
-    SetFlag(Z, _x == 0x00);
-    SetFlag(N, _x & 0x80);
+    _registers.x--;
+    SetFlag(Z, _registers.x == 0x00);
+    SetFlag(N, _registers.x & 0x80);
     return 0;
 }
 
@@ -1006,9 +1006,9 @@ uint8_t olc6502::DEX()
 // Flags Out:   N, Z
 uint8_t olc6502::DEY()
 {
-    _y--;
-    SetFlag(Z, _y == 0x00);
-    SetFlag(N, _y & 0x80);
+    _registers.y--;
+    SetFlag(Z, _registers.y == 0x00);
+    SetFlag(N, _registers.y & 0x80);
     return 0;
 }
 
@@ -1019,9 +1019,9 @@ uint8_t olc6502::DEY()
 uint8_t olc6502::EOR()
 {
     fetch();
-    _a = _a ^ _fetched;
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.a = _registers.a ^ _fetched;
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 1;
 }
 
@@ -1044,9 +1044,9 @@ uint8_t olc6502::INC()
 // Flags Out:   N, Z
 uint8_t olc6502::INX()
 {
-    _x++;
-    SetFlag(Z, _x == 0x00);
-    SetFlag(N, _x & 0x80);
+    _registers.x++;
+    SetFlag(Z, _registers.x == 0x00);
+    SetFlag(N, _registers.x & 0x80);
     return 0;
 }
 
@@ -1056,9 +1056,9 @@ uint8_t olc6502::INX()
 // Flags Out:   N, Z
 uint8_t olc6502::INY()
 {
-    _y++;
-    SetFlag(Z, _y == 0x00);
-    SetFlag(N, _y & 0x80);
+    _registers.y++;
+    SetFlag(Z, _registers.y == 0x00);
+    SetFlag(N, _registers.y & 0x80);
     return 0;
 }
 
@@ -1067,7 +1067,7 @@ uint8_t olc6502::INY()
 // Function:    pc = address
 uint8_t olc6502::JMP()
 {
-    _pc = _addr_abs;
+    _registers.program_counter = _addr_abs;
     return 0;
 }
 
@@ -1076,14 +1076,14 @@ uint8_t olc6502::JMP()
 // Function:    Push current pc to stack, pc = address
 uint8_t olc6502::JSR()
 {
-    _pc--;
+    _registers.program_counter--;
 
-    write(0x0100 + _stkp, (_pc >> 8) & 0x00FF);
-    _stkp--;
-    write(0x0100 + _stkp, _pc & 0x00FF);
-    _stkp--;
+    write(0x0100 + _registers.stack_pointer, (_registers.program_counter >> 8) & 0x00FF);
+    _registers.stack_pointer--;
+    write(0x0100 + _registers.stack_pointer, _registers.program_counter & 0x00FF);
+    _registers.stack_pointer--;
 
-    _pc = _addr_abs;
+    _registers.program_counter = _addr_abs;
     return 0;
 }
 
@@ -1093,9 +1093,9 @@ uint8_t olc6502::JSR()
 uint8_t olc6502::LDA()
 {
     fetch();
-    _a = _fetched;
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.a = _fetched;
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 1;
 }
 
@@ -1106,9 +1106,9 @@ uint8_t olc6502::LDA()
 uint8_t olc6502::LDX()
 {
     fetch();
-    _x = _fetched;
-    SetFlag(Z, _x == 0x00);
-    SetFlag(N, _x & 0x80);
+    _registers.x = _fetched;
+    SetFlag(Z, _registers.x == 0x00);
+    SetFlag(N, _registers.x & 0x80);
     return 1;
 }
 
@@ -1119,9 +1119,9 @@ uint8_t olc6502::LDX()
 uint8_t olc6502::LDY()
 {
     fetch();
-    _y = _fetched;
-    SetFlag(Z, _y == 0x00);
-    SetFlag(N, _y & 0x80);
+    _registers.y = _fetched;
+    SetFlag(Z, _registers.y == 0x00);
+    SetFlag(N, _registers.y & 0x80);
     return 1;
 }
 
@@ -1133,7 +1133,7 @@ uint8_t olc6502::LSR()
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
     if (_lookup[_opcode].addrmode == &olc6502::IMP)
-        _a = _temp & 0x00FF;
+        _registers.a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
@@ -1164,9 +1164,9 @@ uint8_t olc6502::NOP()
 uint8_t olc6502::ORA()
 {
     fetch();
-    _a = _a | _fetched;
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.a = _registers.a | _fetched;
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 1;
 }
 
@@ -1175,8 +1175,8 @@ uint8_t olc6502::ORA()
 // Function:    A -> stack
 uint8_t olc6502::PHA()
 {
-    write(0x0100 + _stkp, _a);
-    _stkp--;
+    write(0x0100 + _registers.stack_pointer, _registers.a);
+    _registers.stack_pointer--;
     return 0;
 }
 
@@ -1186,10 +1186,10 @@ uint8_t olc6502::PHA()
 // Note:        Break flag is set to 1 before push
 uint8_t olc6502::PHP()
 {
-    write(0x0100 + _stkp, _status | B | U);
+    write(0x0100 + _registers.stack_pointer, _registers.status | B | U);
     SetFlag(B, 0);
     SetFlag(U, 0);
-    _stkp--;
+    _registers.stack_pointer--;
     return 0;
 }
 
@@ -1198,10 +1198,10 @@ uint8_t olc6502::PHP()
 // Flags Out:   N, Z
 uint8_t olc6502::PLA()
 {
-    _stkp++;
-    _a = read(0x0100 + _stkp);
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.stack_pointer++;
+    _registers.a = read(0x0100 + _registers.stack_pointer);
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 0;
 }
 
@@ -1210,8 +1210,8 @@ uint8_t olc6502::PLA()
 // Function:    Status <- stack
 uint8_t olc6502::PLP()
 {
-    _stkp++;
-    _status = read(0x0100 + _stkp);
+    _registers.stack_pointer++;
+    _registers.status = read(0x0100 + _registers.stack_pointer);
     SetFlag(U, 1);
     return 0;
 }
@@ -1224,7 +1224,7 @@ uint8_t olc6502::ROL()
     SetFlag(Z, (_temp & 0x00FF) == 0x0000);
     SetFlag(N, _temp & 0x0080);
     if (_lookup[_opcode].addrmode == &olc6502::IMP)
-        _a = _temp & 0x00FF;
+        _registers.a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
@@ -1238,7 +1238,7 @@ uint8_t olc6502::ROR()
     SetFlag(Z, (_temp & 0x00FF) == 0x00);
     SetFlag(N, _temp & 0x0080);
     if (_lookup[_opcode].addrmode == &olc6502::IMP)
-        _a = _temp & 0x00FF;
+        _registers.a = _temp & 0x00FF;
     else
         write(_addr_abs, _temp & 0x00FF);
     return 0;
@@ -1246,26 +1246,26 @@ uint8_t olc6502::ROR()
 
 uint8_t olc6502::RTI()
 {
-    _stkp++;
-    _status = read(0x0100 + _stkp);
-    _status &= ~B;
-    _status &= ~U;
+    _registers.stack_pointer++;
+    _registers.status = read(0x0100 + _registers.stack_pointer);
+    _registers.status &= ~B;
+    _registers.status &= ~U;
 
-    _stkp++;
-    _pc = (uint16_t)read(0x0100 + _stkp);
-    _stkp++;
-    _pc |= (uint16_t)read(0x0100 + _stkp) << 8;
+    _registers.stack_pointer++;
+    _registers.program_counter = (uint16_t)read(0x0100 + _registers.stack_pointer);
+    _registers.stack_pointer++;
+    _registers.program_counter |= (uint16_t)read(0x0100 + _registers.stack_pointer) << 8;
     return 0;
 }
 
 uint8_t olc6502::RTS()
 {
-    _stkp++;
-    _pc = (uint16_t)read(0x0100 + _stkp);
-    _stkp++;
-    _pc |= (uint16_t)read(0x0100 + _stkp) << 8;
+    _registers.stack_pointer++;
+    _registers.program_counter = (uint16_t)read(0x0100 + _registers.stack_pointer);
+    _registers.stack_pointer++;
+    _registers.program_counter |= (uint16_t)read(0x0100 + _registers.stack_pointer) << 8;
 
-    _pc++;
+    _registers.program_counter++;
     return 0;
 }
 
@@ -1300,7 +1300,7 @@ uint8_t olc6502::SEI()
 // Function:    M = A
 uint8_t olc6502::STA()
 {
-    write(_addr_abs, _a);
+    write(_addr_abs, _registers.a);
     return 0;
 }
 
@@ -1309,7 +1309,7 @@ uint8_t olc6502::STA()
 // Function:    M = X
 uint8_t olc6502::STX()
 {
-    write(_addr_abs, _x);
+    write(_addr_abs, _registers.x);
     return 0;
 }
 
@@ -1318,7 +1318,7 @@ uint8_t olc6502::STX()
 // Function:    M = Y
 uint8_t olc6502::STY()
 {
-    write(_addr_abs, _y);
+    write(_addr_abs, _registers.y);
     return 0;
 }
 
@@ -1327,9 +1327,9 @@ uint8_t olc6502::STY()
 // Flags Out:   N, Z
 uint8_t olc6502::TAX()
 {
-    _x = _a;
-    SetFlag(Z, _x == 0x00);
-    SetFlag(N, _x & 0x80);
+    _registers.x = _registers.a;
+    SetFlag(Z, _registers.x == 0x00);
+    SetFlag(N, _registers.x & 0x80);
     return 0;
 }
 
@@ -1339,9 +1339,9 @@ uint8_t olc6502::TAX()
 // Flags Out:   N, Z
 uint8_t olc6502::TAY()
 {
-    _y = _a;
-    SetFlag(Z, _y == 0x00);
-    SetFlag(N, _y & 0x80);
+    _registers.y = _registers.a;
+    SetFlag(Z, _registers.y == 0x00);
+    SetFlag(N, _registers.y & 0x80);
     return 0;
 }
 
@@ -1351,9 +1351,9 @@ uint8_t olc6502::TAY()
 // Flags Out:   N, Z
 uint8_t olc6502::TSX()
 {
-    _x = _stkp;
-    SetFlag(Z, _x == 0x00);
-    SetFlag(N, _x & 0x80);
+    _registers.x = _registers.stack_pointer;
+    SetFlag(Z, _registers.x == 0x00);
+    SetFlag(N, _registers.x & 0x80);
     return 0;
 }
 
@@ -1363,9 +1363,9 @@ uint8_t olc6502::TSX()
 // Flags Out:   N, Z
 uint8_t olc6502::TXA()
 {
-    _a = _x;
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.a = _registers.x;
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 0;
 }
 
@@ -1374,7 +1374,7 @@ uint8_t olc6502::TXA()
 // Function:    stack pointer = X
 uint8_t olc6502::TXS()
 {
-    _stkp = _x;
+    _registers.stack_pointer = _registers.x;
     return 0;
 }
 
@@ -1383,9 +1383,9 @@ uint8_t olc6502::TXS()
 // Flags Out:   N, Z
 uint8_t olc6502::TYA()
 {
-    _a = _y;
-    SetFlag(Z, _a == 0x00);
-    SetFlag(N, _a & 0x80);
+    _registers.a = _registers.y;
+    SetFlag(Z, _registers.a == 0x00);
+    SetFlag(N, _registers.a & 0x80);
     return 0;
 }
 
