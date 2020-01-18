@@ -108,6 +108,16 @@ public:
     };
     Q_ENUM(FLAGS6502)
 
+    struct Registers
+    {
+        uint8_t  a = 0x00;
+        uint8_t  x = 0x00;
+        uint8_t  y = 0x00;
+        uint8_t  stack_pointer   = 0x00;
+        uint16_t program_counter = 0x00;
+        uint8_t  status = 0x00;
+    };
+
     explicit olc6502(QObject *parent = nullptr);
 
     static void RegisterType();
@@ -190,13 +200,16 @@ public:
     // clocking every cycle
     bool complete();
 
-    uint8_t a() const { return _a; }
-    uint8_t x() const { return _x; }
-    uint8_t y() const { return _y; }
+    uint8_t a() const { return _registers.a; }
+    uint8_t x() const { return _registers.x; }
+    uint8_t y() const { return _registers.y; }
 
-    uint16_t pc() const { return _pc; }
-    uint8_t  stackPointer() const { return _stkp; }
-    uint8_t  status() const { return _status; }
+    uint16_t pc() const { return _registers.program_counter; }
+    uint8_t  stackPointer() const { return _registers.stack_pointer; }
+    uint8_t  status() const { return _registers.status; }
+
+    const Registers &registers() const { return _registers; }
+          Registers &registers()       { return _registers; }
 
     uint32_t clockTicks() const { return _clock_count; }
 
@@ -244,12 +257,15 @@ private:
     };
 
     // Assisstive variables to facilitate emulation
+    Registers _registers;
+#if 0
     uint8_t  _a = 0x00;
     uint8_t  _x = 0x00;
     uint8_t  _y = 0x00;
     uint8_t  _stkp = 0x00;
     uint16_t _pc = 0x0000;
     uint8_t  _status = 0x00; // status register
+#endif
     uint8_t  _fetched = 0x00; // Represents the working input value to the ALU
     uint16_t _temp = 0x0000; // A convenience variable used everywhere
     uint16_t _addr_abs = 0x0000; // All used memory addresses end up in here
