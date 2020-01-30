@@ -69,7 +69,7 @@
     Twitch:		https://www.twitch.tv/javidx9
     GitHub:		https://www.github.com/onelonecoder
     Patreon:	https://www.patreon.com/javidx9
-    Homepage:	https://www.onelonecoder.com
+    Homepage:	https://www.onelonecodr.com
 
     Author
     ~~~~~~
@@ -77,16 +77,16 @@
 */
 
 #if INSTRUCTION_EXECUTOR
-olc6502::InstructionExecutor::InstructionExecutor(Registers    &registers,
-                                                  readDelegate  read_signal,
-                                                  writeDelegate write_signal,
-                                                  registerValueChangedDelegate a_changed_signal,
-                                                  registerValueChangedDelegate x_changed_signal,
-                                                  registerValueChangedDelegate y_changed_signal,
-                                                  addressValueChangedDelegate  program_counter_changed_signal,
-                                                  registerValueChangedDelegate stack_pointer_changed_signal,
-                                                  registerValueChangedDelegate status_changed_signal
-                                                  )
+InstructionExecutor::InstructionExecutor(Registers    &registers,
+                                         readDelegate  read_signal,
+                                         writeDelegate write_signal,
+                                         registerValueChangedDelegate a_changed_signal,
+                                         registerValueChangedDelegate x_changed_signal,
+                                         registerValueChangedDelegate y_changed_signal,
+                                         addressValueChangedDelegate  program_counter_changed_signal,
+                                         registerValueChangedDelegate stack_pointer_changed_signal,
+                                         registerValueChangedDelegate status_changed_signal
+                                         )
     :
     _registers(registers),
     _read_delegate(read_signal),
@@ -146,7 +146,7 @@ olc6502::InstructionExecutor::InstructionExecutor(Registers    &registers,
 // There is no additional data required for this instruction. The instruction
 // does something very simple like like sets a status bit. However, we will
 // target the accumulator, for instructions like PHA
-uint8_t olc6502::InstructionExecutor::IMP()
+uint8_t InstructionExecutor::IMP()
 {
     _fetched = registers().a;
     return 0;
@@ -155,7 +155,7 @@ uint8_t olc6502::InstructionExecutor::IMP()
 // Address Mode: Immediate
 // The instruction expects the next byte to be used as a value, so we'll prep
 // the read address to point to the next byte
-uint8_t olc6502::InstructionExecutor::IMM()
+uint8_t InstructionExecutor::IMM()
 {
     _addr_abs = registers().program_counter++;
     return 0;
@@ -165,7 +165,7 @@ uint8_t olc6502::InstructionExecutor::IMM()
 // To save program bytes, zero page addressing allows you to absolutely address
 // a location in first 0xFF bytes of address range. Clearly this only requires
 // one byte instead of the usual two.
-uint8_t olc6502::InstructionExecutor::ZP0()
+uint8_t InstructionExecutor::ZP0()
 {
     _addr_abs = read(registers().program_counter);
     registers().program_counter++;
@@ -177,7 +177,7 @@ uint8_t olc6502::InstructionExecutor::ZP0()
 // Fundamentally the same as Zero Page addressing, but the contents of the X Register
 // is added to the supplied single byte address. This is useful for iterating through
 // ranges within the first page.
-uint8_t olc6502::InstructionExecutor::ZPX()
+uint8_t InstructionExecutor::ZPX()
 {
     _addr_abs = (read(registers().program_counter) + registers().x);
     registers().program_counter++;
@@ -187,7 +187,7 @@ uint8_t olc6502::InstructionExecutor::ZPX()
 
 // Address Mode: Zero Page with Y Offset
 // Same as above but uses Y Register for offset
-uint8_t olc6502::InstructionExecutor::ZPY()
+uint8_t InstructionExecutor::ZPY()
 {
     _addr_abs = (read(registers().program_counter) + registers().y);
     registers().program_counter++;
@@ -199,7 +199,7 @@ uint8_t olc6502::InstructionExecutor::ZPY()
 // This address mode is exclusive to branch instructions. The address
 // must reside within -128 to +127 of the branch instruction, i.e.
 // you cant directly branch to any address in the addressable range.
-uint8_t olc6502::InstructionExecutor::REL()
+uint8_t InstructionExecutor::REL()
 {
     _addr_rel = read(registers().program_counter);
     registers().program_counter++;
@@ -210,7 +210,7 @@ uint8_t olc6502::InstructionExecutor::REL()
 
 // Address Mode: Absolute
 // A full 16-bit address is loaded and used
-uint8_t olc6502::InstructionExecutor::ABS()
+uint8_t InstructionExecutor::ABS()
 {
     uint16_t lo = read(registers().program_counter);
     registers().program_counter++;
@@ -225,7 +225,7 @@ uint8_t olc6502::InstructionExecutor::ABS()
 // Fundamentally the same as absolute addressing, but the contents of the X Register
 // is added to the supplied two byte address. If the resulting address changes
 // the page, an additional clock cycle is required
-uint8_t olc6502::InstructionExecutor::ABX()
+uint8_t InstructionExecutor::ABX()
 {
     uint16_t lo = read(registers().program_counter);
     registers().program_counter++;
@@ -245,7 +245,7 @@ uint8_t olc6502::InstructionExecutor::ABX()
 // Fundamentally the same as absolute addressing, but the contents of the Y Register
 // is added to the supplied two byte address. If the resulting address changes
 // the page, an additional clock cycle is required
-uint8_t olc6502::InstructionExecutor::ABY()
+uint8_t InstructionExecutor::ABY()
 
 {
     uint16_t lo = read(registers().program_counter);
@@ -273,7 +273,7 @@ uint8_t olc6502::InstructionExecutor::ABY()
 // we need to cross a page boundary. This doesnt actually work on the chip as
 // designed, instead it wraps back around in the same page, yielding an
 // invalid actual address
-uint8_t olc6502::InstructionExecutor::IND()
+uint8_t InstructionExecutor::IND()
 {
     uint16_t ptr_lo = read(registers().program_counter);
     registers().program_counter++;
@@ -297,7 +297,7 @@ uint8_t olc6502::InstructionExecutor::IND()
 // The supplied 8-bit address is offset by X Register to index
 // a location in page 0x00. The actual 16-bit address is read
 // from this location
-uint8_t olc6502::InstructionExecutor::IZX()
+uint8_t InstructionExecutor::IZX()
 {
     uint16_t t = read(registers().program_counter);
     registers().program_counter++;
@@ -315,7 +315,7 @@ uint8_t olc6502::InstructionExecutor::IZX()
 // here the actual 16-bit address is read, and the contents of
 // Y Register is added to it to offset it. If the offset causes a
 // change in page then an additional clock cycle is required.
-uint8_t olc6502::InstructionExecutor::IZY()
+uint8_t InstructionExecutor::IZY()
 {
     uint16_t t = read(registers().program_counter);
     registers().program_counter++;
@@ -344,19 +344,19 @@ uint8_t olc6502::InstructionExecutor::IZY()
 // 256, i.e. no far reaching memory fetch is required. "fetched"
 // is a variable global to the CPU, and is set by calling this
 // function. It also returns it for convenience.
-uint8_t olc6502::InstructionExecutor::fetch()
+uint8_t InstructionExecutor::fetch()
 {
-    if (!(_lookup[_opcode].addrmode == &olc6502::InstructionExecutor::IMP))
+    if (!(_lookup[_opcode].addrmode == &InstructionExecutor::IMP))
         _fetched = read(_addr_abs);
     return _fetched;
 }
 
-uint8_t olc6502::InstructionExecutor::read(addressType address, bool read_only)
+uint8_t InstructionExecutor::read(addressType address, bool read_only)
 {
     return (_read_delegate) ? _read_delegate(address, read_only) : 0x00;
 }
 
-void olc6502::InstructionExecutor::write(addressType address, uint8_t data)
+void InstructionExecutor::write(addressType address, uint8_t data)
 {
     if (_write_delegate)
         _write_delegate(address, data);
@@ -369,7 +369,7 @@ void olc6502::InstructionExecutor::write(addressType address, uint8_t data)
 // allows the programmer to jump to a known and programmable location in the
 // memory to start executing from. Typically the programmer would set the value
 // at location 0xFFFC at compile time.
-void olc6502::InstructionExecutor::reset()
+void InstructionExecutor::reset()
 {
     // Get address to set program counter to
     _addr_abs = 0xFFFC;
@@ -395,7 +395,7 @@ void olc6502::InstructionExecutor::reset()
     _cycles = 8;
 }
 
-void olc6502::InstructionExecutor::irq()
+void InstructionExecutor::irq()
 {
     // If interrupts are allowed
     if (GetFlag(I) == 0)
@@ -425,7 +425,7 @@ void olc6502::InstructionExecutor::irq()
     }
 }
 
-void olc6502::InstructionExecutor::nmi()
+void InstructionExecutor::nmi()
 {
     write(0x0100 + registers().stack_pointer, (registers().program_counter >> 8) & 0x00FF);
     registers().stack_pointer--;
@@ -446,7 +446,7 @@ void olc6502::InstructionExecutor::nmi()
     _cycles = 8;
 }
 
-void olc6502::InstructionExecutor::clock()
+void InstructionExecutor::clock()
 {
     // Each instruction requires a variable number of clock cycles to execute.
     // In my emulation, I only care about the final result and so I perform
@@ -530,7 +530,7 @@ void olc6502::InstructionExecutor::clock()
     _cycles--;
 }
 
-auto olc6502::InstructionExecutor::disassemble(addressType start, addressType stop) -> disassemblyType
+auto InstructionExecutor::disassemble(addressType start, addressType stop) -> disassemblyType
 {
     size_t  addr = start; // MUST be a value type that holds more values than start!
     uint8_t value = 0x00, lo = 0x00, hi = 0x00;
@@ -573,70 +573,70 @@ auto olc6502::InstructionExecutor::disassemble(addressType start, addressType st
         // routines mimmick the actual fetch routine of the
         // 6502 in order to get accurate data as part of the
         // instruction
-        if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::IMP)
+        if (_lookup[opcode].addrmode == &InstructionExecutor::IMP)
         {
             sInst += " {IMP}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::IMM)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::IMM)
         {
             value = _read_delegate(addr, true); addr++;
             sInst += "#$" + hex(value, 2) + " {IMM}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::ZP0)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::ZP0)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = 0x00;
             sInst += "$" + hex(lo, 2) + " {ZP0}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::ZPX)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::ZPX)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = 0x00;
             sInst += "$" + hex(lo, 2) + ", X {ZPX}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::ZPY)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::ZPY)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = 0x00;
             sInst += "$" + hex(lo, 2) + ", Y {ZPY}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::IZX)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::IZX)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = 0x00;
             sInst += "($" + hex(lo, 2) + ", X) {IZX}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::IZY)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::IZY)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = 0x00;
             sInst += "($" + hex(lo, 2) + "), Y {IZY}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::ABS)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::ABS)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = _read_delegate(addr, true); addr++;
             sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + " {ABS}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::ABX)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::ABX)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = _read_delegate(addr, true); addr++;
             sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + ", X {ABX}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::ABY)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::ABY)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = _read_delegate(addr, true); addr++;
             sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + ", Y {ABY}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::IND)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::IND)
         {
             lo = _read_delegate(addr, true); addr++;
             hi = _read_delegate(addr, true); addr++;
             sInst += "($" + hex((uint16_t)(hi << 8) | lo, 4) + ") {IND}";
         }
-        else if (_lookup[opcode].addrmode == &olc6502::InstructionExecutor::REL)
+        else if (_lookup[opcode].addrmode == &InstructionExecutor::REL)
         {
             value = _read_delegate(addr, true); addr++;
             sInst += "$" + hex(value, 2) + " [$" + hex(addr + value, 4) + "] {REL}";
@@ -722,7 +722,7 @@ auto olc6502::InstructionExecutor::disassemble(addressType start, addressType st
 //       Positive Number + Positive Number = Positive Result -> OK! No Overflow
 //       Negative Number + Negative Number = Negative Result -> OK! NO Overflow
 
-uint8_t olc6502::InstructionExecutor::ADC()
+uint8_t InstructionExecutor::ADC()
 {
     // Grab the data that we are adding to the accumulator
     fetch();
@@ -776,7 +776,7 @@ uint8_t olc6502::InstructionExecutor::ADC()
 // of M, the data(!) therfore we can simply add, exactly the same way we did
 // before.
 
-uint8_t olc6502::InstructionExecutor::SBC()
+uint8_t InstructionExecutor::SBC()
 {
     fetch();
 
@@ -808,7 +808,7 @@ uint8_t olc6502::InstructionExecutor::SBC()
 // Instruction: Bitwise Logic AND
 // Function:    A = A & M
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::AND()
+uint8_t InstructionExecutor::AND()
 {
     fetch();
     registers().a = registers().a & _fetched;
@@ -821,7 +821,7 @@ uint8_t olc6502::InstructionExecutor::AND()
 // Instruction: Arithmetic Shift Left
 // Function:    A = C <- (A << 1) <- 0
 // Flags Out:   N, Z, C
-uint8_t olc6502::InstructionExecutor::ASL()
+uint8_t InstructionExecutor::ASL()
 {
     fetch();
     _temp = (uint16_t)_fetched << 1;
@@ -838,7 +838,7 @@ uint8_t olc6502::InstructionExecutor::ASL()
 
 // Instruction: Branch if Carry Clear
 // Function:    if(C == 0) pc = address
-uint8_t olc6502::InstructionExecutor::BCC()
+uint8_t InstructionExecutor::BCC()
 {
     if (GetFlag(C) == 0)
     {
@@ -856,7 +856,7 @@ uint8_t olc6502::InstructionExecutor::BCC()
 
 // Instruction: Branch if Carry Set
 // Function:    if(C == 1) pc = address
-uint8_t olc6502::InstructionExecutor::BCS()
+uint8_t InstructionExecutor::BCS()
 {
     if (GetFlag(C) == 1)
     {
@@ -873,7 +873,7 @@ uint8_t olc6502::InstructionExecutor::BCS()
 
 // Instruction: Branch if Equal
 // Function:    if(Z == 1) pc = address
-uint8_t olc6502::InstructionExecutor::BEQ()
+uint8_t InstructionExecutor::BEQ()
 {
     if (GetFlag(Z) == 1)
     {
@@ -888,7 +888,7 @@ uint8_t olc6502::InstructionExecutor::BEQ()
     return 0;
 }
 
-uint8_t olc6502::InstructionExecutor::BIT()
+uint8_t InstructionExecutor::BIT()
 {
     fetch();
     _temp = registers().a & _fetched;
@@ -900,7 +900,7 @@ uint8_t olc6502::InstructionExecutor::BIT()
 
 // Instruction: Branch if Negative
 // Function:    if(N == 1) pc = address
-uint8_t olc6502::InstructionExecutor::BMI()
+uint8_t InstructionExecutor::BMI()
 {
     if (GetFlag(N) == 1)
     {
@@ -918,7 +918,7 @@ uint8_t olc6502::InstructionExecutor::BMI()
 
 // Instruction: Branch if Not Equal
 // Function:    if(Z == 0) pc = address
-uint8_t olc6502::InstructionExecutor::BNE()
+uint8_t InstructionExecutor::BNE()
 {
     if (GetFlag(Z) == 0)
     {
@@ -935,7 +935,7 @@ uint8_t olc6502::InstructionExecutor::BNE()
 
 // Instruction: Branch if Positive
 // Function:    if(N == 0) pc = address
-uint8_t olc6502::InstructionExecutor::BPL()
+uint8_t InstructionExecutor::BPL()
 {
     if (GetFlag(N) == 0)
     {
@@ -952,7 +952,7 @@ uint8_t olc6502::InstructionExecutor::BPL()
 
 // Instruction: Break
 // Function:    Program Sourced Interrupt
-uint8_t olc6502::InstructionExecutor::BRK()
+uint8_t InstructionExecutor::BRK()
 {
     registers().program_counter++;
 
@@ -973,7 +973,7 @@ uint8_t olc6502::InstructionExecutor::BRK()
 
 // Instruction: Branch if Overflow Clear
 // Function:    if(V == 0) pc = address
-uint8_t olc6502::InstructionExecutor::BVC()
+uint8_t InstructionExecutor::BVC()
 {
     if (GetFlag(V) == 0)
     {
@@ -990,7 +990,7 @@ uint8_t olc6502::InstructionExecutor::BVC()
 
 // Instruction: Branch if Overflow Set
 // Function:    if(V == 1) pc = address
-uint8_t olc6502::InstructionExecutor::BVS()
+uint8_t InstructionExecutor::BVS()
 {
     if (GetFlag(V) == 1)
     {
@@ -1007,7 +1007,7 @@ uint8_t olc6502::InstructionExecutor::BVS()
 
 // Instruction: Clear Carry Flag
 // Function:    C = 0
-uint8_t olc6502::InstructionExecutor::CLC()
+uint8_t InstructionExecutor::CLC()
 {
     SetFlag(C, false);
     return 0;
@@ -1015,7 +1015,7 @@ uint8_t olc6502::InstructionExecutor::CLC()
 
 // Instruction: Clear Decimal Flag
 // Function:    D = 0
-uint8_t olc6502::InstructionExecutor::CLD()
+uint8_t InstructionExecutor::CLD()
 {
     SetFlag(D, false);
     return 0;
@@ -1023,7 +1023,7 @@ uint8_t olc6502::InstructionExecutor::CLD()
 
 // Instruction: Disable Interrupts / Clear Interrupt Flag
 // Function:    I = 0
-uint8_t olc6502::InstructionExecutor::CLI()
+uint8_t InstructionExecutor::CLI()
 {
     SetFlag(I, false);
     return 0;
@@ -1032,7 +1032,7 @@ uint8_t olc6502::InstructionExecutor::CLI()
 
 // Instruction: Clear Overflow Flag
 // Function:    V = 0
-uint8_t olc6502::InstructionExecutor::CLV()
+uint8_t InstructionExecutor::CLV()
 {
     SetFlag(V, false);
     return 0;
@@ -1041,7 +1041,7 @@ uint8_t olc6502::InstructionExecutor::CLV()
 // Instruction: Compare Accumulator
 // Function:    C <- A >= M      Z <- (A - M) == 0
 // Flags Out:   N, C, Z
-uint8_t olc6502::InstructionExecutor::CMP()
+uint8_t InstructionExecutor::CMP()
 {
     fetch();
     _temp = (uint16_t)registers().a - (uint16_t)_fetched;
@@ -1055,7 +1055,7 @@ uint8_t olc6502::InstructionExecutor::CMP()
 // Instruction: Compare X Register
 // Function:    C <- X >= M      Z <- (X - M) == 0
 // Flags Out:   N, C, Z
-uint8_t olc6502::InstructionExecutor::CPX()
+uint8_t InstructionExecutor::CPX()
 {
     fetch();
     _temp = (uint16_t)registers().x - (uint16_t)_fetched;
@@ -1068,7 +1068,7 @@ uint8_t olc6502::InstructionExecutor::CPX()
 // Instruction: Compare Y Register
 // Function:    C <- Y >= M      Z <- (Y - M) == 0
 // Flags Out:   N, C, Z
-uint8_t olc6502::InstructionExecutor::CPY()
+uint8_t InstructionExecutor::CPY()
 {
     fetch();
     _temp = (uint16_t)registers().y - (uint16_t)_fetched;
@@ -1081,7 +1081,7 @@ uint8_t olc6502::InstructionExecutor::CPY()
 // Instruction: Decrement Value at Memory Location
 // Function:    M = M - 1
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::DEC()
+uint8_t InstructionExecutor::DEC()
 {
     fetch();
     _temp = _fetched - 1;
@@ -1094,7 +1094,7 @@ uint8_t olc6502::InstructionExecutor::DEC()
 // Instruction: Decrement X Register
 // Function:    X = X - 1
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::DEX()
+uint8_t InstructionExecutor::DEX()
 {
     registers().x--;
     SetFlag(Z, registers().x == 0x00);
@@ -1106,7 +1106,7 @@ uint8_t olc6502::InstructionExecutor::DEX()
 // Instruction: Decrement Y Register
 // Function:    Y = Y - 1
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::DEY()
+uint8_t InstructionExecutor::DEY()
 {
     registers().y--;
     SetFlag(Z, registers().y == 0x00);
@@ -1118,7 +1118,7 @@ uint8_t olc6502::InstructionExecutor::DEY()
 // Instruction: Bitwise Logic XOR
 // Function:    A = A xor M
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::EOR()
+uint8_t InstructionExecutor::EOR()
 {
     fetch();
     registers().a = registers().a ^ _fetched;
@@ -1130,7 +1130,7 @@ uint8_t olc6502::InstructionExecutor::EOR()
 // Instruction: Increment Value at Memory Location
 // Function:    M = M + 1
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::INC()
+uint8_t InstructionExecutor::INC()
 {
     fetch();
     _temp = _fetched + 1;
@@ -1144,7 +1144,7 @@ uint8_t olc6502::InstructionExecutor::INC()
 // Instruction: Increment X Register
 // Function:    X = X + 1
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::INX()
+uint8_t InstructionExecutor::INX()
 {
     registers().x++;
     SetFlag(Z, registers().x == 0x00);
@@ -1156,7 +1156,7 @@ uint8_t olc6502::InstructionExecutor::INX()
 // Instruction: Increment Y Register
 // Function:    Y = Y + 1
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::INY()
+uint8_t InstructionExecutor::INY()
 {
     registers().y++;
     SetFlag(Z, registers().y == 0x00);
@@ -1167,7 +1167,7 @@ uint8_t olc6502::InstructionExecutor::INY()
 
 // Instruction: Jump To Location
 // Function:    pc = address
-uint8_t olc6502::InstructionExecutor::JMP()
+uint8_t InstructionExecutor::JMP()
 {
     registers().program_counter = _addr_abs;
     return 0;
@@ -1176,7 +1176,7 @@ uint8_t olc6502::InstructionExecutor::JMP()
 
 // Instruction: Jump To Sub-Routine
 // Function:    Push current pc to stack, pc = address
-uint8_t olc6502::InstructionExecutor::JSR()
+uint8_t InstructionExecutor::JSR()
 {
     registers().program_counter--;
 
@@ -1192,7 +1192,7 @@ uint8_t olc6502::InstructionExecutor::JSR()
 // Instruction: Load The Accumulator
 // Function:    A = M
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::LDA()
+uint8_t InstructionExecutor::LDA()
 {
     fetch();
     registers().a = _fetched;
@@ -1205,7 +1205,7 @@ uint8_t olc6502::InstructionExecutor::LDA()
 // Instruction: Load The X Register
 // Function:    X = M
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::LDX()
+uint8_t InstructionExecutor::LDX()
 {
     fetch();
     registers().x = _fetched;
@@ -1218,7 +1218,7 @@ uint8_t olc6502::InstructionExecutor::LDX()
 // Instruction: Load The Y Register
 // Function:    Y = M
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::LDY()
+uint8_t InstructionExecutor::LDY()
 {
     fetch();
     registers().y = _fetched;
@@ -1227,7 +1227,7 @@ uint8_t olc6502::InstructionExecutor::LDY()
     return 1;
 }
 
-uint8_t olc6502::InstructionExecutor::LSR()
+uint8_t InstructionExecutor::LSR()
 {
     fetch();
     SetFlag(C, _fetched & 0x0001);
@@ -1241,7 +1241,7 @@ uint8_t olc6502::InstructionExecutor::LSR()
     return 0;
 }
 
-uint8_t olc6502::InstructionExecutor::NOP()
+uint8_t InstructionExecutor::NOP()
 {
     // Sadly not all NOPs are equal, Ive added a few here
     // based on https://wiki.nesdev.com/w/index.php/CPU_unofficial_opcodes
@@ -1263,7 +1263,7 @@ uint8_t olc6502::InstructionExecutor::NOP()
 // Instruction: Bitwise Logic OR
 // Function:    A = A | M
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::ORA()
+uint8_t InstructionExecutor::ORA()
 {
     fetch();
     registers().a = registers().a | _fetched;
@@ -1275,7 +1275,7 @@ uint8_t olc6502::InstructionExecutor::ORA()
 
 // Instruction: Push Accumulator to Stack
 // Function:    A -> stack
-uint8_t olc6502::InstructionExecutor::PHA()
+uint8_t InstructionExecutor::PHA()
 {
     write(0x0100 + registers().stack_pointer, registers().a);
     registers().stack_pointer--;
@@ -1286,7 +1286,7 @@ uint8_t olc6502::InstructionExecutor::PHA()
 // Instruction: Push Status Register to Stack
 // Function:    status -> stack
 // Note:        Break flag is set to 1 before push
-uint8_t olc6502::InstructionExecutor::PHP()
+uint8_t InstructionExecutor::PHP()
 {
     write(0x0100 + registers().stack_pointer, registers().status | B | U);
     SetFlag(B, 0);
@@ -1298,7 +1298,7 @@ uint8_t olc6502::InstructionExecutor::PHP()
 // Instruction: Pop Accumulator off Stack
 // Function:    A <- stack
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::PLA()
+uint8_t InstructionExecutor::PLA()
 {
     registers().stack_pointer++;
     registers().a = read(0x0100 + registers().stack_pointer);
@@ -1310,7 +1310,7 @@ uint8_t olc6502::InstructionExecutor::PLA()
 
 // Instruction: Pop Status Register off Stack
 // Function:    Status <- stack
-uint8_t olc6502::InstructionExecutor::PLP()
+uint8_t InstructionExecutor::PLP()
 {
     registers().stack_pointer++;
     registers().status = read(0x0100 + registers().stack_pointer);
@@ -1318,7 +1318,7 @@ uint8_t olc6502::InstructionExecutor::PLP()
     return 0;
 }
 
-uint8_t olc6502::InstructionExecutor::ROL()
+uint8_t InstructionExecutor::ROL()
 {
     fetch();
     _temp = (uint16_t)(_fetched << 1) | GetFlag(C);
@@ -1332,7 +1332,7 @@ uint8_t olc6502::InstructionExecutor::ROL()
     return 0;
 }
 
-uint8_t olc6502::InstructionExecutor::ROR()
+uint8_t InstructionExecutor::ROR()
 {
     fetch();
     _temp = (uint16_t)(GetFlag(C) << 7) | (_fetched >> 1);
@@ -1346,7 +1346,7 @@ uint8_t olc6502::InstructionExecutor::ROR()
     return 0;
 }
 
-uint8_t olc6502::InstructionExecutor::RTI()
+uint8_t InstructionExecutor::RTI()
 {
     registers().stack_pointer++;
     registers().status = read(0x0100 + registers().stack_pointer);
@@ -1360,7 +1360,7 @@ uint8_t olc6502::InstructionExecutor::RTI()
     return 0;
 }
 
-uint8_t olc6502::InstructionExecutor::RTS()
+uint8_t InstructionExecutor::RTS()
 {
     registers().stack_pointer++;
     registers().program_counter = (uint16_t)read(0x0100 + registers().stack_pointer);
@@ -1373,7 +1373,7 @@ uint8_t olc6502::InstructionExecutor::RTS()
 
 // Instruction: Set Carry Flag
 // Function:    C = 1
-uint8_t olc6502::InstructionExecutor::SEC()
+uint8_t InstructionExecutor::SEC()
 {
     SetFlag(C, true);
     return 0;
@@ -1382,7 +1382,7 @@ uint8_t olc6502::InstructionExecutor::SEC()
 
 // Instruction: Set Decimal Flag
 // Function:    D = 1
-uint8_t olc6502::InstructionExecutor::SED()
+uint8_t InstructionExecutor::SED()
 {
     SetFlag(D, true);
     return 0;
@@ -1391,7 +1391,7 @@ uint8_t olc6502::InstructionExecutor::SED()
 
 // Instruction: Set Interrupt Flag / Enable Interrupts
 // Function:    I = 1
-uint8_t olc6502::InstructionExecutor::SEI()
+uint8_t InstructionExecutor::SEI()
 {
     SetFlag(I, true);
     return 0;
@@ -1400,7 +1400,7 @@ uint8_t olc6502::InstructionExecutor::SEI()
 
 // Instruction: Store Accumulator at Address
 // Function:    M = A
-uint8_t olc6502::InstructionExecutor::STA()
+uint8_t InstructionExecutor::STA()
 {
     write(_addr_abs, registers().a);
     return 0;
@@ -1409,7 +1409,7 @@ uint8_t olc6502::InstructionExecutor::STA()
 
 // Instruction: Store X Register at Address
 // Function:    M = X
-uint8_t olc6502::InstructionExecutor::STX()
+uint8_t InstructionExecutor::STX()
 {
     write(_addr_abs, registers().x);
     return 0;
@@ -1418,7 +1418,7 @@ uint8_t olc6502::InstructionExecutor::STX()
 
 // Instruction: Store Y Register at Address
 // Function:    M = Y
-uint8_t olc6502::InstructionExecutor::STY()
+uint8_t InstructionExecutor::STY()
 {
     write(_addr_abs, registers().y);
     return 0;
@@ -1427,7 +1427,7 @@ uint8_t olc6502::InstructionExecutor::STY()
 // Instruction: Transfer Accumulator to X Register
 // Function:    X = A
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::TAX()
+uint8_t InstructionExecutor::TAX()
 {
     registers().x = registers().a;
     SetFlag(Z, registers().x == 0x00);
@@ -1439,7 +1439,7 @@ uint8_t olc6502::InstructionExecutor::TAX()
 // Instruction: Transfer Accumulator to Y Register
 // Function:    Y = A
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::TAY()
+uint8_t InstructionExecutor::TAY()
 {
     registers().y = registers().a;
     SetFlag(Z, registers().y == 0x00);
@@ -1451,7 +1451,7 @@ uint8_t olc6502::InstructionExecutor::TAY()
 // Instruction: Transfer Stack Pointer to X Register
 // Function:    X = stack pointer
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::TSX()
+uint8_t InstructionExecutor::TSX()
 {
     registers().x = registers().stack_pointer;
     SetFlag(Z, registers().x == 0x00);
@@ -1463,7 +1463,7 @@ uint8_t olc6502::InstructionExecutor::TSX()
 // Instruction: Transfer X Register to Accumulator
 // Function:    A = X
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::TXA()
+uint8_t InstructionExecutor::TXA()
 {
     registers().a = registers().x;
     SetFlag(Z, registers().a == 0x00);
@@ -1474,7 +1474,7 @@ uint8_t olc6502::InstructionExecutor::TXA()
 
 // Instruction: Transfer X Register to Stack Pointer
 // Function:    stack pointer = X
-uint8_t olc6502::InstructionExecutor::TXS()
+uint8_t InstructionExecutor::TXS()
 {
     registers().stack_pointer = registers().x;
     return 0;
@@ -1483,7 +1483,7 @@ uint8_t olc6502::InstructionExecutor::TXS()
 // Instruction: Transfer Y Register to Accumulator
 // Function:    A = Y
 // Flags Out:   N, Z
-uint8_t olc6502::InstructionExecutor::TYA()
+uint8_t InstructionExecutor::TYA()
 {
     registers().a = registers().y;
     SetFlag(Z, registers().a == 0x00);
@@ -1493,7 +1493,7 @@ uint8_t olc6502::InstructionExecutor::TYA()
 
 
 // This function captures illegal opcodes
-uint8_t olc6502::InstructionExecutor::XXX()
+uint8_t InstructionExecutor::XXX()
 {
     return 0;
 }
@@ -1793,23 +1793,12 @@ void olc6502::clock()
 
 uint8_t olc6502::GetFlag(FLAGS6502 f)
 {
-#if INSTRUCTION_EXECUTOR
     return registers().GetFlag(f);
-#else
-    return ((registers().status & static_cast<uint8_t>(f)) > 0) ? 1 : 0;
-#endif
 }
 
 void olc6502::SetFlag(FLAGS6502 f, bool v)
 {
-#if INSTRUCTION_EXECUTOR
     registers().SetFlag(f, v);
-#else
-    if (v)
-        registers().status |= static_cast<uint8_t>(f);
-    else
-        registers().status &= ~static_cast<uint8_t>(f);
-#endif
 }
 
 #if !INSTRUCTION_EXECUTOR
@@ -2879,12 +2868,16 @@ uint8_t olc6502::XXX()
 {
     return 0;
 }
-
-bool olc6502::complete()
-{
-    return _cycles == 0;
-}
 #endif
+
+bool olc6502::complete() const
+{
+#if INSTRUCTION_EXECUTOR
+    return _executor.complete();
+#else
+    return _cycles == 0;
+#endif
+}
 
 void olc6502::setLog(bool value)
 {

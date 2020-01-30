@@ -6,37 +6,37 @@ using namespace testing;
 
 bool Carry(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::C;
+    return status_value & FLAGS6502::C;
 }
 
 bool Zero(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::Z;
+    return status_value & FLAGS6502::Z;
 }
 
 bool Interrupt(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::I;
+    return status_value & FLAGS6502::I;
 }
 
 bool Decimal(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::D;
+    return status_value & FLAGS6502::D;
 }
 
 bool Break(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::B;
+    return status_value & FLAGS6502::B;
 }
 
 bool Overflow(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::V;
+    return status_value & FLAGS6502::V;
 }
 
 bool Negative(uint8_t status_value)
 {
-    return status_value & olc6502::FLAGS6502::N;
+    return status_value & FLAGS6502::N;
 }
 
 TEST(CPU, ResetSetsProcessorToKnownState)
