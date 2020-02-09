@@ -1,5 +1,4 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock-matchers.h>
+#include <gmock/gmock.h>
 #include "olc6502.hpp"
 
 using namespace testing;
@@ -46,10 +45,10 @@ TEST(CPU, ResetSetsProcessorToKnownState)
     cpu.reset();
 
     // Official behaviors
-    EXPECT_THAT(cpu.a(), Eq(0)) << "Accumulator is not zero";
-    EXPECT_THAT(cpu.x(), Eq(0)) << "X register is not zero";
-    EXPECT_THAT(cpu.y(), Eq(0)) << "Y register is not zero";
-    EXPECT_THAT(cpu.stackPointer(), Eq(0xFD)) << "Stack Pointer register is not 0xFD";
+    EXPECT_THAT(cpu.a(), Eq(0U)) << "Accumulator is not zero";
+    EXPECT_THAT(cpu.x(), Eq(0U)) << "X register is not zero";
+    EXPECT_THAT(cpu.y(), Eq(0U)) << "Y register is not zero";
+    EXPECT_THAT(cpu.stackPointer(), Eq(0xFDU)) << "Stack Pointer register is not 0xFD";
     EXPECT_THAT(Carry(cpu.status()), Eq(false)) << "Carry flag is not clear";
     EXPECT_THAT(Zero(cpu.status()), Eq(false)) << "Zero flag is not clear";
     EXPECT_THAT(Interrupt(cpu.status()), Eq(false)) << "Interrupt flag is not clear";
@@ -61,7 +60,7 @@ TEST(CPU, ResetSetsProcessorToKnownState)
     // cpu.pc() is read from memory address 0xFFFC  Add test
 
     // Extra, implementation-dependent expectations
-    EXPECT_THAT(cpu.clockTicks(), Eq(0)) << "Number of clock ticks should be zero";
+    EXPECT_THAT(cpu.clockTicks(), Eq(0U)) << "Number of clock ticks should be zero";
     EXPECT_THAT(cpu.complete(), Eq(false)) << "A CPU reset should not be immediately completing an instruction";
 }
 
@@ -71,11 +70,11 @@ TEST(CPU, ClockTickIncrementsClockCount)
 
     cpu.reset();
 
-    EXPECT_THAT(cpu.clockTicks(), Eq(0)) << "Number of clock ticks is not zero";
+    EXPECT_THAT(cpu.clockTicks(), Eq(0U)) << "Number of clock ticks is not zero";
 
     cpu.clock();
 
-    EXPECT_THAT(cpu.clockTicks(), Eq(1)) << "Only one clock cycle is supposed to occur";
+    EXPECT_THAT(cpu.clockTicks(), Eq(1U)) << "Only one clock cycle is supposed to occur";
 }
 
 TEST(CPU, ResetTakesDeterminateNumberOfCycles)
