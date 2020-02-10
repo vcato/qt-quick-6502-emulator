@@ -15,14 +15,14 @@ struct Registers
     // Convenience functions to access status register
     uint8_t GetFlag(FLAGS6502 f) const
     {
-        return ((status & static_cast<uint8_t>(f)) > 0) ? 1 : 0;
+        return ((status & f) > 0) ? 1 : 0;
     }
     void    SetFlag(FLAGS6502 f, bool v)
     {
         if (v)
-            status |= static_cast<uint8_t>(f);
+            status |= f;
         else
-            status &= ~static_cast<uint8_t>(f);
+            status &= ~f;
     }
 };
 
