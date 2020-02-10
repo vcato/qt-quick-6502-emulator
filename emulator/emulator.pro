@@ -21,6 +21,7 @@ SOURCES += \
     bus.cpp \
     computer.cpp \
     ibusdevice.cpp \
+    instructionexecutor.cpp \
     olc6502.cpp \
     rambusdevice.cpp \
     rambusdevicedisassemblymodel.cpp \
@@ -30,12 +31,15 @@ SOURCES += \
 HEADERS += \
     bus.hpp \
     computer.hpp \
+    flags.hpp \
     ibusdevice.hpp \
+    instructionexecutor.hpp \
     olc6502.hpp \
     rambusdevice.hpp \
     rambusdevicedisassemblymodel.hpp \
     rambusdevicetablemodel.hpp \
-    rambusdeviceview.hpp
+    rambusdeviceview.hpp \
+    registers.hpp
 
 # Default rules for deployment.
 unix {
