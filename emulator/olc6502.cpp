@@ -369,16 +369,6 @@ void olc6502::clock()
 #endif
 }
 
-uint8_t olc6502::GetFlag(FLAGS6502 f)
-{
-    return registers().GetFlag(f);
-}
-
-void olc6502::SetFlag(FLAGS6502 f, bool v)
-{
-    registers().SetFlag(f, v);
-}
-
 #if !INSTRUCTION_EXECUTOR
 // The 6502 can address between 0x0000 - 0xFFFF. The high byte is often referred
 // to as the "page", and the low byte is the offset into that page. This implies
