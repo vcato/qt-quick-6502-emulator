@@ -392,7 +392,9 @@ void InstructionExecutor::clock()
         // how to implement the instruction
         _opcode = read(registers().program_counter);
 
+#if 0
         uint16_t log_pc = registers().program_counter; // For logging
+#endif
 
         // Always set the unused status flag bit to 1
         SetFlag(U, true);
