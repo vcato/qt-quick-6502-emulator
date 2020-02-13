@@ -271,9 +271,11 @@ private:
 #endif
     bool     _log = false;
 
+#if !INSTRUCTION_EXECUTOR
     // Convenience functions to access status register
     uint8_t GetFlag(FLAGS6502 f) const   { return registers().GetFlag(f); }
     void    SetFlag(FLAGS6502 f, bool v) { registers().SetFlag(f, v); }
+#endif
 
     // These only exist to get around the QML type system.  It only really knows about
     // int, which is OK because in this case, all unsigned 8-bit values exist within the
