@@ -21,6 +21,7 @@ SOURCES += \
         accumulator_mode.cpp \
         immediate_mode.cpp \
         implied_mode.cpp \
+        registers_tests.cpp \
         relative_mode.cpp \
         zero_page_indexed_indirect_mode.cpp \
         zero_page_indexed_with_x_mode.cpp \
