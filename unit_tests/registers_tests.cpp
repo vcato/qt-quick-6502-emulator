@@ -396,11 +396,11 @@ TEST(Registers, GetFlagAndSetFlagAreRelated)
     registers.SetFlag(C, 0);
     EXPECT_THAT(registers.GetFlag(C), Eq(false));
 
-    EXPECT_THAT(registers.GetFlag(C), Eq(false));
+    EXPECT_THAT(registers.GetFlag(Z), Eq(false));
     registers.SetFlag(Z, 1);
     EXPECT_THAT(registers.GetFlag(Z), Eq(true));
     registers.SetFlag(Z, 0);
-    EXPECT_THAT(registers.GetFlag(C), Eq(false));
+    EXPECT_THAT(registers.GetFlag(Z), Eq(false));
 
     EXPECT_THAT(registers.GetFlag(I), Eq(false));
     registers.SetFlag(I, 1);
