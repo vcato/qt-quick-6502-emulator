@@ -4,14 +4,15 @@ GOOGLETEST_DIR = ../googletest
 include(gtest_dependency.pri)
 
 TEMPLATE = app
-CONFIG += console c++11
+CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG += thread
 CONFIG += qt
 
 QT += quick
 
-HEADERS +=
+HEADERS += \
+    InstructionExecutorTestFixture.hpp
 
 SOURCES += \
         6502_tests.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
         accumulator_mode.cpp \
         immediate_mode.cpp \
         implied_mode.cpp \
+        instruction_executor_tests.cpp \
         registers_tests.cpp \
         relative_mode.cpp \
         zero_page_indexed_indirect_mode.cpp \

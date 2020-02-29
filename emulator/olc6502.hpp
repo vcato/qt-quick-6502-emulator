@@ -128,7 +128,7 @@ public:
     const Registers &registers() const { return _registers; }
           Registers &registers()       { return _registers; }
 
-    uint32_t clockTicks() const { return _executor.clockTicks(); }
+    uint32_t clockTicks() const { return _executor.clock_ticks; }
 
     bool log() const { return _log; }
     void setLog(bool value);

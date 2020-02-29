@@ -118,14 +118,16 @@ public:
     // Indicates the current instruction has completed by returning true. This is
     // a utility function to enable "step-by-step" execution, without manually
     // clocking every cycle
-    bool complete() const { return _cycles == 0; }
+    bool complete() const { return remainingCyclesForInstruction() == 0; }
+
+    uint8_t remainingCyclesForInstruction() const { return _cycles; }
 
     void reset();
     void irq();
     void nmi();
 
     void clock(); ///< Executes one clock tick
-    uint32_t clockTicks() const { return _clock_count; }
+    uint32_t clock_ticks = 0; // A global accumulation of the number of clocks
 
     const Registers &registers() const { return _registers; }
           Registers &registers()       { return _registers; }
@@ -141,7 +143,6 @@ protected:
     uint16_t _addr_rel = 0x0000; // Represents absolute address following a branch
     uint8_t  _opcode = 0x00; // Is the instruction byte
     uint8_t  _cycles = 0; // Counts how many cycles the instruction has remaining
-    uint32_t _clock_count = 0; // A global accumulation of the number of clocks
     std::vector<INSTRUCTION> _lookup;
     Registers    &_registers;
     readDelegate  _read_delegate;
