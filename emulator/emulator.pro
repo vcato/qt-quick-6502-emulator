@@ -34,7 +34,9 @@ HEADERS += \
     flags.hpp \
     ibusdevice.hpp \
     instructionexecutor.hpp \
+    instructions.hpp \
     olc6502.hpp \
+    opcodes.hpp \
     rambusdevice.hpp \
     rambusdevicedisassemblymodel.hpp \
     rambusdevicetablemodel.hpp \

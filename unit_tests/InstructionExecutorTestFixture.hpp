@@ -3,6 +3,7 @@
 
 #include <gmock/gmock.h>
 #include "instructionexecutor.hpp"
+#include "opcodes.hpp"
 #include <vector>
 #include <map>
 #include <functional>
@@ -57,6 +58,29 @@ protected:
     std::vector<registerType>      stackPointerChangedSignalsCaught;
     std::vector<registerType>      statusChangedSignalsCaught;
     std::map<addressType, uint8_t> fakeMemory;
+
+    void loadInstructionIntoMemory(const AbstractInstruction_e instruction, const AddressMode_e mode, const addressType address)
+    {
+        executor.registers().program_counter = address;
+        fakeMemory[address] = OpcodeFor(instruction, mode);
+    }
+
+    void executeInstruction()
+    {
+        do {
+            executor.clock();
+        } while (!executor.complete());
+    }
+
+    uint8_t loByteOf(addressType address)
+    {
+        return address & 0xFF;
+    }
+
+    uint8_t hiByteOf(addressType address)
+    {
+        return address >> 8;
+    }
 
     uint8_t addressBusReadSignaled(addressType address, bool read_only)
     {

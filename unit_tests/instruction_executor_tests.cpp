@@ -11,7 +11,7 @@ TEST_F(InstructionExecutorTestFixture, CompleteReturnsTrueUponInitialization)
 
 TEST_F(InstructionExecutorTestFixture, ClockTicksReturnsZeroUponInitialization)
 {
-    EXPECT_THAT(executor.clock_ticks, Eq(0));
+    EXPECT_THAT(executor.clock_ticks, Eq(0U));
 }
 
 /** Verify that calling clock() increments clock_ticks by one.
@@ -19,6 +19,8 @@ TEST_F(InstructionExecutorTestFixture, ClockTicksReturnsZeroUponInitialization)
  *  Basic strategy: Verify the behavior at the two extremes
  *    ) 0 to 1  (min to one greater)
  *    ) max to 0  (max back around to min)
+ *
+ *  @pre The clock_ticks member is an unsigned variable.
  */
 TEST_F(InstructionExecutorTestFixture, ClockTickIncrementsClockCount)
 {

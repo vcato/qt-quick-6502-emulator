@@ -12,7 +12,8 @@ CONFIG += qt
 QT += quick
 
 HEADERS += \
-    InstructionExecutorTestFixture.hpp
+    InstructionExecutorTestFixture.hpp \
+    loadaccumulatorwithmemory.hpp
 
 SOURCES += \
         6502_tests.cpp \
@@ -22,9 +23,11 @@ SOURCES += \
         accumulator_mode.cpp \
         immediate_mode.cpp \
         implied_mode.cpp \
+        indirect_y_indexed.cpp \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
         relative_mode.cpp \
+        x_indexed_indirect.cpp \
         zero_page_indexed_indirect_mode.cpp \
         zero_page_indexed_with_x_mode.cpp \
         zero_page_indexed_with_y_mode.cpp \
