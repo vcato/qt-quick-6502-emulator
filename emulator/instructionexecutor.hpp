@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <map>
+#include <vector>
 #include "registers.hpp"
 
 

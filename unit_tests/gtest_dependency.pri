@@ -14,7 +14,7 @@ isEmpty(GOOGLETEST_DIR):GOOGLETEST_DIR=$$(GOOGLETEST_DIR)
     GTEST_SRCDIR = $$GOOGLETEST_DIR/googletest
     GMOCK_SRCDIR = $$GOOGLETEST_DIR/googlemock
 } else: unix {
-    exists(/usr/src/gtest):GTEST_SRCDIR=/usr/src/gtest
+    exists(/usr/src/googletest/googletest):GTEST_SRCDIR=/usr/src/googletest/googletest
     exists(/usr/src/gmock):GMOCK_SRCDIR=/usr/src/gmock
     !isEmpty(GTEST_SRCDIR): message("Using gtest from system")
 }
