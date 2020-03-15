@@ -426,7 +426,7 @@ void InstructionExecutor::clock()
             // This can be used for debugging the emulation, but has little utility
             // during emulation. Its also very slow, so only use if you have to.
             qDebug("%10d:%02d PC:%04X %s A:%02X X:%02X Y:%02X %s%s%s%s%s%s%s%s STKP:%02X\n",
-                   _clock_count, 0, log_pc, "XXX", registers().a, registers().x, registers().y,
+                   clock_ticks, 0, log_pc, "XXX", registers().a, registers().x, registers().y,
                    GetFlag(N) ? "N" : ".",	GetFlag(V) ? "V" : ".",	GetFlag(U) ? "U" : ".",
                    GetFlag(B) ? "B" : ".",	GetFlag(D) ? "D" : ".",	GetFlag(I) ? "I" : ".",
                    GetFlag(Z) ? "Z" : ".",	GetFlag(C) ? "C" : ".",	registers().stack_pointer);
@@ -450,7 +450,7 @@ void InstructionExecutor::clock()
 
     // Increment global clock count - This is actually unused unless logging is enabled
     // but I've kept it in because its a handy watch variable for debugging
-    _clock_count++;
+    clock_ticks++;
 
     // Decrement the number of cycles remaining for this instruction
     _cycles--;

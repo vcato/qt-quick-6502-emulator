@@ -1,9 +1,5 @@
 #include <gmock/gmock.h>
+#include "InstructionExecutorTestFixture.hpp"
+#include "opcodes.hpp"
 
 using namespace testing;
-
-TEST(LoadAccumulatorWithMemory, ZeroPageIndirectIndexedWithY)
-{
-    EXPECT_EQ(1, 1);
-    ASSERT_THAT(0, Eq(0));
-}
