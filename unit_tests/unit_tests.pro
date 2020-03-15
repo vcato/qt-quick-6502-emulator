@@ -13,6 +13,7 @@ QT += quick
 
 HEADERS += \
     InstructionExecutorTestFixture.hpp \
+    instruction_helpers.hpp \
     loadaccumulatorwithmemory.hpp
 
 SOURCES += \
