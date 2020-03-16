@@ -141,6 +141,6 @@ TEST_P(LDAZeroPageMode, CheckInstructionRequirements)
     EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::Z), Eq(GetParam().requirements.final.flags.z_value.expected_value));
 }
 
-INSTANTIATE_TEST_SUITE_P(LoadZeroPageAtVariousAddresses,
+INSTANTIATE_TEST_CASE_P(LoadZeroPageAtVariousAddresses,
                          LDAZeroPageMode,
                          testing::ValuesIn(LDAZeroPageModeTestValues) );

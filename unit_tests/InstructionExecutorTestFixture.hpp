@@ -104,8 +104,12 @@ protected:
         uint8_t retval = 0;
 
         // Retrieve the data at the given address...
-        if (auto location = fakeMemory.find(address); location != fakeMemory.end())
+        auto location = fakeMemory.find(address);
+
+        if (location != fakeMemory.end()) {
             retval = location->second;
+        }
+
         readSignalsCaught.emplace_back(address, read_only, retval);
         return retval;
     }
