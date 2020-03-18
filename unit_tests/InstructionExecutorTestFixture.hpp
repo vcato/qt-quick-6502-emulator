@@ -31,11 +31,28 @@ public:
         uint8_t     data;
     };
 
-protected:
     //void SetUp() override { }
 
     //void TearDown() override { }
 
+    struct Param_AbsoluteIndexedWithY
+    {
+        addressType instruction_address;
+        addressType address_to_load_from;
+        uint8_t     value_to_load;
+        uint8_t     y_register;
+    };
+
+    void setup_LDA_AbsoluteIndexedWithY(const Param_AbsoluteIndexedWithY &param)
+    {
+        loadInstructionIntoMemory(AbstractInstruction_e::LDA, AddressMode_e::AbsoluteYIndexed, param.instruction_address);
+        fakeMemory[param.instruction_address + 1] = loByteOf(param.address_to_load_from);
+        fakeMemory[param.instruction_address + 2] = hiByteOf(param.address_to_load_from);
+        fakeMemory[param.address_to_load_from + param.y_register] = param.value_to_load;
+        executor.registers().y = param.y_register;
+    }
+
+protected:
     Registers r;
     InstructionExecutor executor{ r,
                                   std::bind(&InstructionExecutorTestFixture::addressBusReadSignaled,        this, _1, _2),
@@ -87,8 +104,12 @@ protected:
         uint8_t retval = 0;
 
         // Retrieve the data at the given address...
-        if (auto location = fakeMemory.find(address); location != fakeMemory.end())
+        auto location = fakeMemory.find(address);
+
+        if (location != fakeMemory.end()) {
             retval = location->second;
+        }
+
         readSignalsCaught.emplace_back(address, read_only, retval);
         return retval;
     }

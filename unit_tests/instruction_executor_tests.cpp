@@ -25,22 +25,22 @@ TEST_F(InstructionExecutorTestFixture, ClockTicksReturnsZeroUponInitialization)
 TEST_F(InstructionExecutorTestFixture, ClockTickIncrementsClockCount)
 {
     // Test the type expectations, so that we expect a rollover...
-    EXPECT_THAT(std::numeric_limits<typeof executor.clock_ticks>::is_integer, Eq(true));
-    EXPECT_THAT(std::numeric_limits<typeof executor.clock_ticks>::is_signed, Eq(false));
+    EXPECT_THAT(std::numeric_limits<decltype(executor.clock_ticks)>::is_integer, Eq(true));
+    EXPECT_THAT(std::numeric_limits<decltype(executor.clock_ticks)>::is_signed, Eq(false));
 
     // Lowest value case
-    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<typeof executor.clock_ticks>::min()));
+    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<decltype(executor.clock_ticks)>::min()));
 
     executor.clock();
 
-    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<typeof executor.clock_ticks>::min() + 1));
+    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<decltype(executor.clock_ticks)>::min() + 1));
 
     // Try the rollover case.
-    executor.clock_ticks = std::numeric_limits<typeof executor.clock_ticks>::max();
+    executor.clock_ticks = std::numeric_limits<decltype(executor.clock_ticks)>::max();
 
-    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<typeof executor.clock_ticks>::max()));
+    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<decltype(executor.clock_ticks)>::max()));
 
     executor.clock();
 
-    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<typeof executor.clock_ticks>::min()));
+    EXPECT_THAT(executor.clock_ticks, Eq(std::numeric_limits<decltype(executor.clock_ticks)>::min()));
 }

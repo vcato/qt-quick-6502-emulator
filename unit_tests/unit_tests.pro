@@ -4,7 +4,7 @@
 include(gtest_dependency.pri)
 
 TEMPLATE = app
-CONFIG += console c++17
+CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG += thread
 CONFIG += qt
@@ -13,6 +13,7 @@ QT += quick
 
 HEADERS += \
     InstructionExecutorTestFixture.hpp \
+    instruction_helpers.hpp \
     loadaccumulatorwithmemory.hpp
 
 SOURCES += \
