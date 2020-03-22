@@ -13,6 +13,7 @@ QT += quick
 
 HEADERS += \
     InstructionExecutorTestFixture.hpp \
+    instruction_definitions.hpp \
     instruction_helpers.hpp \
     loadaccumulatorwithmemory.hpp
 
@@ -29,7 +30,6 @@ SOURCES += \
         registers_tests.cpp \
         relative_mode.cpp \
         x_indexed_indirect.cpp \
-        zero_page_indexed_indirect_mode.cpp \
         zero_page_indexed_with_x_mode.cpp \
         zero_page_indexed_with_y_mode.cpp \
         zero_page_mode.cpp \

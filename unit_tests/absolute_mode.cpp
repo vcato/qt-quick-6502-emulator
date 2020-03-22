@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "InstructionExecutorTestFixture.hpp"
-#include "instruction_helpers.hpp"
+#include "instruction_definitions.hpp"
 
 using namespace testing;
 
@@ -12,14 +12,8 @@ struct LDA_Absolute_Expectations
     NZFlags flags;
 };
 
-struct LDA_Absolute_Requirements
-{
-    LDA_Absolute_Expectations initial;
-    LDA_Absolute_Expectations final;
-};
-
-using LDARequirements = LDA_Absolute_Requirements;
-using LDAAbsolute = LDA<Absolute, LDARequirements>;
+using LDARequirements = Requirements<LDA_Absolute_Expectations>;
+using LDAAbsolute = LDA<Absolute, LDA_Absolute_Expectations>;
 
 class LDAAbsoluteMode : public InstructionExecutorTestFixture,
                         public WithParamInterface<LDAAbsolute>

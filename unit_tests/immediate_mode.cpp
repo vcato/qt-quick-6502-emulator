@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "InstructionExecutorTestFixture.hpp"
-#include "instruction_helpers.hpp"
+#include "instruction_definitions.hpp"
 
 using namespace testing;
 
@@ -12,14 +12,8 @@ struct LDA_Immediate_Expectations
     NZFlags flags;
 };
 
-struct LDA_Immediate_Requirements
-{
-    LDA_Immediate_Expectations initial;
-    LDA_Immediate_Expectations final;
-};
-
-using LDARequirements = LDA_Immediate_Requirements;
-using LDAImmediate = LDA<Immediate, LDARequirements>;
+using LDARequirements = Requirements<LDA_Immediate_Expectations>;
+using LDAImmediate = LDA<Immediate, LDA_Immediate_Expectations>;
 
 class LDAImmediateMode : public InstructionExecutorTestFixture,
                          public WithParamInterface<LDAImmediate>

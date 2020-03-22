@@ -63,6 +63,10 @@ struct AbsoluteXIndexed : Absolute
 
 struct AbsoluteYIndexed : Absolute
 {
+    constexpr AbsoluteYIndexed &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr AbsoluteYIndexed &value(uint16_t v) { absolute_address = v; return *this; }
+    constexpr AbsoluteYIndexed &y(uint8_t v) { y_register_value = v; return *this; }
+
     uint8_t y_register_value;
 };
 
@@ -80,16 +84,24 @@ struct Implied : Address
 
 struct Indirect : Address
 {
-    uint16_t indirect_address;
+    uint8_t zero_page_address;
 };
 
 struct XIndexedIndirect : Indirect
 {
+    constexpr XIndexedIndirect &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr XIndexedIndirect &zp_address(uint8_t v) { zero_page_address = v; return *this; }
+    constexpr XIndexedIndirect &x(uint8_t v) { x_register_value = v; return *this; }
+
     uint8_t x_register_value;
 };
 
 struct IndirectYIndexed : Indirect
 {
+    constexpr IndirectYIndexed &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr IndirectYIndexed &zp_address(uint8_t v) { zero_page_address = v; return *this; }
+    constexpr IndirectYIndexed &y(uint8_t v) { y_register_value = v; return *this; }
+
     uint8_t y_register_value;
 };
 
@@ -130,20 +142,5 @@ struct Instruction
     TAddress              address;
     AbstractInstruction_e operation = TOperation;
 };
-
-template<typename TAddress, typename TRequirements>
-struct LDA : Instruction<AbstractInstruction_e::LDA, TAddress>
-{
-    LDA(const TAddress &a, const TRequirements &r)
-        :
-        Instruction<AbstractInstruction_e::LDA, TAddress>(a),
-        requirements(r)
-    {
-    }
-
-    TRequirements requirements;
-};
-
-//auto instruction = LDA(Immediate(6));
 
 #endif // INSTRUCTION_HELPERS_HPP

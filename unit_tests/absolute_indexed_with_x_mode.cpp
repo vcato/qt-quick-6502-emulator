@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "InstructionExecutorTestFixture.hpp"
-#include "instruction_helpers.hpp"
+#include "instruction_definitions.hpp"
 
 using namespace testing;
 
@@ -13,14 +13,8 @@ struct LDA_AbsoluteXIndexed_Expectations
     NZFlags flags;
 };
 
-struct LDA_AbsoluteXIndexed_Requirements
-{
-    LDA_AbsoluteXIndexed_Expectations initial;
-    LDA_AbsoluteXIndexed_Expectations final;
-};
-
-using LDARequirements = LDA_AbsoluteXIndexed_Requirements;
-using LDAAbsoluteXIndexed = LDA<AbsoluteXIndexed, LDARequirements>;
+using LDARequirements = Requirements<LDA_AbsoluteXIndexed_Expectations>;
+using LDAAbsoluteXIndexed = LDA<AbsoluteXIndexed, LDA_AbsoluteXIndexed_Expectations>;
 
 class LDAAbsoluteXIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAAbsoluteXIndexed>
@@ -186,6 +180,6 @@ TEST_P(LDAAbsoluteXIndexedMode, CheckInstructionRequirements)
     EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::Z), Eq(GetParam().requirements.final.flags.z_value.expected_value));
 }
 
-INSTANTIATE_TEST_SUITE_P(LoadAbsoluteAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadAbsoluteXIndexedAtVariousAddresses,
                          LDAAbsoluteXIndexedMode,
                          testing::ValuesIn(LDAAbsoluteXIndexedModeTestValues) );

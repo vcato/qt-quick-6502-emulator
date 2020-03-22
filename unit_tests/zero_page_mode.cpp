@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include "InstructionExecutorTestFixture.hpp"
-#include "instruction_helpers.hpp"
+#include "instruction_definitions.hpp"
 
 using namespace testing;
 
@@ -10,14 +10,8 @@ struct LDA_ZeroPage_Expectations
     NZFlags flags;
 };
 
-struct LDA_ZeroPage_Requirements
-{
-    LDA_ZeroPage_Expectations initial;
-    LDA_ZeroPage_Expectations final;
-};
-
-using LDARequirements = LDA_ZeroPage_Requirements;
-using LDAZeroPage = LDA<ZeroPage, LDARequirements>;
+using LDARequirements = Requirements<LDA_ZeroPage_Expectations>;
+using LDAZeroPage = LDA<ZeroPage, LDA_ZeroPage_Expectations>;
 
 class LDAZeroPageMode : public InstructionExecutorTestFixture,
                         public WithParamInterface<LDAZeroPage>
