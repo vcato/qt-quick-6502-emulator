@@ -19,8 +19,10 @@ class LDAIndirectYIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAIndirectYIndexed>
 {
 public:
-    void setup_LDA_IndirectYIndexed(const LDAIndirectYIndexed &param)
+    void SetUp() override
     {
+        const LDAIndirectYIndexed &param = GetParam();
+
         loadInstructionIntoMemory(param.operation,
                                   AddressMode_e::IndirectYIndexed,
                                   param.address.instruction_address);
@@ -63,8 +65,6 @@ TEST_P(LDAIndirectYIndexedMode, CheckInstructionRequirements)
     const uint8_t     zero_page_address_to_load_from = GetParam().address.zero_page_address;
     const uint8_t     value_to_load = GetParam().requirements.final.a;
     const uint8_t     y_register    = GetParam().requirements.initial.y;
-
-    setup_LDA_IndirectYIndexed(GetParam());
 
     // Initial expectations
     EXPECT_THAT(executor.registers().program_counter, Eq(address));

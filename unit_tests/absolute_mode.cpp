@@ -19,8 +19,10 @@ class LDAAbsoluteMode : public InstructionExecutorTestFixture,
                         public WithParamInterface<LDAAbsolute>
 {
 public:
-    void setup_LDA_Absolute(const LDAAbsolute &param)
+    void SetUp() override
     {
+        const LDAAbsolute &param = GetParam();
+
         loadInstructionIntoMemory(param.operation,
                                   AddressMode_e::Absolute,
                                   param.address.instruction_address);
@@ -139,8 +141,6 @@ TEST_P(LDAAbsoluteMode, CheckInstructionRequirements)
     const addressType &address = GetParam().address.instruction_address;
     const addressType &address_to_load_from = GetParam().address.absolute_address;
     const uint8_t     &value_to_load = GetParam().requirements.final.a;
-
-    setup_LDA_Absolute(GetParam());
 
     // Initial expectations
     EXPECT_THAT(executor.registers().program_counter, Eq(address));

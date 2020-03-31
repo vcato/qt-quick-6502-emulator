@@ -19,8 +19,10 @@ class LDAImmediateMode : public InstructionExecutorTestFixture,
                          public WithParamInterface<LDAImmediate>
 {
 public:
-    void setup_LDA_Immediate(const LDAImmediate &param)
+    void SetUp() override
     {
+        const LDAImmediate &param = GetParam();
+
         loadInstructionIntoMemory(param.operation,
                                   AddressMode_e::Immediate,
                                   param.address.instruction_address);
@@ -111,8 +113,6 @@ LDAImmediate{
 
 TEST_P(LDAImmediateMode, CheckInstructionRequirements)
 {
-    setup_LDA_Immediate(GetParam());
-
     // Initial expectations
     EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address));
     EXPECT_THAT(executor.complete(), Eq(true));

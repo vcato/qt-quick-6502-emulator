@@ -18,8 +18,10 @@ class LDAZeroPageXIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAZeroPageXIndexed>
 {
 public:
-    void setup_LDA_ZeroPageXIndexed(const LDAZeroPageXIndexed &param)
+    void SetUp() override
     {
+        const LDAZeroPageXIndexed &param = GetParam();
+
         loadInstructionIntoMemory(param.operation,
                                   AddressMode_e::ZeroPageXIndexed,
                                   param.address.instruction_address);
@@ -124,8 +126,6 @@ LDAZeroPageXIndexed{
 
 TEST_P(LDAZeroPageXIndexedMode, CheckInstructionRequirements)
 {
-    setup_LDA_ZeroPageXIndexed(GetParam());
-
     // Initial expectations
     EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address));
     EXPECT_THAT(executor.complete(), Eq(true));

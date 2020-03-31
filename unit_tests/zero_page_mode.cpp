@@ -17,8 +17,10 @@ class LDAZeroPageMode : public InstructionExecutorTestFixture,
                         public WithParamInterface<LDAZeroPage>
 {
 public:
-    void setup_LDA_ZeroPage(const LDAZeroPage &param)
+    void SetUp() override
     {
+        const LDAZeroPage &param = GetParam();
+
         loadInstructionIntoMemory(param.operation,
                                   AddressMode_e::ZeroPage,
                                   param.address.instruction_address);
@@ -112,8 +114,6 @@ LDAZeroPage{
 
 TEST_P(LDAZeroPageMode, CheckInstructionRequirements)
 {
-    setup_LDA_ZeroPage(GetParam());
-
     // Initial expectations
     EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address));
     EXPECT_THAT(executor.complete(), Eq(true));

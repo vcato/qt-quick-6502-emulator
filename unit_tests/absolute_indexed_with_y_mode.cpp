@@ -20,8 +20,10 @@ class LDAAbsoluteYIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAAbsoluteYIndexed>
 {
 public:
-    void setup_LDA_AbsoluteYIndexed(const LDAAbsoluteYIndexed &param)
+    void SetUp() override
     {
+        const LDAAbsoluteYIndexed &param = GetParam();
+
         loadInstructionIntoMemory(param.operation,
                                   AddressMode_e::AbsoluteYIndexed,
                                   param.address.instruction_address);
@@ -155,8 +157,6 @@ TEST_P(LDAAbsoluteYIndexedMode, CheckInstructionRequirements)
     const addressType &address = GetParam().address.instruction_address;
     const addressType &address_to_load_from = GetParam().address.absolute_address;
     const uint8_t     &value_to_load = GetParam().requirements.final.a;
-
-    setup_LDA_AbsoluteYIndexed(GetParam());
 
     // Initial expectations
     EXPECT_THAT(executor.registers().program_counter, Eq(address));
