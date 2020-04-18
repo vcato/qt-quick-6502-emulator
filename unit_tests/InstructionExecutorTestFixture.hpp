@@ -31,28 +31,16 @@ public:
         uint8_t     data;
     };
 
-    //void SetUp() override { }
-
-    //void TearDown() override { }
-
-    struct Param_AbsoluteIndexedWithY
+    uint8_t loByteOf(addressType address) const
     {
-        addressType instruction_address;
-        addressType address_to_load_from;
-        uint8_t     value_to_load;
-        uint8_t     y_register;
-    };
-
-    void setup_LDA_AbsoluteIndexedWithY(const Param_AbsoluteIndexedWithY &param)
-    {
-        loadInstructionIntoMemory(AbstractInstruction_e::LDA, AddressMode_e::AbsoluteYIndexed, param.instruction_address);
-        fakeMemory[param.instruction_address + 1] = loByteOf(param.address_to_load_from);
-        fakeMemory[param.instruction_address + 2] = hiByteOf(param.address_to_load_from);
-        fakeMemory[param.address_to_load_from + param.y_register] = param.value_to_load;
-        executor.registers().y = param.y_register;
+        return address & 0xFF;
     }
 
-protected:
+    uint8_t hiByteOf(addressType address) const
+    {
+        return address >> 8;
+    }
+
     Registers r;
     InstructionExecutor executor{ r,
                                   std::bind(&InstructionExecutorTestFixture::addressBusReadSignaled,        this, _1, _2),
@@ -76,7 +64,7 @@ protected:
     std::vector<registerType>      statusChangedSignalsCaught;
     std::map<addressType, uint8_t> fakeMemory;
 
-    void loadInstructionIntoMemory(const AbstractInstruction_e instruction, const AddressMode_e mode, const addressType address)
+    void loadOpcodeIntoMemory(const AbstractInstruction_e instruction, const AddressMode_e mode, const addressType address)
     {
         executor.registers().program_counter = address;
         fakeMemory[address] = OpcodeFor(instruction, mode);
@@ -89,16 +77,7 @@ protected:
         } while (!executor.complete());
     }
 
-    uint8_t loByteOf(addressType address)
-    {
-        return address & 0xFF;
-    }
-
-    uint8_t hiByteOf(addressType address)
-    {
-        return address >> 8;
-    }
-
+protected:
     uint8_t addressBusReadSignaled(addressType address, bool read_only)
     {
         uint8_t retval = 0;

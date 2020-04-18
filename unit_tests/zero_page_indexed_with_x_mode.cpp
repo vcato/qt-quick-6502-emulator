@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include "InstructionExecutorTestFixture.hpp"
-#include "instruction_helpers.hpp"
+#include "instruction_definitions.hpp"
+#include "instruction_checks.hpp"
 
 using namespace testing;
 
@@ -11,22 +12,18 @@ struct LDA_ZeroPageXIndexed_Expectations
     NZFlags flags;
 };
 
-struct LDA_ZeroPageXIndexed_Requirements
-{
-    LDA_ZeroPageXIndexed_Expectations initial;
-    LDA_ZeroPageXIndexed_Expectations final;
-};
-
-using LDARequirements = LDA_ZeroPageXIndexed_Requirements;
-using LDAZeroPageXIndexed = LDA<ZeroPageXIndexed, LDARequirements>;
+using LDARequirements = Requirements<LDA_ZeroPageXIndexed_Expectations>;
+using LDAZeroPageXIndexed = LDA<ZeroPageXIndexed, LDA_ZeroPageXIndexed_Expectations>;
 
 class LDAZeroPageXIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAZeroPageXIndexed>
 {
 public:
-    void setup_LDA_ZeroPageXIndexed(const LDAZeroPageXIndexed &param)
+    void SetUp() override
     {
-        loadInstructionIntoMemory(param.operation,
+        const LDAZeroPageXIndexed &param = GetParam();
+
+        loadOpcodeIntoMemory(param.operation,
                                   AddressMode_e::ZeroPageXIndexed,
                                   param.address.instruction_address);
         fakeMemory[param.address.instruction_address + 1] = param.address.zero_page_address;
@@ -42,6 +39,22 @@ public:
     }
 
 };
+
+void RegistersAreInExpectedState(const Registers &registers,
+                                 const LDA_ZeroPageXIndexed_Expectations &expectations)
+{
+    EXPECT_THAT(registers.a, Eq(expectations.a));
+    EXPECT_THAT(registers.x, Eq(expectations.x));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
+}
+
+void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
+                               const Instruction<AbstractInstruction_e::LDA, ZeroPageXIndexed> &instruction)
+{
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::ZeroPageXIndexed) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.zero_page_address));
+}
 
 static const std::vector<LDAZeroPageXIndexed> LDAZeroPageXIndexedModeTestValues {
 LDAZeroPageXIndexed{
@@ -130,30 +143,20 @@ LDAZeroPageXIndexed{
 
 TEST_P(LDAZeroPageXIndexedMode, CheckInstructionRequirements)
 {
-    setup_LDA_ZeroPageXIndexed(GetParam());
-
     // Initial expectations
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address));
+    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(0U));
-    EXPECT_THAT(fakeMemory.at( executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::ZeroPageXIndexed) ));
-    EXPECT_THAT(fakeMemory.at( executor.registers().program_counter + 1), Eq(GetParam().address.zero_page_address));
+    MemoryContainsInstruction(*this, GetParam());
     EXPECT_THAT(fakeMemory.at( GetParam().address.zero_page_address + GetParam().requirements.initial.x), Eq(GetParam().requirements.final.a));
-
-    EXPECT_THAT(executor.registers().a, Eq(GetParam().requirements.initial.a));
-    EXPECT_THAT(executor.registers().x, Eq(GetParam().requirements.initial.x));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::N), Eq(GetParam().requirements.initial.flags.n_value.expected_value));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::Z), Eq(GetParam().requirements.initial.flags.n_value.expected_value));
+    RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + 2));
+    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + GetParam().address.operand_byte_count + 1));
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(4U));
-    EXPECT_THAT(executor.registers().a, Eq(GetParam().requirements.final.a));
-    EXPECT_THAT(executor.registers().x, Eq(GetParam().requirements.final.x));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::N), Eq(GetParam().requirements.final.flags.n_value.expected_value));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::Z), Eq(GetParam().requirements.final.flags.z_value.expected_value));
+    RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 
 INSTANTIATE_TEST_CASE_P(LoadZeroPageXIndexedAtVariousAddresses,

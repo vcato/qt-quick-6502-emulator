@@ -50,6 +50,8 @@ struct Absolute : Address
     constexpr Absolute &value(uint16_t v) { absolute_address = v; return *this; }
 
     uint16_t absolute_address;
+
+    static constexpr uint16_t operand_byte_count = 2;
 };
 
 struct AbsoluteXIndexed : Absolute
@@ -63,6 +65,10 @@ struct AbsoluteXIndexed : Absolute
 
 struct AbsoluteYIndexed : Absolute
 {
+    constexpr AbsoluteYIndexed &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr AbsoluteYIndexed &value(uint16_t v) { absolute_address = v; return *this; }
+    constexpr AbsoluteYIndexed &y(uint8_t v) { y_register_value = v; return *this; }
+
     uint8_t y_register_value;
 };
 
@@ -72,6 +78,8 @@ struct Immediate : Address
     constexpr Immediate &value(uint8_t v) { immediate_value = v; return *this; }
 
     uint8_t immediate_value;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct Implied : Address
@@ -80,22 +88,34 @@ struct Implied : Address
 
 struct Indirect : Address
 {
-    uint16_t indirect_address;
+    uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct XIndexedIndirect : Indirect
 {
+    constexpr XIndexedIndirect &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr XIndexedIndirect &zp_address(uint8_t v) { zero_page_address = v; return *this; }
+    constexpr XIndexedIndirect &x(uint8_t v) { x_register_value = v; return *this; }
+
     uint8_t x_register_value;
 };
 
 struct IndirectYIndexed : Indirect
 {
+    constexpr IndirectYIndexed &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr IndirectYIndexed &zp_address(uint8_t v) { zero_page_address = v; return *this; }
+    constexpr IndirectYIndexed &y(uint8_t v) { y_register_value = v; return *this; }
+
     uint8_t y_register_value;
 };
 
 struct Relative : Address
 {
     uint8_t offset;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct ZeroPage : Address
@@ -104,6 +124,8 @@ struct ZeroPage : Address
     constexpr ZeroPage &zp_address(uint8_t v) { zero_page_address = v; return *this; }
 
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct ZeroPageXIndexed : Address
@@ -112,6 +134,8 @@ struct ZeroPageXIndexed : Address
     constexpr ZeroPageXIndexed &zp_address(uint8_t v) { zero_page_address = v; return *this; }
 
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct ZeroPageYIndexed : Address
@@ -120,6 +144,8 @@ struct ZeroPageYIndexed : Address
     constexpr ZeroPageYIndexed &zp_address(uint8_t v) { zero_page_address = v; return *this; }
 
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 template<AbstractInstruction_e TOperation, typename TAddress>
@@ -130,20 +156,5 @@ struct Instruction
     TAddress              address;
     AbstractInstruction_e operation = TOperation;
 };
-
-template<typename TAddress, typename TRequirements>
-struct LDA : Instruction<AbstractInstruction_e::LDA, TAddress>
-{
-    LDA(const TAddress &a, const TRequirements &r)
-        :
-        Instruction<AbstractInstruction_e::LDA, TAddress>(a),
-        requirements(r)
-    {
-    }
-
-    TRequirements requirements;
-};
-
-//auto instruction = LDA(Immediate(6));
 
 #endif // INSTRUCTION_HELPERS_HPP

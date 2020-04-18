@@ -13,8 +13,9 @@ QT += quick
 
 HEADERS += \
     InstructionExecutorTestFixture.hpp \
-    instruction_helpers.hpp \
-    loadaccumulatorwithmemory.hpp
+    instruction_checks.hpp \
+    instruction_definitions.hpp \
+    instruction_helpers.hpp
 
 SOURCES += \
         6502_tests.cpp \
@@ -29,7 +30,6 @@ SOURCES += \
         registers_tests.cpp \
         relative_mode.cpp \
         x_indexed_indirect.cpp \
-        zero_page_indexed_indirect_mode.cpp \
         zero_page_indexed_with_x_mode.cpp \
         zero_page_indexed_with_y_mode.cpp \
         zero_page_mode.cpp \
@@ -48,3 +48,6 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../emul
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../emulator/release/emulator.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../emulator/debug/emulator.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../emulator/libemulator.a
+
+DISTFILES += \
+    PLAN.md
