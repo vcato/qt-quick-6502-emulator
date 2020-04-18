@@ -10,18 +10,18 @@ isEmpty(GOOGLETEST_DIR):GOOGLETEST_DIR=$$(GOOGLETEST_DIR)
 #    }
 #}
 
-#!isEmpty(GOOGLETEST_DIR): {
-#    GTEST_SRCDIR = $$GOOGLETEST_DIR/googletest
-#    GMOCK_SRCDIR = $$GOOGLETEST_DIR/googlemock
-#} else: unix {
-#    exists(/usr/src/googletest/googletest):GTEST_SRCDIR=/usr/src/googletest/googletest
-#    exists(/usr/src/gmock):GMOCK_SRCDIR=/usr/src/gmock
-#    !isEmpty(GTEST_SRCDIR): message("Using gtest from system")
-#}
-#
+!isEmpty(GOOGLETEST_DIR): {
+    GTEST_SRCDIR = $$GOOGLETEST_DIR/googletest
+    GMOCK_SRCDIR = $$GOOGLETEST_DIR/googlemock
+} else: unix {
+    exists(/usr/src/googletest/googletest):GTEST_SRCDIR=/usr/src/googletest/googletest
+    exists(/usr/src/gmock):GMOCK_SRCDIR=/usr/src/gmock
+    !isEmpty(GTEST_SRCDIR): message("Using gtest from system")
+}
 
-GTEST_SRCDIR=/usr/src/gtest
-GMOCK_SRCDIR=/usr/src/gmock
+
+#GTEST_SRCDIR=/usr/src/gtest
+#GMOCK_SRCDIR=/usr/src/gmock
 !isEmpty(GTEST_SRCDIR): message("Using gtest from system")
 
 requires(exists($$GTEST_SRCDIR):exists($$GMOCK_SRCDIR))

@@ -38,6 +38,8 @@ public:
 
 };
 
+namespace
+{
 void RegistersAreInExpectedState(const Registers &registers,
                                  const LDA_ZeroPage_Expectations &expectations)
 {
@@ -51,6 +53,13 @@ void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
 {
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::ZeroPage) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.zero_page_address));
+}
+
+void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
+                                       const LDAZeroPage                    &instruction)
+{
+    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address ), Eq(instruction.requirements.final.a));
+}
 }
 
 static const std::vector<LDAZeroPage> LDAZeroPageModeTestValues {
@@ -135,7 +144,7 @@ TEST_P(LDAZeroPageMode, CheckInstructionRequirements)
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(0U));
     MemoryContainsInstruction(*this, GetParam());
-    EXPECT_THAT(fakeMemory.at( GetParam().address.zero_page_address ), Eq(GetParam().requirements.final.a));
+    MemoryContainsExpectedComputation(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
 
     executeInstruction();
