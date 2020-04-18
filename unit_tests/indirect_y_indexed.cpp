@@ -40,6 +40,8 @@ public:
     }
 };
 
+namespace
+{
 void RegistersAreInExpectedState(const Registers &registers,
                                  const LDA_IndirectYIndexed_Expectations &expectations)
 {
@@ -54,6 +56,20 @@ void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
 {
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ),     Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::IndirectYIndexed) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1 ), Eq(instruction.address.zero_page_address));
+}
+
+void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
+                                       const LDAIndirectYIndexed            &instruction)
+{
+    const uint8_t zero_page_address_to_load_from = instruction.address.zero_page_address;
+    const uint8_t value_to_load                  = instruction.requirements.final.a;
+    const auto    address_stored_in_zero_page    = instruction.requirements.initial.address_to_indirect_to;
+    const uint8_t y_register                     = instruction.requirements.initial.y;
+
+    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from ),    Eq( fixture.loByteOf(address_stored_in_zero_page) ));
+    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + 1), Eq( fixture.hiByteOf(address_stored_in_zero_page) ));
+    EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page + y_register ), Eq(value_to_load));
+}
 }
 
 static const std::vector<LDAIndirectYIndexed> LDAIndirectYIndexedModeTestValues {
@@ -78,19 +94,13 @@ LDAIndirectYIndexed{
 TEST_P(LDAIndirectYIndexedMode, CheckInstructionRequirements)
 {
     const addressType address = GetParam().address.instruction_address;
-    const addressType address_stored_in_zero_page    = GetParam().requirements.initial.address_to_indirect_to;
-    const uint8_t     zero_page_address_to_load_from = GetParam().address.zero_page_address;
-    const uint8_t     value_to_load = GetParam().requirements.final.a;
-    const uint8_t     y_register    = GetParam().requirements.initial.y;
 
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(0U));
     MemoryContainsInstruction(*this, GetParam());
-    EXPECT_THAT(fakeMemory.at( zero_page_address_to_load_from ),    Eq( loByteOf(address_stored_in_zero_page) ));
-    EXPECT_THAT(fakeMemory.at( zero_page_address_to_load_from + 1), Eq( hiByteOf(address_stored_in_zero_page) ));
-    EXPECT_THAT(fakeMemory.at( address_stored_in_zero_page + y_register ), Eq(value_to_load));
+    MemoryContainsExpectedComputation(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
 
     executeInstruction();

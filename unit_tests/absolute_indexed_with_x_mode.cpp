@@ -40,6 +40,8 @@ public:
     }
 };
 
+namespace
+{
 void RegistersAreInExpectedState(const Registers &registers,
                                  const LDA_AbsoluteXIndexed_Expectations &expectations)
 {
@@ -52,8 +54,16 @@ void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
                                const Instruction<AbstractInstruction_e::LDA, AbsoluteXIndexed> &instruction)
 {
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::AbsoluteXIndexed) ));
+
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq( fixture.loByteOf(instruction.address.absolute_address) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 2), Eq( fixture.hiByteOf(instruction.address.absolute_address) ));
+}
+
+void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
+                                       const LDAAbsoluteXIndexed            &instruction)
+{
+    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address + instruction.requirements.final.x ), Eq( instruction.requirements.final.a ));
+}
 }
 
 static const std::vector<LDAAbsoluteXIndexed> LDAAbsoluteXIndexedModeTestValues {
@@ -171,16 +181,12 @@ LDAAbsoluteXIndexed{
 
 TEST_P(LDAAbsoluteXIndexedMode, CheckInstructionRequirements)
 {
-    const addressType &address = GetParam().address.instruction_address;
-    const addressType &address_to_load_from = GetParam().address.absolute_address;
-    const uint8_t     &value_to_load = GetParam().requirements.final.a;
-
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(0U));
     MemoryContainsInstruction(*this, GetParam());
-    EXPECT_THAT(fakeMemory.at( address_to_load_from + GetParam().requirements.final.x ), Eq( value_to_load ));
+    MemoryContainsExpectedComputation(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
 
     executeInstruction();

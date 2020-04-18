@@ -36,6 +36,8 @@ public:
     }
 };
 
+namespace
+{
 void RegistersAreInExpectedState(const Registers &registers,
                                  const LDA_Immediate_Expectations &expectations)
 {
@@ -49,6 +51,12 @@ void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
 {
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::Immediate) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.immediate_value));
+}
+
+void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* fixture */,
+                                       const LDAImmediate                   &/* instruction */)
+{
+}
 }
 
 static const std::vector<LDAImmediate> LDAImmediateModeTestValues {
@@ -134,6 +142,7 @@ TEST_P(LDAImmediateMode, CheckInstructionRequirements)
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(0U));
     MemoryContainsInstruction(*this, GetParam());
+    MemoryContainsExpectedComputation(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
 
     executeInstruction();
