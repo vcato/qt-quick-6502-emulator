@@ -50,6 +50,8 @@ struct Absolute : Address
     constexpr Absolute &value(uint16_t v) { absolute_address = v; return *this; }
 
     uint16_t absolute_address;
+
+    static constexpr uint16_t operand_byte_count = 2;
 };
 
 struct AbsoluteXIndexed : Absolute
@@ -76,6 +78,8 @@ struct Immediate : Address
     constexpr Immediate &value(uint8_t v) { immediate_value = v; return *this; }
 
     uint8_t immediate_value;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct Implied : Address
@@ -85,6 +89,8 @@ struct Implied : Address
 struct Indirect : Address
 {
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct XIndexedIndirect : Indirect
@@ -108,6 +114,8 @@ struct IndirectYIndexed : Indirect
 struct Relative : Address
 {
     uint8_t offset;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct ZeroPage : Address
@@ -116,6 +124,8 @@ struct ZeroPage : Address
     constexpr ZeroPage &zp_address(uint8_t v) { zero_page_address = v; return *this; }
 
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct ZeroPageXIndexed : Address
@@ -124,6 +134,8 @@ struct ZeroPageXIndexed : Address
     constexpr ZeroPageXIndexed &zp_address(uint8_t v) { zero_page_address = v; return *this; }
 
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 struct ZeroPageYIndexed : Address
@@ -132,6 +144,8 @@ struct ZeroPageYIndexed : Address
     constexpr ZeroPageYIndexed &zp_address(uint8_t v) { zero_page_address = v; return *this; }
 
     uint8_t zero_page_address;
+
+    static constexpr uint16_t operand_byte_count = 1;
 };
 
 template<AbstractInstruction_e TOperation, typename TAddress>

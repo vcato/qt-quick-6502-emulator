@@ -31,11 +31,16 @@ public:
         uint8_t     data;
     };
 
-    //void SetUp() override { }
+    uint8_t loByteOf(addressType address) const
+    {
+        return address & 0xFF;
+    }
 
-    //void TearDown() override { }
+    uint8_t hiByteOf(addressType address) const
+    {
+        return address >> 8;
+    }
 
-protected:
     Registers r;
     InstructionExecutor executor{ r,
                                   std::bind(&InstructionExecutorTestFixture::addressBusReadSignaled,        this, _1, _2),
@@ -59,7 +64,7 @@ protected:
     std::vector<registerType>      statusChangedSignalsCaught;
     std::map<addressType, uint8_t> fakeMemory;
 
-    void loadInstructionIntoMemory(const AbstractInstruction_e instruction, const AddressMode_e mode, const addressType address)
+    void loadOpcodeIntoMemory(const AbstractInstruction_e instruction, const AddressMode_e mode, const addressType address)
     {
         executor.registers().program_counter = address;
         fakeMemory[address] = OpcodeFor(instruction, mode);
@@ -72,16 +77,7 @@ protected:
         } while (!executor.complete());
     }
 
-    uint8_t loByteOf(addressType address)
-    {
-        return address & 0xFF;
-    }
-
-    uint8_t hiByteOf(addressType address)
-    {
-        return address >> 8;
-    }
-
+protected:
     uint8_t addressBusReadSignaled(addressType address, bool read_only)
     {
         uint8_t retval = 0;

@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include "InstructionExecutorTestFixture.hpp"
 #include "instruction_definitions.hpp"
+#include "instruction_checks.hpp"
 
 using namespace testing;
 
@@ -23,7 +24,7 @@ public:
     {
         const LDAAbsolute &param = GetParam();
 
-        loadInstructionIntoMemory(param.operation,
+        loadOpcodeIntoMemory(param.operation,
                                   AddressMode_e::Absolute,
                                   param.address.instruction_address);
         fakeMemory[param.address.instruction_address + 1] = loByteOf(param.address.absolute_address);
@@ -36,6 +37,22 @@ public:
         r.SetFlag(FLAGS6502::Z, param.requirements.initial.flags.z_value.expected_value);
     }
 };
+
+void RegistersAreInExpectedState(const Registers &registers,
+                                 const LDA_Absolute_Expectations &expectations)
+{
+    EXPECT_THAT(registers.a, Eq(expectations.a));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
+}
+
+void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
+                               const Instruction<AbstractInstruction_e::LDA, Absolute> &instruction)
+{
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::Absolute) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq( fixture.loByteOf(instruction.address.absolute_address) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 2), Eq( fixture.hiByteOf(instruction.address.absolute_address) ));
+}
 
 static const std::vector<LDAAbsolute> LDAAbsoluteModeTestValues {
 LDAAbsolute{
@@ -143,25 +160,19 @@ TEST_P(LDAAbsoluteMode, CheckInstructionRequirements)
     const uint8_t     &value_to_load = GetParam().requirements.final.a;
 
     // Initial expectations
-    EXPECT_THAT(executor.registers().program_counter, Eq(address));
+    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(0U));
-    EXPECT_THAT(fakeMemory.at( executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::Absolute) ));
-    EXPECT_THAT(fakeMemory.at( executor.registers().program_counter + 1), Eq( loByteOf(address_to_load_from) ));
-    EXPECT_THAT(fakeMemory.at( executor.registers().program_counter + 2), Eq( hiByteOf(address_to_load_from) ));
+    MemoryContainsInstruction(*this, GetParam());
     EXPECT_THAT(fakeMemory.at( address_to_load_from ), Eq( value_to_load ));
-    EXPECT_THAT(executor.registers().a, Eq(GetParam().requirements.initial.a));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::N), Eq(GetParam().requirements.initial.flags.n_value.expected_value));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::Z), Eq(GetParam().requirements.initial.flags.n_value.expected_value));
+    RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + 3));
+    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + GetParam().address.operand_byte_count + 1));
     EXPECT_THAT(executor.complete(), Eq(true));
     EXPECT_THAT(executor.clock_ticks, Eq(4U));
-    EXPECT_THAT(executor.registers().a, Eq(value_to_load));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::N), Eq(GetParam().requirements.final.flags.n_value.expected_value));
-    EXPECT_THAT(executor.registers().GetFlag(FLAGS6502::Z), Eq(GetParam().requirements.final.flags.z_value.expected_value));
+    RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 
 INSTANTIATE_TEST_SUITE_P(LoadAbsoluteAtVariousAddresses,

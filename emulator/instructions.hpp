@@ -64,6 +64,8 @@ enum class AbstractInstruction_e : uint8_t
     TXA, ///< transfer X to accumulator
     TXS, ///< transfer X to stack pointer
     TYA, ///< transfer Y to accumulator
+
+    END
 };
 
 /** Representation of the available address modes.

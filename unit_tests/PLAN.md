@@ -30,4 +30,5 @@ of the instruction.  Could make the tests easier to read and comprehend.
 
 Examples:
 * Program counter is incremented by the instruction size in memory
-* Memory contains expected instruction and parameter
+* Memory contains expected instruction and parameter at the given address
+*

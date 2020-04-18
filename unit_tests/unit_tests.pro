@@ -13,6 +13,7 @@ QT += quick
 
 HEADERS += \
     InstructionExecutorTestFixture.hpp \
+    instruction_checks.hpp \
     instruction_definitions.hpp \
     instruction_helpers.hpp
 
