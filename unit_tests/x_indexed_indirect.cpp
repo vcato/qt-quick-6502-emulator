@@ -13,8 +13,7 @@ struct LDA_XIndexedIndirect_Expectations
     NZFlags  flags;
 };
 
-using LDARequirements = Requirements<LDA_XIndexedIndirect_Expectations>;
-using LDAXIndexedIndirect = LDA<XIndexedIndirect, LDA_XIndexedIndirect_Expectations>;
+using LDAXIndexedIndirect = LDA<XIndexedIndirect, LDA_XIndexedIndirect_Expectations, 6>;
 
 class LDAXIndexedIndirectMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAXIndexedIndirect>
@@ -70,13 +69,19 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
     EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + x_register + 1), Eq( fixture.hiByteOf(address_stored_in_zero_page) ));
     EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page ), Eq(value_to_load));
 }
+
+void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
+                                             const LDAXIndexedIndirect            &instruction)
+{
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
+}
 }
 
 static const std::vector<LDAXIndexedIndirect> LDAXIndexedIndirectModeTestValues {
 LDAXIndexedIndirect{
     // Beginning of a page
     XIndexedIndirect().address(0x8000).zp_address(0xA0),
-    LDARequirements{
+    LDAXIndexedIndirect::Requirements{
         .initial = {
             .address_to_indirect_to = 0xC000,
             .a = 0,
@@ -105,9 +110,9 @@ TEST_P(LDAXIndexedIndirectMode, CheckInstructionRequirements)
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(address + GetParam().address.operand_byte_count + 1));
+    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
-    EXPECT_THAT(executor.clock_ticks, Eq(6U));
+    InstructionExecutedInExpectedClockTicks(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 

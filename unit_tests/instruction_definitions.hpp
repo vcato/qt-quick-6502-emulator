@@ -3,24 +3,27 @@
 
 #include "instruction_helpers.hpp"
 
-template<class TExpectations>
+template<class TExpectations, uint32_t TCycleCount>
 struct Requirements
 {
     TExpectations initial;
     TExpectations final;
+    static constexpr auto cycle_count = TCycleCount;
 };
 
-template<typename TAddress, class TExpectations>
+template<typename TAddress, class TExpectations, uint32_t TCycleCount>
 struct LDA : Instruction<AbstractInstruction_e::LDA, TAddress>
 {
-    LDA(const TAddress &a, const Requirements<TExpectations> &r)
+    using Requirements = Requirements<TExpectations, TCycleCount>;
+
+    LDA(const TAddress &a, const Requirements &r)
         :
         Instruction<AbstractInstruction_e::LDA, TAddress>(a),
         requirements(r)
     {
     }
 
-    Requirements<TExpectations> requirements;
+    Requirements requirements;
 };
 
 //auto instruction = LDA(Immediate(6));

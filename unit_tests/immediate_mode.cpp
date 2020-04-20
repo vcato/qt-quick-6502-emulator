@@ -13,8 +13,7 @@ struct LDA_Immediate_Expectations
     NZFlags flags;
 };
 
-using LDARequirements = Requirements<LDA_Immediate_Expectations>;
-using LDAImmediate = LDA<Immediate, LDA_Immediate_Expectations>;
+using LDAImmediate = LDA<Immediate, LDA_Immediate_Expectations, 2>;
 
 class LDAImmediateMode : public InstructionExecutorTestFixture,
                          public WithParamInterface<LDAImmediate>
@@ -57,13 +56,19 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* 
                                        const LDAImmediate                   &/* instruction */)
 {
 }
+
+void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
+                                             const LDAImmediate                   &instruction)
+{
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
+}
 }
 
 static const std::vector<LDAImmediate> LDAImmediateModeTestValues {
 LDAImmediate{
     // Beginning of a page
     Immediate().address(0x0000).value(6),
-    LDARequirements{
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -75,7 +80,7 @@ LDAImmediate{
 LDAImmediate{
     // One before the end of a page
     Immediate().address(0x00FE).value(6),
-    LDARequirements{
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -87,7 +92,7 @@ LDAImmediate{
 LDAImmediate{
     // Crossing a page boundary
     Immediate().address(0x00FF).value(6),
-    LDARequirements{
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -99,7 +104,7 @@ LDAImmediate{
 LDAImmediate{
     // Loading a zero affects the Z flag
     Immediate().address(0x8000).value(0),
-    LDARequirements{
+    LDAImmediate::Requirements{
         .initial = {
             .a = 6,
             .flags = { }},
@@ -117,7 +122,7 @@ LDAImmediate{
 LDAImmediate{
     // Loading a negative affects the N flag
     Immediate().address(0x8000).value(0x80),
-    LDARequirements{
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -147,9 +152,9 @@ TEST_P(LDAImmediateMode, CheckInstructionRequirements)
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + GetParam().address.operand_byte_count + 1));
+    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
-    EXPECT_THAT(executor.clock_ticks, Eq(2U));
+    InstructionExecutedInExpectedClockTicks(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 
