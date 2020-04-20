@@ -12,8 +12,7 @@ struct LDA_ZeroPageXIndexed_Expectations
     NZFlags flags;
 };
 
-using LDARequirements = Requirements<LDA_ZeroPageXIndexed_Expectations>;
-using LDAZeroPageXIndexed = LDA<ZeroPageXIndexed, LDA_ZeroPageXIndexed_Expectations>;
+using LDAZeroPageXIndexed = LDA<ZeroPageXIndexed, LDA_ZeroPageXIndexed_Expectations, 4>;
 
 class LDAZeroPageXIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAZeroPageXIndexed>
@@ -63,13 +62,19 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
 {
     EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address + instruction.requirements.initial.x), Eq(instruction.requirements.final.a));
 }
+
+void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
+                                             const LDAZeroPageXIndexed            &instruction)
+{
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
+}
 }
 
 static const std::vector<LDAZeroPageXIndexed> LDAZeroPageXIndexedModeTestValues {
 LDAZeroPageXIndexed{
     // Beginning of a page
     ZeroPageXIndexed().address(0x0000).zp_address(6),
-    LDARequirements{
+    LDAZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
             .x = 0,
@@ -83,7 +88,7 @@ LDAZeroPageXIndexed{
 LDAZeroPageXIndexed{
     // One before the end of a page
     ZeroPageXIndexed().address(0x00FE).zp_address(6),
-    LDARequirements{
+    LDAZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
             .x = 0,
@@ -97,7 +102,7 @@ LDAZeroPageXIndexed{
 LDAZeroPageXIndexed{
     // Crossing a page boundary
     ZeroPageXIndexed().address(0x00FF).zp_address(6),
-    LDARequirements{
+    LDAZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
             .x = 0,
@@ -111,7 +116,7 @@ LDAZeroPageXIndexed{
 LDAZeroPageXIndexed{
     // Loading a zero affects the Z flag
     ZeroPageXIndexed().address(0x8000).zp_address(16),
-    LDARequirements{
+    LDAZeroPageXIndexed::Requirements{
         .initial = {
             .a = 6,
             .x = 0,
@@ -131,7 +136,7 @@ LDAZeroPageXIndexed{
 LDAZeroPageXIndexed{
     // Loading a negative affects the N flag
     ZeroPageXIndexed().address(0x8000).zp_address(0xFF),
-    LDARequirements{
+    LDAZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
             .x = 0,
@@ -162,9 +167,9 @@ TEST_P(LDAZeroPageXIndexedMode, CheckInstructionRequirements)
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + GetParam().address.operand_byte_count + 1));
+    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
-    EXPECT_THAT(executor.clock_ticks, Eq(4U));
+    InstructionExecutedInExpectedClockTicks(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 

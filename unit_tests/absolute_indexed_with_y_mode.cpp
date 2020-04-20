@@ -14,8 +14,7 @@ struct LDA_AbsoluteYIndexed_Expectations
     NZFlags flags;
 };
 
-using LDARequirements = Requirements<LDA_AbsoluteYIndexed_Expectations>;
-using LDAAbsoluteYIndexed = LDA<AbsoluteYIndexed, LDA_AbsoluteYIndexed_Expectations>;
+using LDAAbsoluteYIndexed = LDA<AbsoluteYIndexed, LDA_AbsoluteYIndexed_Expectations, 4>;
 
 class LDAAbsoluteYIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAAbsoluteYIndexed>
@@ -63,13 +62,19 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
 {
     EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address + instruction.requirements.final.y ), Eq( instruction.requirements.final.a ));
 }
+
+void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
+                                             const LDAAbsoluteYIndexed            &instruction)
+{
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
+}
 }
 
 static const std::vector<LDAAbsoluteYIndexed> LDAAbsoluteYIndexedModeTestValues {
 LDAAbsoluteYIndexed{
     // Beginning of a page
     AbsoluteYIndexed().address(0x0000).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0,
             .y = 0,
@@ -83,7 +88,7 @@ LDAAbsoluteYIndexed{
 LDAAbsoluteYIndexed{
     // Middle of a page
     AbsoluteYIndexed().address(0x0088).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0,
             .y = 5,
@@ -97,7 +102,7 @@ LDAAbsoluteYIndexed{
 LDAAbsoluteYIndexed{
     // End of a page
     AbsoluteYIndexed().address(0x00FD).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0,
             .y = 0,
@@ -111,7 +116,7 @@ LDAAbsoluteYIndexed{
 LDAAbsoluteYIndexed{
     // Crossing a page (partial absolute address)
     AbsoluteYIndexed().address(0x00FE).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0,
             .y = 0,
@@ -125,7 +130,7 @@ LDAAbsoluteYIndexed{
 LDAAbsoluteYIndexed{
     // Crossing a page (entire absolute address)
     AbsoluteYIndexed().address(0x00FF).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0,
             .y = 0,
@@ -139,7 +144,7 @@ LDAAbsoluteYIndexed{
 LDAAbsoluteYIndexed{
     // Loading a zero affects the Z flag
     AbsoluteYIndexed().address(0x8000).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0xA0,
             .y = 0,
@@ -159,7 +164,7 @@ LDAAbsoluteYIndexed{
 LDAAbsoluteYIndexed{
     // Loading a negative affects the N flag
     AbsoluteYIndexed().address(0x8000).value(0xA000),
-    LDARequirements{
+    LDAAbsoluteYIndexed::Requirements{
         .initial = {
             .a = 0x10,
             .y = 0,
@@ -190,9 +195,9 @@ TEST_P(LDAAbsoluteYIndexedMode, CheckInstructionRequirements)
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + GetParam().address.operand_byte_count + 1));
+    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
-    EXPECT_THAT(executor.clock_ticks, Eq(4U));
+    InstructionExecutedInExpectedClockTicks(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 

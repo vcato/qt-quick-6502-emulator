@@ -11,8 +11,7 @@ struct LDA_ZeroPage_Expectations
     NZFlags flags;
 };
 
-using LDARequirements = Requirements<LDA_ZeroPage_Expectations>;
-using LDAZeroPage = LDA<ZeroPage, LDA_ZeroPage_Expectations>;
+using LDAZeroPage = LDA<ZeroPage, LDA_ZeroPage_Expectations, 3>;
 
 class LDAZeroPageMode : public InstructionExecutorTestFixture,
                         public WithParamInterface<LDAZeroPage>
@@ -60,13 +59,19 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
 {
     EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address ), Eq(instruction.requirements.final.a));
 }
+
+void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
+                                             const LDAZeroPage                    &instruction)
+{
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
+}
 }
 
 static const std::vector<LDAZeroPage> LDAZeroPageModeTestValues {
 LDAZeroPage{
     // Beginning of a page
     ZeroPage().address(0x0000).zp_address(6),
-    LDARequirements{
+    LDAZeroPage::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -78,7 +83,7 @@ LDAZeroPage{
 LDAZeroPage{
     // One before the end of a page
     ZeroPage().address(0x00FE).zp_address(6),
-    LDARequirements{
+    LDAZeroPage::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -90,7 +95,7 @@ LDAZeroPage{
 LDAZeroPage{
     // Crossing a page boundary
     ZeroPage().address(0x00FF).zp_address(6),
-    LDARequirements{
+    LDAZeroPage::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -102,7 +107,7 @@ LDAZeroPage{
 LDAZeroPage{
     // Loading a zero affects the Z flag
     ZeroPage().address(0x8000).zp_address(16),
-    LDARequirements{
+    LDAZeroPage::Requirements{
         .initial = {
             .a = 6,
             .flags = { }},
@@ -120,7 +125,7 @@ LDAZeroPage{
 LDAZeroPage{
     // Loading a negative affects the N flag
     ZeroPage().address(0x8000).zp_address(0xFF),
-    LDARequirements{
+    LDAZeroPage::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -149,9 +154,9 @@ TEST_P(LDAZeroPageMode, CheckInstructionRequirements)
 
     executeInstruction();
 
-    EXPECT_THAT(executor.registers().program_counter, Eq(GetParam().address.instruction_address + GetParam().address.operand_byte_count + 1));
+    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(executor, GetParam()));
     EXPECT_THAT(executor.complete(), Eq(true));
-    EXPECT_THAT(executor.clock_ticks, Eq(3U));
+    InstructionExecutedInExpectedClockTicks(*this, GetParam());
     RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
 }
 
