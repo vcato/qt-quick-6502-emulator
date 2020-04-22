@@ -4,7 +4,7 @@
 #include "instruction_helpers.hpp"
 
 template<class TExpectations, uint32_t TCycleCount>
-struct Requirements
+struct BasicRequirements
 {
     TExpectations initial;
     TExpectations final;
@@ -14,7 +14,7 @@ struct Requirements
 template<typename TAddress, class TExpectations, uint32_t TCycleCount>
 struct LDA : Instruction<AbstractInstruction_e::LDA, TAddress>
 {
-    using Requirements = Requirements<TExpectations, TCycleCount>;
+    using Requirements = BasicRequirements<TExpectations, TCycleCount>;
 
     LDA(const TAddress &a, const Requirements &r)
         :
