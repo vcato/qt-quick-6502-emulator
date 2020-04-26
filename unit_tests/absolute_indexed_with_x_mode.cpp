@@ -69,6 +69,26 @@ void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixtur
 {
     EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
 }
+
+void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
+                                const LDAAbsoluteXIndexed            &instruction)
+{
+    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(fixture.executor, instruction));
+    EXPECT_THAT(fixture.executor.complete(), Eq(true));
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(0U));
+    MemoryContainsInstruction(fixture, instruction);
+    MemoryContainsExpectedComputation(fixture, instruction);
+    RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.initial);
+}
+
+void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
+                                  const LDAAbsoluteXIndexed            &instruction)
+{
+    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(fixture.executor, instruction));
+    EXPECT_THAT(fixture.executor.complete(), Eq(true));
+    InstructionExecutedInExpectedClockTicks(fixture, instruction);
+    RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.final);
+}
 }
 
 static const std::vector<LDAAbsoluteXIndexed> LDAAbsoluteXIndexedModeTestValues {
@@ -186,20 +206,11 @@ LDAAbsoluteXIndexed{
 
 TEST_P(LDAAbsoluteXIndexedMode, TypicalInstructionExecution)
 {
-    // Initial expectations
-    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));
-    EXPECT_THAT(executor.complete(), Eq(true));
-    EXPECT_THAT(executor.clock_ticks, Eq(0U));
-    MemoryContainsInstruction(*this, GetParam());
-    MemoryContainsExpectedComputation(*this, GetParam());
-    RegistersAreInExpectedState(executor.registers(), GetParam().requirements.initial);
+    SetupTypicalExecutionState(*this, GetParam());
 
     executeInstruction();
 
-    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(executor, GetParam()));
-    EXPECT_THAT(executor.complete(), Eq(true));
-    InstructionExecutedInExpectedClockTicks(*this, GetParam());
-    RegistersAreInExpectedState(executor.registers(), GetParam().requirements.final);
+    CheckTypicalExecutionResults(*this, GetParam());
 }
 
 INSTANTIATE_TEST_SUITE_P(LoadAbsoluteXIndexedAtVariousAddresses,
