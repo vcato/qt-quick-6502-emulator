@@ -96,7 +96,7 @@ LDAXIndexedIndirect{
 }
 };
 
-TEST_P(LDAXIndexedIndirectMode, CheckInstructionRequirements)
+TEST_P(LDAXIndexedIndirectMode, TypicalInstructionExecution)
 {
     const addressType address = GetParam().address.instruction_address;
 

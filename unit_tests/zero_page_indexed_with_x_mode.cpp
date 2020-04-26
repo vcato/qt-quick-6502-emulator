@@ -155,7 +155,7 @@ LDAZeroPageXIndexed{
 }
 };
 
-TEST_P(LDAZeroPageXIndexedMode, CheckInstructionRequirements)
+TEST_P(LDAZeroPageXIndexedMode, TypicalInstructionExecution)
 {
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));

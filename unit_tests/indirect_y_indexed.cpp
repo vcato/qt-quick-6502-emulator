@@ -96,7 +96,7 @@ LDAIndirectYIndexed{
 }
 };
 
-TEST_P(LDAIndirectYIndexedMode, CheckInstructionRequirements)
+TEST_P(LDAIndirectYIndexedMode, TypicalInstructionExecution)
 {
     const addressType address = GetParam().address.instruction_address;
 

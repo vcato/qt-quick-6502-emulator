@@ -183,7 +183,7 @@ LDAAbsoluteYIndexed{
 }
 };
 
-TEST_P(LDAAbsoluteYIndexedMode, CheckInstructionRequirements)
+TEST_P(LDAAbsoluteYIndexedMode, TypicalInstructionExecution)
 {
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));

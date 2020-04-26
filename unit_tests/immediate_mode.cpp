@@ -140,7 +140,7 @@ LDAImmediate{
 };
 
 
-TEST_P(LDAImmediateMode, CheckInstructionRequirements)
+TEST_P(LDAImmediateMode, TypicalInstructionExecution)
 {
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));

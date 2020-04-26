@@ -167,7 +167,7 @@ LDAAbsolute{
 }
 };
 
-TEST_P(LDAAbsoluteMode, CheckInstructionRequirements)
+TEST_P(LDAAbsoluteMode, TypicalInstructionExecution)
 {
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));

@@ -142,7 +142,7 @@ LDAZeroPage{
 }
 };
 
-TEST_P(LDAZeroPageMode, CheckInstructionRequirements)
+TEST_P(LDAZeroPageMode, TypicalInstructionExecution)
 {
     // Initial expectations
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(executor, GetParam()));
