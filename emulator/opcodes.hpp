@@ -149,6 +149,8 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         break;
     case AbstractInstruction_e::TYA:
         break;
+    case AbstractInstruction_e::END:
+        break;
     }
     return 0;
 }
