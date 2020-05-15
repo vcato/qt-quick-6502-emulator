@@ -22,21 +22,9 @@ struct NZFlags
 
 struct NZCFlags
 {
-    StatusExpectation n_value;
-    StatusExpectation z_value;
-    StatusExpectation c_value;
-};
-
-struct NZRequirements
-{
-    NZFlags initial;
-    NZFlags final;
-};
-
-struct NZCRequirements
-{
-    NZCFlags initial;
-    NZCFlags final;
+    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
+    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
+    StatusExpectation c_value { .status_flag = FLAGS6502::C, .expected_value = false };
 };
 
 struct Address
