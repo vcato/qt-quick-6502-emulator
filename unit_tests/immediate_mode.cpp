@@ -1,6 +1,4 @@
 #include <gmock/gmock.h>
-#include "InstructionExecutorTestFixture.hpp"
-#include "instruction_definitions.hpp"
 #include "instruction_checks.hpp"
 
 using namespace testing;
@@ -35,8 +33,7 @@ public:
     }
 };
 
-namespace
-{
+template<>
 void RegistersAreInExpectedState(const Registers &registers,
                                  const LDA_Immediate_Expectations &expectations)
 {
@@ -45,6 +42,7 @@ void RegistersAreInExpectedState(const Registers &registers,
     EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
 }
 
+template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
                                const Instruction<AbstractInstruction_e::LDA, Immediate> &instruction)
 {
@@ -52,17 +50,13 @@ void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.immediate_value));
 }
 
+template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* fixture */,
                                        const LDAImmediate                   &/* instruction */)
 {
 }
 
-void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
-                                             const LDAImmediate                   &instruction)
-{
-    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count));
-}
-
+template<>
 void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
                                 const LDAImmediate                   &instruction)
 {
@@ -74,15 +68,6 @@ void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
     RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.initial);
 }
 
-void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
-                                  const LDAImmediate                   &instruction)
-{
-    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(fixture.executor, instruction));
-    EXPECT_THAT(fixture.executor.complete(), Eq(true));
-    InstructionExecutedInExpectedClockTicks(fixture, instruction);
-    RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.final);
-}
-}
 
 static const std::vector<LDAImmediate> LDAImmediateModeTestValues {
 LDAImmediate{
