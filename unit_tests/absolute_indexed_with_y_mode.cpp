@@ -62,18 +62,6 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
     EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address + instruction.requirements.final.y ), Eq( instruction.requirements.final.a ));
 }
 
-template<>
-void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
-                                const LDAAbsoluteYIndexed            &instruction)
-{
-    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(fixture.executor, instruction));
-    EXPECT_THAT(fixture.executor.complete(), Eq(true));
-    EXPECT_THAT(fixture.executor.clock_ticks, Eq(0U));
-    MemoryContainsInstruction(fixture, instruction);
-    MemoryContainsExpectedComputation(fixture, instruction);
-    RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.initial);
-}
-
 
 static const std::vector<LDAAbsoluteYIndexed> LDAAbsoluteYIndexedModeTestValues {
 LDAAbsoluteYIndexed{

@@ -56,18 +56,6 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* 
 {
 }
 
-template<>
-void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
-                                const LDAImmediate                   &instruction)
-{
-    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(fixture.executor, instruction));
-    EXPECT_THAT(fixture.executor.complete(), Eq(true));
-    EXPECT_THAT(fixture.executor.clock_ticks, Eq(0U));
-    MemoryContainsInstruction(fixture, instruction);
-    MemoryContainsExpectedComputation(fixture, instruction);
-    RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.initial);
-}
-
 
 static const std::vector<LDAImmediate> LDAImmediateModeTestValues {
 LDAImmediate{
