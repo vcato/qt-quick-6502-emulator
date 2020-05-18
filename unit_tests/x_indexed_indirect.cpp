@@ -69,18 +69,6 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
     EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page ), Eq(value_to_load));
 }
 
-template<>
-void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
-                                const LDAXIndexedIndirect            &instruction)
-{
-    EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(fixture.executor, instruction));
-    EXPECT_THAT(fixture.executor.complete(), Eq(true));
-    EXPECT_THAT(fixture.executor.clock_ticks, Eq(0U));
-    MemoryContainsInstruction(fixture, instruction);
-    MemoryContainsExpectedComputation(fixture, instruction);
-    RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.initial);
-}
-
 
 static const std::vector<LDAXIndexedIndirect> LDAXIndexedIndirectModeTestValues {
 LDAXIndexedIndirect{
@@ -103,11 +91,7 @@ LDAXIndexedIndirect{
 
 TEST_P(LDAXIndexedIndirectMode, TypicalInstructionExecution)
 {
-    SetupTypicalExecutionState(*this, GetParam());
-
-    executeInstruction();
-
-    CheckTypicalExecutionResults(*this, GetParam());
+    TypicalInstructionExecution(*this, GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(LoadXIndexedIndirectAtVariousAddresses,
