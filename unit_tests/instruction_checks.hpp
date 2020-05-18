@@ -74,4 +74,20 @@ void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
     RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.final);
 }
 
+
+/** Tests the execution of an instruction.
+ *
+ *  @param fixture The test fixture to use for the test
+ *  @param param   The instruction and state to test for
+ */
+template<typename TFixture, typename TParam>
+void TypicalInstructionExecution(TFixture &fixture, const TParam &param)
+{
+    SetupTypicalExecutionState(fixture, param);
+
+    fixture.executeInstruction();
+
+    CheckTypicalExecutionResults(fixture, param);
+}
+
 #endif // INSTRUCTION_CHECKS_HPP

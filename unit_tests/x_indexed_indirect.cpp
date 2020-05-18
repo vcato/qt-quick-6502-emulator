@@ -91,11 +91,7 @@ LDAXIndexedIndirect{
 
 TEST_P(LDAXIndexedIndirectMode, TypicalInstructionExecution)
 {
-    SetupTypicalExecutionState(*this, GetParam());
-
-    executeInstruction();
-
-    CheckTypicalExecutionResults(*this, GetParam());
+    TypicalInstructionExecution(*this, GetParam());
 }
 
 INSTANTIATE_TEST_SUITE_P(LoadXIndexedIndirectAtVariousAddresses,
