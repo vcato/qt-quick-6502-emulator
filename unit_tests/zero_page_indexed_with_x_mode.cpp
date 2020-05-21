@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include "instruction_checks.hpp"
 
-using namespace testing;
+
 
 struct LDA_ZeroPageXIndexed_Expectations
 {
@@ -10,13 +10,9 @@ struct LDA_ZeroPageXIndexed_Expectations
     NZFlags flags;
 };
 
-using LDAZeroPageXIndexed = LDA<ZeroPageXIndexed, LDA_ZeroPageXIndexed_Expectations, 4>;
+using LDAZeroPageXIndexed     = LDA<ZeroPageXIndexed, LDA_ZeroPageXIndexed_Expectations, 4>;
+using LDAZeroPageXIndexedMode = ParameterizedInstructionExecutorTestFixture<LDAZeroPageXIndexed>;
 
-class LDAZeroPageXIndexedMode : public InstructionExecutorTestFixture,
-                                public WithParamInterface<LDAZeroPageXIndexed>
-{
-public:
-};
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,

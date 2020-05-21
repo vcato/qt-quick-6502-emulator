@@ -126,4 +126,20 @@ protected:
     }
 };
 
+
+/** The class for instantiating a test fixture for testing a particular instruction.
+ *
+ *  @note This class is an attempt to combine the capability of a parameterized
+ *        test with the instantiation abilities of a type-parameterized test under
+ *        googletest.  So basically, we will have multiple instantiations, each
+ *        one having its own array of input values for testing the instruction
+ *        in various states.
+ */
+template<typename TInstructionWithStateExpectations>
+class ParameterizedInstructionExecutorTestFixture : public InstructionExecutorTestFixture,
+                                                    public testing::WithParamInterface<TInstructionWithStateExpectations>
+{
+public:
+};
+
 #endif // INSTRUCTIONEXECUTORTESTFRAMEWORK_H

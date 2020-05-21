@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include "instruction_checks.hpp"
 
-using namespace testing;
+
 
 struct LDA_Absolute_Expectations
 {
@@ -11,13 +11,9 @@ struct LDA_Absolute_Expectations
     NZFlags flags;
 };
 
-using LDAAbsolute = LDA<Absolute, LDA_Absolute_Expectations, 4>;
+using LDAAbsolute     = LDA<Absolute, LDA_Absolute_Expectations, 4>;
+using LDAAbsoluteMode = ParameterizedInstructionExecutorTestFixture<LDAAbsolute>;
 
-class LDAAbsoluteMode : public InstructionExecutorTestFixture,
-                        public WithParamInterface<LDAAbsolute>
-{
-public:
-};
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
