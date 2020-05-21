@@ -26,6 +26,36 @@ struct LDA : Instruction<AbstractInstruction_e::LDA, TAddress>
     Requirements requirements;
 };
 
+template<typename TAddress, class TExpectations, uint32_t TCycleCount>
+struct LDX : Instruction<AbstractInstruction_e::LDX, TAddress>
+{
+    using Requirements = BasicRequirements<TExpectations, TCycleCount>;
+
+    LDX(const TAddress &a, const Requirements &r)
+        :
+        Instruction<AbstractInstruction_e::LDX, TAddress>(a),
+        requirements(r)
+    {
+    }
+
+    Requirements requirements;
+};
+
+template<typename TAddress, class TExpectations, uint32_t TCycleCount>
+struct LDY : Instruction<AbstractInstruction_e::LDY, TAddress>
+{
+    using Requirements = BasicRequirements<TExpectations, TCycleCount>;
+
+    LDY(const TAddress &a, const Requirements &r)
+        :
+        Instruction<AbstractInstruction_e::LDY, TAddress>(a),
+        requirements(r)
+    {
+    }
+
+    Requirements requirements;
+};
+
 //auto instruction = LDA(Immediate(6));
 
 #endif // INSTRUCTION_DEFINITIONS_HPP
