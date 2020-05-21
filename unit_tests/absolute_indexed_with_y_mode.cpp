@@ -18,24 +18,25 @@ class LDAAbsoluteYIndexedMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAAbsoluteYIndexed>
 {
 public:
-    void SetUp() override
-    {
-        const LDAAbsoluteYIndexed &param = GetParam();
-
-        loadOpcodeIntoMemory(param.operation,
-                                  AddressMode_e::AbsoluteYIndexed,
-                                  param.address.instruction_address);
-        fakeMemory[param.address.instruction_address + 1] = loByteOf(param.address.absolute_address);
-        fakeMemory[param.address.instruction_address + 2] = hiByteOf(param.address.absolute_address);
-        fakeMemory[param.address.absolute_address + param.requirements.final.y ] = param.requirements.final.a;
-
-        // Load appropriate registers
-        r.a = param.requirements.initial.a;
-        r.y = param.requirements.initial.y;
-        r.SetFlag(FLAGS6502::N, param.requirements.initial.flags.n_value.expected_value);
-        r.SetFlag(FLAGS6502::Z, param.requirements.initial.flags.z_value.expected_value);
-    }
 };
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const LDAAbsoluteYIndexed            &instruction_param)
+{
+    fixture.loadOpcodeIntoMemory(instruction_param.operation,
+                                 AddressMode_e::AbsoluteYIndexed,
+                                 instruction_param.address.instruction_address);
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = fixture.loByteOf(instruction_param.address.absolute_address);
+    fixture.fakeMemory[instruction_param.address.instruction_address + 2] = fixture.hiByteOf(instruction_param.address.absolute_address);
+    fixture.fakeMemory[instruction_param.address.absolute_address + instruction_param.requirements.final.y ] = instruction_param.requirements.final.a;
+
+    // Load appropriate registers
+    fixture.r.a = instruction_param.requirements.initial.a;
+    fixture.r.y = instruction_param.requirements.initial.y;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,

@@ -17,25 +17,26 @@ class LDAXIndexedIndirectMode : public InstructionExecutorTestFixture,
                                 public WithParamInterface<LDAXIndexedIndirect>
 {
 public:
-    void SetUp() override
-    {
-        const LDAXIndexedIndirect &param = GetParam();
-
-        loadOpcodeIntoMemory(param.operation,
-                                  AddressMode_e::XIndexedIndirect,
-                                  param.address.instruction_address);
-        fakeMemory[param.address.instruction_address + 1] = param.address.zero_page_address;
-        fakeMemory[param.address.zero_page_address + param.requirements.initial.x    ] = loByteOf(param.requirements.initial.address_to_indirect_to);
-        fakeMemory[param.address.zero_page_address + param.requirements.initial.x + 1] = hiByteOf(param.requirements.initial.address_to_indirect_to);
-        fakeMemory[param.requirements.initial.address_to_indirect_to] = param.requirements.final.a;
-
-        // Load appropriate registers
-        r.a = param.requirements.initial.a;
-        r.x = param.requirements.initial.x;
-        r.SetFlag(FLAGS6502::N, param.requirements.initial.flags.n_value.expected_value);
-        r.SetFlag(FLAGS6502::Z, param.requirements.initial.flags.z_value.expected_value);
-    }
 };
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const LDAXIndexedIndirect            &instruction_param)
+{
+    fixture.loadOpcodeIntoMemory(instruction_param.operation,
+                                 AddressMode_e::XIndexedIndirect,
+                                 instruction_param.address.instruction_address);
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
+    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x    ] = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
+    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x + 1] = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
+    fixture.fakeMemory[instruction_param.requirements.initial.address_to_indirect_to] = instruction_param.requirements.final.a;
+
+    // Load appropriate registers
+    fixture.r.a = instruction_param.requirements.initial.a;
+    fixture.r.x = instruction_param.requirements.initial.x;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
