@@ -22,8 +22,12 @@ template<class TInstructionAndAddressingMode>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
                                        const TInstructionAndAddressingMode  &instruction);
 
+template<typename TInstructionAndAddressingMode>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const TInstructionAndAddressingMode  &instruction_param);
+
 template<class TInstructionAndAddressingMode>
-void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
+void SetupTypicalExecutionState(      InstructionExecutorTestFixture &fixture,
                                 const TInstructionAndAddressingMode  &instruction);
 
 
@@ -53,9 +57,11 @@ void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixtur
 }
 
 template<class TInstructionAndAddressingMode>
-void SetupTypicalExecutionState(const InstructionExecutorTestFixture &fixture,
+void SetupTypicalExecutionState(      InstructionExecutorTestFixture &fixture,
                                 const TInstructionAndAddressingMode  &instruction)
 {
+    LoadInstructionIntoMemoryAndSetRegistersToInitialState(fixture, instruction);
+
     EXPECT_TRUE(ProgramCounterIsSetToInstructionAddress(fixture.executor, instruction));
     EXPECT_THAT(fixture.executor.complete(), Eq(true));
     EXPECT_THAT(fixture.executor.clock_ticks, Eq(0U));
