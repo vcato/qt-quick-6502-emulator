@@ -1,33 +1,28 @@
 #include <gmock/gmock.h>
 #include "instruction_checks.hpp"
 
-using namespace testing;
 
-struct LDA_ZeroPage_Expectations
+
+struct LDA_Immediate_Expectations
 {
+    constexpr LDA_Immediate_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
+
     uint8_t a;
     NZFlags flags;
 };
 
-using LDAZeroPage = LDA<ZeroPage, LDA_ZeroPage_Expectations, 3>;
+using LDAImmediate     = LDA<Immediate, LDA_Immediate_Expectations, 2>;
+using LDAImmediateMode = ParameterizedInstructionExecutorTestFixture<LDAImmediate>;
 
-class LDAZeroPageMode : public InstructionExecutorTestFixture,
-                        public WithParamInterface<LDAZeroPage>
-{
-public:
-};
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const LDAZeroPage                    &instruction_param)
+                                                            const LDAImmediate                   &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::ZeroPage,
+                                 AddressMode_e::Immediate,
                                  instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-
-    // Load expected data into memory
-    fixture.fakeMemory[instruction_param.address.zero_page_address] = instruction_param.requirements.final.a;
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
 
     // Load appropriate registers
     fixture.r.a = instruction_param.requirements.initial.a;
@@ -37,7 +32,7 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const LDA_ZeroPage_Expectations &expectations)
+                                 const LDA_Immediate_Expectations &expectations)
 {
     EXPECT_THAT(registers.a, Eq(expectations.a));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
@@ -46,61 +41,60 @@ void RegistersAreInExpectedState(const Registers &registers,
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::LDA, ZeroPage> &instruction)
+                               const Instruction<AbstractInstruction_e::LDA, Immediate> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::ZeroPage) ));
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.zero_page_address));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::Immediate) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.immediate_value));
 }
 
 template<>
-void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
-                                       const LDAZeroPage                    &instruction)
+void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* fixture */,
+                                       const LDAImmediate                   &/* instruction */)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address ), Eq(instruction.requirements.final.a));
 }
 
 
-static const std::vector<LDAZeroPage> LDAZeroPageModeTestValues {
-LDAZeroPage{
+static const std::vector<LDAImmediate> LDAImmediateModeTestValues {
+LDAImmediate{
     // Beginning of a page
-    ZeroPage().address(0x0000).zp_address(6),
-    LDAZeroPage::Requirements{
+    Immediate().address(0x0000).value(6),
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
         .final = {
-            .a = 10,
+            .a = 6,
             .flags = { }
         }}
 },
-LDAZeroPage{
+LDAImmediate{
     // One before the end of a page
-    ZeroPage().address(0x00FE).zp_address(6),
-    LDAZeroPage::Requirements{
+    Immediate().address(0x00FE).value(6),
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
         .final = {
-            .a = 11,
+            .a = 6,
             .flags = { }
         }}
 },
-LDAZeroPage{
+LDAImmediate{
     // Crossing a page boundary
-    ZeroPage().address(0x00FF).zp_address(6),
-    LDAZeroPage::Requirements{
+    Immediate().address(0x00FF).value(6),
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
         .final = {
-            .a = 32,
+            .a = 6,
             .flags = { }
         }}
 },
-LDAZeroPage{
+LDAImmediate{
     // Loading a zero affects the Z flag
-    ZeroPage().address(0x8000).zp_address(16),
-    LDAZeroPage::Requirements{
+    Immediate().address(0x8000).value(0),
+    LDAImmediate::Requirements{
         .initial = {
             .a = 6,
             .flags = { }},
@@ -115,10 +109,10 @@ LDAZeroPage{
                     .expected_value = true } }
         }}
 },
-LDAZeroPage{
+LDAImmediate{
     // Loading a negative affects the N flag
-    ZeroPage().address(0x8000).zp_address(0xFF),
-    LDAZeroPage::Requirements{
+    Immediate().address(0x8000).value(0x80),
+    LDAImmediate::Requirements{
         .initial = {
             .a = 0,
             .flags = { }},
@@ -135,11 +129,13 @@ LDAZeroPage{
 }
 };
 
-TEST_P(LDAZeroPageMode, TypicalInstructionExecution)
+
+TEST_P(LDAImmediateMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadZeroPageAtVariousAddresses,
-                         LDAZeroPageMode,
-                         testing::ValuesIn(LDAZeroPageModeTestValues) );
+INSTANTIATE_TEST_CASE_P(LoadImmediateAtVariousAddresses,
+                         LDAImmediateMode,
+                         testing::ValuesIn(LDAImmediateModeTestValues) );
+

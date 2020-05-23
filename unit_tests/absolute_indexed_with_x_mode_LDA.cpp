@@ -1,46 +1,42 @@
 #include <gmock/gmock.h>
 #include "instruction_checks.hpp"
 
-using namespace testing;
 
-struct LDA_AbsoluteYIndexed_Expectations
+
+struct LDA_AbsoluteXIndexed_Expectations
 {
-    constexpr LDA_AbsoluteYIndexed_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
+    constexpr LDA_AbsoluteXIndexed_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
 
     uint8_t a;
-    uint8_t y;
+    uint8_t x;
     NZFlags flags;
 };
 
-using LDAAbsoluteYIndexed = LDA<AbsoluteYIndexed, LDA_AbsoluteYIndexed_Expectations, 4>;
+using LDAAbsoluteXIndexed     = LDA<AbsoluteXIndexed, LDA_AbsoluteXIndexed_Expectations, 4>;
+using LDAAbsoluteXIndexedMode = ParameterizedInstructionExecutorTestFixture<LDAAbsoluteXIndexed>;
 
-class LDAAbsoluteYIndexedMode : public InstructionExecutorTestFixture,
-                                public WithParamInterface<LDAAbsoluteYIndexed>
-{
-public:
-};
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const LDAAbsoluteYIndexed            &instruction_param)
+                                                            const LDAAbsoluteXIndexed            &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::AbsoluteYIndexed,
+                                 AddressMode_e::AbsoluteXIndexed,
                                  instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = fixture.loByteOf(instruction_param.address.absolute_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 2] = fixture.hiByteOf(instruction_param.address.absolute_address);
-    fixture.fakeMemory[instruction_param.address.absolute_address + instruction_param.requirements.final.y ] = instruction_param.requirements.final.a;
+    fixture.fakeMemory[instruction_param.address.absolute_address + instruction_param.requirements.final.x ] = instruction_param.requirements.final.a;
 
     // Load appropriate registers
     fixture.r.a = instruction_param.requirements.initial.a;
-    fixture.r.y = instruction_param.requirements.initial.y;
+    fixture.r.x = instruction_param.requirements.initial.x;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
 }
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const LDA_AbsoluteYIndexed_Expectations &expectations)
+                                 const LDA_AbsoluteXIndexed_Expectations &expectations)
 {
     EXPECT_THAT(registers.a, Eq(expectations.a));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
@@ -49,103 +45,104 @@ void RegistersAreInExpectedState(const Registers &registers,
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::LDA, AbsoluteYIndexed> &instruction)
+                               const Instruction<AbstractInstruction_e::LDA, AbsoluteXIndexed> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::AbsoluteYIndexed) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::AbsoluteXIndexed) ));
+
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq( fixture.loByteOf(instruction.address.absolute_address) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 2), Eq( fixture.hiByteOf(instruction.address.absolute_address) ));
 }
 
 template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
-                                       const LDAAbsoluteYIndexed            &instruction)
+                                       const LDAAbsoluteXIndexed            &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address + instruction.requirements.final.y ), Eq( instruction.requirements.final.a ));
+    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address + instruction.requirements.final.x ), Eq( instruction.requirements.final.a ));
 }
 
 
-static const std::vector<LDAAbsoluteYIndexed> LDAAbsoluteYIndexedModeTestValues {
-LDAAbsoluteYIndexed{
+static const std::vector<LDAAbsoluteXIndexed> LDAAbsoluteXIndexedModeTestValues {
+LDAAbsoluteXIndexed{
     // Beginning of a page
-    AbsoluteYIndexed().address(0x0000).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x0000).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0,
-            .y = 0,
+            .x = 0,
             .flags = { }},
         .final = {
             .a = 6,
-            .y = 0,
+            .x = 0,
             .flags = { }
         }}
 },
-LDAAbsoluteYIndexed{
+LDAAbsoluteXIndexed{
     // Middle of a page
-    AbsoluteYIndexed().address(0x0088).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x0088).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0,
-            .y = 5,
+            .x = 5,
             .flags = { }},
         .final = {
             .a = 6,
-            .y = 5,
+            .x = 5,
             .flags = { }
         }}
 },
-LDAAbsoluteYIndexed{
+LDAAbsoluteXIndexed{
     // End of a page
-    AbsoluteYIndexed().address(0x00FD).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x00FD).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0,
-            .y = 0,
+            .x = 0,
             .flags = { }},
         .final = {
             .a = 6,
-            .y = 0,
+            .x = 0,
             .flags = { }
         }}
 },
-LDAAbsoluteYIndexed{
+LDAAbsoluteXIndexed{
     // Crossing a page (partial absolute address)
-    AbsoluteYIndexed().address(0x00FE).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x00FE).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0,
-            .y = 0,
+            .x = 0,
             .flags = { }},
         .final = {
             .a = 6,
-            .y = 0,
+            .x = 0,
             .flags = { }
         }}
 },
-LDAAbsoluteYIndexed{
+LDAAbsoluteXIndexed{
     // Crossing a page (entire absolute address)
-    AbsoluteYIndexed().address(0x00FF).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x00FF).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0,
-            .y = 0,
+            .x = 0,
             .flags = { }},
         .final = {
             .a = 6,
-            .y = 0,
+            .x = 0,
             .flags = { }
         }}
 },
-LDAAbsoluteYIndexed{
+LDAAbsoluteXIndexed{
     // Loading a zero affects the Z flag
-    AbsoluteYIndexed().address(0x8000).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x8000).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0xA0,
-            .y = 0,
+            .x = 0,
             .flags = { }},
         .final = {
             .a = 0,
-            .y = 0,
+            .x = 0,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -155,17 +152,17 @@ LDAAbsoluteYIndexed{
                     .expected_value = true } }
         }}
 },
-LDAAbsoluteYIndexed{
+LDAAbsoluteXIndexed{
     // Loading a negative affects the N flag
-    AbsoluteYIndexed().address(0x8000).value(0xA000),
-    LDAAbsoluteYIndexed::Requirements{
+    AbsoluteXIndexed().address(0x8000).value(0xA000),
+    LDAAbsoluteXIndexed::Requirements{
         .initial = {
             .a = 0x10,
-            .y = 0,
+            .x = 0,
             .flags = { }},
         .final = {
             .a = 0xFF,
-            .y = 0,
+            .x = 0,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -177,11 +174,11 @@ LDAAbsoluteYIndexed{
 }
 };
 
-TEST_P(LDAAbsoluteYIndexedMode, TypicalInstructionExecution)
+TEST_P(LDAAbsoluteXIndexedMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadAbsoluteYIndexedAtVariousAddresses,
-                         LDAAbsoluteYIndexedMode,
-                         testing::ValuesIn(LDAAbsoluteYIndexedModeTestValues) );
+INSTANTIATE_TEST_CASE_P(LoadAbsoluteAtVariousAddresses,
+                         LDAAbsoluteXIndexedMode,
+                         testing::ValuesIn(LDAAbsoluteXIndexedModeTestValues) );

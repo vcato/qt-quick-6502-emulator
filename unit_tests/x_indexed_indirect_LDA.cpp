@@ -1,7 +1,7 @@
 #include <gmock/gmock.h>
 #include "instruction_checks.hpp"
 
-using namespace testing;
+
 
 struct LDA_XIndexedIndirect_Expectations
 {
@@ -11,13 +11,9 @@ struct LDA_XIndexedIndirect_Expectations
     NZFlags  flags;
 };
 
-using LDAXIndexedIndirect = LDA<XIndexedIndirect, LDA_XIndexedIndirect_Expectations, 6>;
+using LDAXIndexedIndirect     = LDA<XIndexedIndirect, LDA_XIndexedIndirect_Expectations, 6>;
+using LDAXIndexedIndirectMode = ParameterizedInstructionExecutorTestFixture<LDAXIndexedIndirect>;
 
-class LDAXIndexedIndirectMode : public InstructionExecutorTestFixture,
-                                public WithParamInterface<LDAXIndexedIndirect>
-{
-public:
-};
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,

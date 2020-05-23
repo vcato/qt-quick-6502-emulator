@@ -1,27 +1,21 @@
 #include <gmock/gmock.h>
 #include "instruction_checks.hpp"
 
-using namespace testing;
 
-struct LDA_Immediate_Expectations
+
+struct LDY_Immediate_Expectations
 {
-    constexpr LDA_Immediate_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
-
-    uint8_t a;
+    uint8_t y;
     NZFlags flags;
 };
 
-using LDAImmediate = LDA<Immediate, LDA_Immediate_Expectations, 2>;
+using LDYImmediate     = LDY<Immediate, LDY_Immediate_Expectations, 2>;
+using LDYImmediateMode = ParameterizedInstructionExecutorTestFixture<LDYImmediate>;
 
-class LDAImmediateMode : public InstructionExecutorTestFixture,
-                         public WithParamInterface<LDAImmediate>
-{
-public:
-};
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const LDAImmediate                   &instruction_param)
+                                                            const LDYImmediate                   &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
                                  AddressMode_e::Immediate,
@@ -29,81 +23,81 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
 
     // Load appropriate registers
-    fixture.r.a = instruction_param.requirements.initial.a;
+    fixture.r.y = instruction_param.requirements.initial.y;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
 }
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const LDA_Immediate_Expectations &expectations)
+                                 const LDY_Immediate_Expectations &expectations)
 {
-    EXPECT_THAT(registers.a, Eq(expectations.a));
+    EXPECT_THAT(registers.y, Eq(expectations.y));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
 }
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::LDA, Immediate> &instruction)
+                               const Instruction<AbstractInstruction_e::LDY, Immediate> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDA, AddressMode_e::Immediate) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::LDY, AddressMode_e::Immediate) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.immediate_value));
 }
 
 template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* fixture */,
-                                       const LDAImmediate                   &/* instruction */)
+                                       const LDYImmediate                   &/* instruction */)
 {
 }
 
 
-static const std::vector<LDAImmediate> LDAImmediateModeTestValues {
-LDAImmediate{
+static const std::vector<LDYImmediate> LDYImmediateModeTestValues {
+LDYImmediate{
     // Beginning of a page
     Immediate().address(0x0000).value(6),
-    LDAImmediate::Requirements{
+    LDYImmediate::Requirements{
         .initial = {
-            .a = 0,
+            .y = 0,
             .flags = { }},
         .final = {
-            .a = 6,
+            .y = 6,
             .flags = { }
         }}
 },
-LDAImmediate{
+LDYImmediate{
     // One before the end of a page
     Immediate().address(0x00FE).value(6),
-    LDAImmediate::Requirements{
+    LDYImmediate::Requirements{
         .initial = {
-            .a = 0,
+            .y = 0,
             .flags = { }},
         .final = {
-            .a = 6,
+            .y = 6,
             .flags = { }
         }}
 },
-LDAImmediate{
+LDYImmediate{
     // Crossing a page boundary
     Immediate().address(0x00FF).value(6),
-    LDAImmediate::Requirements{
+    LDYImmediate::Requirements{
         .initial = {
-            .a = 0,
+            .y = 0,
             .flags = { }},
         .final = {
-            .a = 6,
+            .y = 6,
             .flags = { }
         }}
 },
-LDAImmediate{
+LDYImmediate{
     // Loading a zero affects the Z flag
     Immediate().address(0x8000).value(0),
-    LDAImmediate::Requirements{
+    LDYImmediate::Requirements{
         .initial = {
-            .a = 6,
+            .y = 6,
             .flags = { }},
         .final = {
-            .a = 0,
+            .y = 0,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -113,15 +107,15 @@ LDAImmediate{
                     .expected_value = true } }
         }}
 },
-LDAImmediate{
+LDYImmediate{
     // Loading a negative affects the N flag
     Immediate().address(0x8000).value(0x80),
-    LDAImmediate::Requirements{
+    LDYImmediate::Requirements{
         .initial = {
-            .a = 0,
+            .y = 0,
             .flags = { }},
         .final = {
-            .a = 0x80,
+            .y = 0x80,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -134,12 +128,11 @@ LDAImmediate{
 };
 
 
-TEST_P(LDAImmediateMode, TypicalInstructionExecution)
+TEST_P(LDYImmediateMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadImmediateAtVariousAddresses,
-                         LDAImmediateMode,
-                         testing::ValuesIn(LDAImmediateModeTestValues) );
-
+INSTANTIATE_TEST_SUITE_P(LoadImmediateAtVariousAddresses,
+                         LDYImmediateMode,
+                         testing::ValuesIn(LDYImmediateModeTestValues) );
