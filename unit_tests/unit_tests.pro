@@ -27,6 +27,7 @@ SOURCES += \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
         accumulator_mode.cpp \
+        immediate_mode_ADC.cpp \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
