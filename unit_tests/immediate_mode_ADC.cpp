@@ -373,6 +373,78 @@ ADCImmediate{
                     .status_flag = FLAGS6502::V,
                     .expected_value = true } }
         }}
+},
+ADCImmediate{
+    // 0x00 + 0x02 + C = 0x03,
+    Immediate().address(0x8000).value(0x02),
+    ADCImmediate::Requirements{
+        .initial = {
+            .a = 0x00,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } } },
+        .final = {
+            .a = 0x03,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } }
+        }}
+},
+ADCImmediate{
+    // 0xFF + 0x01 + C = 0x01,
+    Immediate().address(0x8000).value(0x01),
+    ADCImmediate::Requirements{
+        .initial = {
+            .a = 0xFF,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } } },
+        .final = {
+            .a = 0x01,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true }, // Carry should be set because we wrapped around
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } }
+        }}
 }
 };
 
