@@ -27,6 +27,7 @@ SOURCES += \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
         accumulator_mode.cpp \
+        immediate_mode_ADC.cpp \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
         zero_page_indexed_with_y_mode_LDX.cpp \
+        zero_page_mode_ADC.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp
