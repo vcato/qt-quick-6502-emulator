@@ -3,26 +3,29 @@
 
 
 
-struct ADC_Immediate_Expectations
+struct ADC_ZeroPage_Expectations
 {
-    constexpr ADC_Immediate_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
-
     uint8_t   a;
     NZCVFlags flags;
+
+    uint8_t   addend;
 };
 
-using ADCImmediate     = ADC<Immediate, ADC_Immediate_Expectations, 2>;
-using ADCImmediateMode = ParameterizedInstructionExecutorTestFixture<ADCImmediate>;
+using ADCZeroPage     = ADC<ZeroPage, ADC_ZeroPage_Expectations, 3>;
+using ADCZeroPageMode = ParameterizedInstructionExecutorTestFixture<ADCZeroPage>;
 
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const ADCImmediate                   &instruction_param)
+                                                            const ADCZeroPage                    &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Immediate,
+                                 AddressMode_e::ZeroPage,
                                  instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
+
+    // Load expected data into memory
+    fixture.fakeMemory[instruction_param.address.zero_page_address] = instruction_param.requirements.initial.addend;
 
     // Load appropriate registers
     fixture.r.a = instruction_param.requirements.initial.a;
@@ -34,7 +37,7 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const ADC_Immediate_Expectations &expectations)
+                                 const ADC_ZeroPage_Expectations &expectations)
 {
     EXPECT_THAT(registers.a, Eq(expectations.a));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
@@ -45,65 +48,69 @@ void RegistersAreInExpectedState(const Registers &registers,
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::ADC, Immediate> &instruction)
+                               const Instruction<AbstractInstruction_e::ADC, ZeroPage> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::ADC, AddressMode_e::Immediate) ));
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.immediate_value));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::ADC, AddressMode_e::ZeroPage) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.zero_page_address));
 }
 
 template<>
-void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &/* fixture */,
-                                       const ADCImmediate                   &/* instruction */)
+void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
+                                       const ADCZeroPage                    &instruction)
 {
+    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address ), Eq(instruction.requirements.initial.addend));
 }
 
 
-static const std::vector<ADCImmediate> ADCImmediateModeTestValues {
-ADCImmediate{
+static const std::vector<ADCZeroPage> ADCZeroPageModeTestValues {
+ADCZeroPage{
     // Beginning of a page
-    Immediate().address(0x0000).value(6),
-    ADCImmediate::Requirements{
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0,
-            .flags = { }},
+            .flags = { },
+            .addend = 12 },
         .final = {
-            .a = 6,
-            .flags = { }
+            .a = 12,
+            .flags = { },
+            .addend = 12
         }}
 },
-ADCImmediate{
+ADCZeroPage{
     // One before the end of a page
-    Immediate().address(0x00FE).value(6),
-    ADCImmediate::Requirements{
+    ZeroPage().address(0x80FE).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0,
-            .flags = { }},
+            .flags = { },
+            .addend = 12 },
         .final = {
-            .a = 6,
-            .flags = { }
+            .a = 12,
+            .flags = { },
+            .addend = 12
         }}
 },
-ADCImmediate{
+ADCZeroPage{
     // Crossing a page boundary
-    Immediate().address(0x00FF).value(6),
-    ADCImmediate::Requirements{
+    ZeroPage().address(0x80FF).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0,
-            .flags = { }},
+            .flags = { },
+            .addend = 12 },
         .final = {
-            .a = 6,
-            .flags = { }
+            .a = 12,
+            .flags = { },
+            .addend = 12
         }}
 },
-ADCImmediate{
-    // Adding a zero does not affect the Z flag
-    Immediate().address(0x8000).value(0x00),
-    ADCImmediate::Requirements{
+ADCZeroPage{
+    // N Flag
+    ZeroPage().address(0x8080).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
-            .a = 6,
-            .flags = { }},
-        .final = {
-            .a = 6,
+            .a = 0,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -116,16 +123,8 @@ ADCImmediate{
                     .expected_value = false },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
-        }}
-},
-ADCImmediate{
-    // Adding a negative affects the N flag
-    Immediate().address(0x8000).value(0x80),
-    ADCImmediate::Requirements{
-        .initial = {
-            .a = 0,
-            .flags = { }},
+                    .expected_value = false } },
+            .addend = 0x80 },
         .final = {
             .a = 0x80,
             .flags = {
@@ -140,16 +139,68 @@ ADCImmediate{
                     .expected_value = false },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
+                    .expected_value = false } },
+            .addend = 0x80
         }}
 },
-ADCImmediate{
-    // Rolling over affects the Z and C flags
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
+ADCZeroPage{
+    // Z Flag
+    ZeroPage().address(0x8080).zp_address(6),
+    ADCZeroPage::Requirements{
+        .initial = {
+            .a = 0,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0 },
+        .final = {
+            .a = 0,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0
+        }}
+},
+ADCZeroPage{
+    // C Flag
+    ZeroPage().address(0x8080).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0xFF,
-            .flags = { }},
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x01 },
         .final = {
             .a = 0x00,
             .flags = {
@@ -164,90 +215,68 @@ ADCImmediate{
                     .expected_value = true },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
+                    .expected_value = false } },
+            .addend = 0x01
         }}
 },
-
-// Carry flag
-ADCImmediate{
-    // 1 + 1 = 2, C = 0, V=0
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
-        .initial = {
-            .a = 0x01,
-            .flags = { }},
-        .final = {
-            .a = 0x02,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
-        }}
-},
-ADCImmediate{
-    // FF + 1 = 0, C = 1, V = 0
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
+ADCZeroPage{
+    // C Flag; C Flag initially set adds one to result
+    ZeroPage().address(0x8080).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0xFF,
-            .flags = { }},
-        .final = {
-            .a = 0x00,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
                     .expected_value = false },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
+                    .expected_value = false },
                 .c_value = {
                     .status_flag = FLAGS6502::C,
                     .expected_value = true },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
-        }}
-},
-ADCImmediate{
-    // 1 + FF = 0, C = 1, V = 0
-    Immediate().address(0x8000).value(0xFF),
-    ADCImmediate::Requirements{
-        .initial = {
+                    .expected_value = false } },
+            .addend = 0x01 },
+        .final = {
             .a = 0x01,
-            .flags = { }},
-        .final = {
-            .a = 0x00,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
                     .expected_value = false },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
+                    .expected_value = false },
                 .c_value = {
                     .status_flag = FLAGS6502::C,
                     .expected_value = true },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
+                    .expected_value = false } },
+            .addend = 0x01
         }}
 },
-ADCImmediate{
+ADCZeroPage{
     // 7F + 1 = 80, C = 0, V = 1
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
-            .a = 0x7f,
-            .flags = { }},
+            .a = 0x7F,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x01 },
         .final = {
             .a = 0x80,
             .flags = {
@@ -262,16 +291,30 @@ ADCImmediate{
                     .expected_value = false },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = true } }
+                    .expected_value = true } },
+            .addend = 0x01
         }}
 },
-ADCImmediate{
-    // 0x80 + 0x01 = 0x81 (-128 + 1 = -127), C = 0, V = 0
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
+ADCZeroPage{
+    // 7F + 1 = 81 (C initially set), C = 0, V = 1
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
-            .a = 0x80,
-            .flags = { }},
+            .a = 0x7F,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x01 },
         .final = {
             .a = 0x81,
             .flags = {
@@ -286,16 +329,68 @@ ADCImmediate{
                     .expected_value = false },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
+                    .expected_value = true } },
+            .addend = 0x01
         }}
 },
-ADCImmediate{
-    // 0x80 + 0x7F = 0xFF (-128 + 127 = -1), C = 0, V = 0
-    Immediate().address(0x8000).value(0x7F),
-    ADCImmediate::Requirements{
+ADCZeroPage{
+    // 0x80 + 0x01 = 0x81 (-128 + 1 = -127), C = 0, V = 0
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0x80,
-            .flags = { }},
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x01 },
+        .final = {
+            .a = 0x81,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x01
+        }}
+},
+ADCZeroPage{
+    // 0x80 + 0x7F = 0xFF (-128 + 127 = -1), C = 0, V = 0
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
+        .initial = {
+            .a = 0x80,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x7F },
         .final = {
             .a = 0xFF,
             .flags = {
@@ -310,16 +405,30 @@ ADCImmediate{
                     .expected_value = false },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
+                    .expected_value = false } },
+            .addend = 0x01
         }}
 },
-ADCImmediate{
-    // 0x80 + 0x80 = 0x00 (-128 + -127 = -256), C = 1, V = 1
-    Immediate().address(0x8000).value(0x80),
-    ADCImmediate::Requirements{
+ADCZeroPage{
+    // 0x80 + 0x80 = 0x00 (-128 + -128 = -256), C = 1, V = 1
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0x80,
-            .flags = { }},
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x80 },
         .final = {
             .a = 0x00,
             .flags = {
@@ -334,13 +443,14 @@ ADCImmediate{
                     .expected_value = true },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = true } }
+                    .expected_value = true } },
+            .addend = 0x01
         }}
 },
-ADCImmediate{
+ADCZeroPage{
     // 0x80 + 0xFF = -129,  V = 1
-    Immediate().address(0x8000).value(0xFF),
-    ADCImmediate::Requirements{
+    ZeroPage().address(0x8000).zp_address(6),
+    ADCZeroPage::Requirements{
         .initial = {
             .a = 0x80,
             .flags = {
@@ -355,7 +465,8 @@ ADCImmediate{
                     .expected_value = false },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = false } } },
+                    .expected_value = false } },
+            .addend = 0xFF },
         .final = {
             .a = 0x7F,
             .flags = {
@@ -370,90 +481,17 @@ ADCImmediate{
                     .expected_value = true },
                 .v_value = {
                     .status_flag = FLAGS6502::V,
-                    .expected_value = true } }
-        }}
-},
-ADCImmediate{
-    // 0x00 + 0x02 + C = 0x03,
-    Immediate().address(0x8000).value(0x02),
-    ADCImmediate::Requirements{
-        .initial = {
-            .a = 0x00,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } } },
-        .final = {
-            .a = 0x03,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
-        }}
-},
-ADCImmediate{
-    // 0xFF + 0x01 + C = 0x01,
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
-        .initial = {
-            .a = 0xFF,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } } },
-        .final = {
-            .a = 0x01,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true }, // Carry should be set because we wrapped around
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
+                    .expected_value = true } },
+            .addend = 0x01
         }}
 }
 };
 
-
-TEST_P(ADCImmediateMode, TypicalInstructionExecution)
+TEST_P(ADCZeroPageMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(AddImmediateAtVariousAddresses,
-                         ADCImmediateMode,
-                         testing::ValuesIn(ADCImmediateModeTestValues) );
-
+INSTANTIATE_TEST_SUITE_P(AddZeroPageAtVariousAddresses,
+                         ADCZeroPageMode,
+                         testing::ValuesIn(ADCZeroPageModeTestValues) );

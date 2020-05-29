@@ -41,6 +41,7 @@ SOURCES += \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
         zero_page_indexed_with_y_mode_LDX.cpp \
+        zero_page_mode_ADC.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp
