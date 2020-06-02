@@ -3,32 +3,34 @@
 
 
 
-struct ADC_ZeroPage_Expectations
+struct ADC_ZeroPageXIndexed_Expectations
 {
-    uint8_t   a;
+    uint8_t a;
+    uint8_t x;
     NZCVFlags flags;
 
     uint8_t   addend;
 };
 
-using ADCZeroPage     = ADC<ZeroPage, ADC_ZeroPage_Expectations, 3>;
-using ADCZeroPageMode = ParameterizedInstructionExecutorTestFixture<ADCZeroPage>;
+using ADCZeroPageXIndexed     = ADC<ZeroPageXIndexed, ADC_ZeroPageXIndexed_Expectations, 4>;
+using ADCZeroPageXIndexedMode = ParameterizedInstructionExecutorTestFixture<ADCZeroPageXIndexed>;
 
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const ADCZeroPage                    &instruction_param)
+                                                            const ADCZeroPageXIndexed            &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::ZeroPage,
+                                 AddressMode_e::ZeroPageXIndexed,
                                  instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
 
     // Load expected data into memory
-    fixture.fakeMemory[instruction_param.address.zero_page_address] = instruction_param.requirements.initial.addend;
+    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x] = instruction_param.requirements.initial.addend;
 
     // Load appropriate registers
     fixture.r.a = instruction_param.requirements.initial.a;
+    fixture.r.x = instruction_param.requirements.initial.x;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.flags.c_value.expected_value);
@@ -37,9 +39,10 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const ADC_ZeroPage_Expectations &expectations)
+                                 const ADC_ZeroPageXIndexed_Expectations &expectations)
 {
     EXPECT_THAT(registers.a, Eq(expectations.a));
+    EXPECT_THAT(registers.x, Eq(expectations.x));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::C), Eq(expectations.flags.c_value.expected_value));
@@ -48,69 +51,76 @@ void RegistersAreInExpectedState(const Registers &registers,
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::ADC, ZeroPage> &instruction)
+                               const Instruction<AbstractInstruction_e::ADC, ZeroPageXIndexed> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::ADC, AddressMode_e::ZeroPage) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::ADC, AddressMode_e::ZeroPageXIndexed) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq(instruction.address.zero_page_address));
 }
 
 template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
-                                       const ADCZeroPage                    &instruction)
+                                       const ADCZeroPageXIndexed            &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address ), Eq(instruction.requirements.initial.addend));
+    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.zero_page_address + instruction.requirements.initial.x), Eq(instruction.requirements.initial.addend));
 }
 
 
-static const std::vector<ADCZeroPage> ADCZeroPageModeTestValues {
-ADCZeroPage{
+static const std::vector<ADCZeroPageXIndexed> ADCZeroPageXIndexedModeTestValues {
+ADCZeroPageXIndexed{
     // Beginning of a page
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
+            .x = 0,
             .flags = { },
             .addend = 12 },
         .final = {
             .a = 12,
+            .x = 0,
             .flags = { },
             .addend = 12
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // One before the end of a page
-    ZeroPage().address(0x80FE).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x80FE).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
+            .x = 3,
             .flags = { },
             .addend = 12 },
         .final = {
             .a = 12,
+            .x = 3,
             .flags = { },
             .addend = 12
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // Crossing a page boundary
-    ZeroPage().address(0x80FF).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x80FF).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
-            .a = 0,
+            .a = 1,
+            .x = 22,
             .flags = { },
-            .addend = 12 },
+            .addend = 31 },
         .final = {
-            .a = 12,
+            .a = 32,
+            .x = 22,
             .flags = { },
-            .addend = 12
+            .addend = 31
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // N Flag
-    ZeroPage().address(0x8080).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8080).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
+            .x = 0x80,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -127,6 +137,7 @@ ADCZeroPage{
             .addend = 0x80 },
         .final = {
             .a = 0x80,
+            .x = 0x80,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -143,12 +154,13 @@ ADCZeroPage{
             .addend = 0x80
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // Z Flag
-    ZeroPage().address(0x8080).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8080).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -165,6 +177,7 @@ ADCZeroPage{
             .addend = 0 },
         .final = {
             .a = 0,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -181,12 +194,13 @@ ADCZeroPage{
             .addend = 0
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // C Flag
-    ZeroPage().address(0x8080).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8080).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0xFF,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -203,6 +217,7 @@ ADCZeroPage{
             .addend = 0x01 },
         .final = {
             .a = 0x00,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -219,12 +234,13 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // C Flag; C Flag initially set adds one to result
-    ZeroPage().address(0x8080).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8080).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0xFF,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -241,6 +257,7 @@ ADCZeroPage{
             .addend = 0x01 },
         .final = {
             .a = 0x01,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -257,13 +274,14 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // V Flag
     // 7F + 1 = 80, C = 0, V = 1
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x7F,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -280,6 +298,7 @@ ADCZeroPage{
             .addend = 0x01 },
         .final = {
             .a = 0x80,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -296,13 +315,14 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // V Flag
     // 7F + 1 = 81 (C initially set), C = 0, V = 1
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x7F,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -319,6 +339,7 @@ ADCZeroPage{
             .addend = 0x01 },
         .final = {
             .a = 0x81,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -335,13 +356,14 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // V Flag
     // 0x80 + 0x01 = 0x81 (-128 + 1 = -127), C = 0, V = 0
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x80,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -358,6 +380,7 @@ ADCZeroPage{
             .addend = 0x01 },
         .final = {
             .a = 0x81,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -374,13 +397,14 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // V Flag
     // 0x80 + 0x7F = 0xFF (-128 + 127 = -1), C = 0, V = 0
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x80,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -397,6 +421,7 @@ ADCZeroPage{
             .addend = 0x7F },
         .final = {
             .a = 0xFF,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -413,13 +438,14 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // V Flag
     // 0x80 + 0x80 = 0x00 (-128 + -128 = -256), C = 1, V = 1
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x80,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -436,6 +462,7 @@ ADCZeroPage{
             .addend = 0x80 },
         .final = {
             .a = 0x00,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -452,13 +479,14 @@ ADCZeroPage{
             .addend = 0x01
         }}
 },
-ADCZeroPage{
+ADCZeroPageXIndexed{
     // V Flag
     // 0x80 + 0xFF = -129,  V = 1
-    ZeroPage().address(0x8000).zp_address(6),
-    ADCZeroPage::Requirements{
+    ZeroPageXIndexed().address(0x8000).zp_address(6),
+    ADCZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x80,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -475,6 +503,7 @@ ADCZeroPage{
             .addend = 0xFF },
         .final = {
             .a = 0x7F,
+            .x = 1,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
@@ -493,11 +522,11 @@ ADCZeroPage{
 }
 };
 
-TEST_P(ADCZeroPageMode, TypicalInstructionExecution)
+TEST_P(ADCZeroPageXIndexedMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(AddZeroPageAtVariousAddresses,
-                         ADCZeroPageMode,
-                         testing::ValuesIn(ADCZeroPageModeTestValues) );
+INSTANTIATE_TEST_SUITE_P(LoadZeroPageXIndexedAtVariousAddresses,
+                         ADCZeroPageXIndexedMode,
+                         testing::ValuesIn(ADCZeroPageXIndexedModeTestValues) );

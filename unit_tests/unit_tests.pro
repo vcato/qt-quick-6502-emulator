@@ -37,6 +37,7 @@ SOURCES += \
         registers_tests.cpp \
         relative_mode.cpp \
         x_indexed_indirect_LDA.cpp \
+        zero_page_indexed_with_x_mode_ADC.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
