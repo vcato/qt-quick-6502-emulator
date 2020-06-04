@@ -23,6 +23,7 @@ SOURCES += \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_y_mode_LDA.cpp \
         absolute_indexed_with_y_mode_LDX.cpp \
+        absolute_mode_ADC.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
