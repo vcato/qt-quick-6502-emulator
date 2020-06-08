@@ -19,6 +19,7 @@ HEADERS += \
 
 SOURCES += \
         6502_tests.cpp \
+        absolute_indexed_with_x_mode_ADC.cpp \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_y_mode_LDA.cpp \
