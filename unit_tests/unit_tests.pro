@@ -39,6 +39,7 @@ SOURCES += \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
         relative_mode.cpp \
+        x_indexed_indirect_ADC.cpp \
         x_indexed_indirect_LDA.cpp \
         zero_page_indexed_with_x_mode_ADC.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
