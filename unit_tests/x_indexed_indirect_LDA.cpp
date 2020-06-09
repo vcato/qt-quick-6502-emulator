@@ -83,6 +83,82 @@ LDAXIndexedIndirect{
             .x = 12,
             .flags = { }
         }}
+},
+LDAXIndexedIndirect{
+    // The end of a page
+    XIndexedIndirect().address(0x80FE).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 6,
+            .x = 12,
+            .flags = { }
+        }}
+},
+LDAXIndexedIndirect{
+    // Crossing a page
+    XIndexedIndirect().address(0x80FF).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 6,
+            .x = 12,
+            .flags = { }
+        }}
+},
+LDAXIndexedIndirect{
+    // Loading a zero affects the Z flag
+    XIndexedIndirect().address(0x8000).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true } }
+        }}
+},
+LDAXIndexedIndirect{
+    // Loading a negative affects the N flag
+    XIndexedIndirect().address(0x8000).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false } }
+        }}
 }
 };
 
