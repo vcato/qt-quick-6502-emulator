@@ -103,6 +103,451 @@ ADCXIndexedIndirect{
                     .expected_value = false } },
             .addend = 2
         }}
+},
+ADCXIndexedIndirect{
+    // End of a page
+    XIndexedIndirect().address(0x80FE).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { },
+            .addend = 6},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 6,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 2
+        }}
+},
+ADCXIndexedIndirect{
+    // Crossing a page
+    XIndexedIndirect().address(0x80FF).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { },
+            .addend = 6},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 6,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 2
+        }}
+},
+ADCXIndexedIndirect{
+    // Adding a zero affects the Z flag
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { },
+            .addend = 0},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0
+        }}
+},
+ADCXIndexedIndirect{
+    // Adding a negative affects the N flag
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { },
+            .addend = 0x80},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x80
+        }}
+},
+// Carry flag
+ADCXIndexedIndirect{
+    // 1 + 1 = 2, C = 0, V=0
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 1,
+            .x = 12,
+            .flags = { },
+            .addend = 1},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 2,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x80
+        }}
+},
+ADCXIndexedIndirect{
+    // FF + 1 = 0, C = 1, V = 0
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0xFF,
+            .x = 12,
+            .flags = { },
+            .addend = 1},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 1
+        }}
+},
+ADCXIndexedIndirect{
+    // 1 + FF = 0, C = 1, V = 0
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 1,
+            .x = 12,
+            .flags = { },
+            .addend = 0xFF},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0xFF
+        }}
+},
+ADCXIndexedIndirect{
+    // 7F + 1 = 80, C = 0, V = 1
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x7F,
+            .x = 12,
+            .flags = { },
+            .addend = 1},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = true } },
+            .addend = 1
+        }}
+},
+ADCXIndexedIndirect{
+    // 0x80 + 0x01 = 0x81 (-128 + 1 = -127), C = 0, V = 0
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = { },
+            .addend = 1},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x81,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 1
+        }}
+},
+ADCXIndexedIndirect{
+    // 0x80 + 0x7F = 0xFF (-128 + 127 = -1), C = 0, V = 0
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = { },
+            .addend = 0x7F},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0xFF,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x7F
+        }}
+},
+ADCXIndexedIndirect{
+    // 0x80 + 0x80 = 0x00 (-128 + -127 = -256), C = 1, V = 1
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = { },
+            .addend = 0x80},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x00,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = true } },
+            .addend = 0x7F
+        }}
+},
+ADCXIndexedIndirect{
+    // 0x80 + 0xFF = -129,  V = 1
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = { },
+            .addend = 0xFF},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x7F,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = true } },
+            .addend = 0x7F
+        }}
+},
+ADCXIndexedIndirect{
+    // 0x00 + 0x02 + C = 0x03,
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x00,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 2},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 3,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = false },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 0x7F
+        }}
+},
+ADCXIndexedIndirect{
+    // 0xFF + 0x01 + C = 0x01,
+    XIndexedIndirect().address(0x8080).zp_address(0xA0),
+    ADCXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0xFF,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 1},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 1,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false },
+                .c_value = {
+                    .status_flag = FLAGS6502::C,
+                    .expected_value = true },
+                .v_value = {
+                    .status_flag = FLAGS6502::V,
+                    .expected_value = false } },
+            .addend = 1
+        }}
 }
 };
 
