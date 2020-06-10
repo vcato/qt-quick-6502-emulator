@@ -35,6 +35,7 @@ SOURCES += \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
         implied_mode.cpp \
+        indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_LDA.cpp \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
