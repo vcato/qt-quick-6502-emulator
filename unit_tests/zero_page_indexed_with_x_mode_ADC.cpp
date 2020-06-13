@@ -26,7 +26,7 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
 
     // Load expected data into memory
-    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x] = instruction_param.requirements.initial.addend;
+    fixture.fakeMemory[ fixture.calculateZeroPageIndexedAddress(instruction_param.address.zero_page_address, instruction_param.requirements.initial.x) ] = instruction_param.requirements.initial.addend;
 
     // Load appropriate registers
     fixture.r.a = instruction_param.requirements.initial.a;

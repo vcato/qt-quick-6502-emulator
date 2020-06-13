@@ -31,6 +31,22 @@ public:
         uint8_t     data;
     };
 
+    /** Calculates the resulting address via the index offset from that address.
+     *
+     *  The page number remains unchanged, while the result of the index added
+     *  to @p zp_address is what it should be (i.e. theer is no carry into the page number
+     *  when a page crossing occurs).
+     *
+     *  @param zp_address The originating address
+     *  @param index      The offset from the address
+     *
+     *  @return The final address with offset, within the originating page.
+     */
+    addressType calculateZeroPageIndexedAddress(uint8_t zp_address, uint8_t index) const
+    {
+        return (zp_address + index) & 0x00FF;
+    }
+
     uint8_t loByteOf(addressType address) const
     {
         return address & 0xFF;
