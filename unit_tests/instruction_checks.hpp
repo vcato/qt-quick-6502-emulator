@@ -49,6 +49,7 @@ bool ProgramCounterIsSetToOnePastTheEntireInstruction(const InstructionExecutor 
                                                     instruction.address.operand_byte_count  + 1);
 }
 
+// This will be redefined for certain addressing modes
 template<class TInstructionAndAddressingMode>
 void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
                                              const TInstructionAndAddressingMode  &instruction)

@@ -72,6 +72,19 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
     EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page + y_register ), Eq(value_to_add));
 }
 
+template<>
+void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
+                                             const ADCIndirectYIndexed            &instruction)
+{
+    // Account for a clock tick one greater if a page is crossed
+    uint32_t original_address  = fixture.loByteOf(instruction.requirements.initial.address_to_indirect_to);
+    uint32_t effective_address = original_address + instruction.requirements.initial.y;
+    bool     page_boundary_is_crossed = effective_address > 0xFF;
+    uint32_t extra_cycle_count = (page_boundary_is_crossed) ? 1 : 0; // If the page is crossed
+
+    EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count + extra_cycle_count));
+}
+
 
 static const std::vector<ADCIndirectYIndexed> ADCIndirectYIndexedModeTestValues {
 ADCIndirectYIndexed{
