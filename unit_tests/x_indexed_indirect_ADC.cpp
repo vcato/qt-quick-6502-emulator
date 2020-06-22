@@ -25,8 +25,11 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
                                  AddressMode_e::XIndexedIndirect,
                                  instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x    ] = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
-    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x + 1] = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
+
+    auto effective_address = fixture.calculateZeroPageIndexedAddress(instruction_param.address.zero_page_address, instruction_param.requirements.initial.x);
+
+    fixture.fakeMemory[ effective_address     ] = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
+    fixture.fakeMemory[ effective_address + 1 ] = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
     fixture.fakeMemory[instruction_param.requirements.initial.address_to_indirect_to] = instruction_param.requirements.initial.addend;
 
     // Load appropriate registers
@@ -63,13 +66,13 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
                                        const ADCXIndexedIndirect            &instruction)
 {
     const auto    address_stored_in_zero_page    = instruction.requirements.initial.address_to_indirect_to;
-    const uint8_t zero_page_address_to_load_from = instruction.address.zero_page_address;
-    const uint8_t value_to_add  = instruction.requirements.initial.addend;
     const uint8_t x_register    = instruction.requirements.initial.x;
+    const uint8_t zero_page_address_to_load_from = fixture.calculateZeroPageIndexedAddress(instruction.address.zero_page_address, x_register);
+    const uint8_t value         = instruction.requirements.initial.addend;
 
-    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + x_register),     Eq( fixture.loByteOf(address_stored_in_zero_page) ));
-    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + x_register + 1), Eq( fixture.hiByteOf(address_stored_in_zero_page) ));
-    EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page ), Eq(value_to_add));
+    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from ),    Eq( fixture.loByteOf(address_stored_in_zero_page) ));
+    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + 1), Eq( fixture.hiByteOf(address_stored_in_zero_page) ));
+    EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page ), Eq(value));
 }
 
 
