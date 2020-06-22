@@ -75,7 +75,7 @@ void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixtur
     // Account for a clock tick one greater if a page is crossed
     uint32_t original_address  = fixture.loByteOf(instruction.requirements.initial.address_to_indirect_to);
     uint32_t effective_address = original_address + instruction.requirements.initial.y;
-    bool     page_boundary_is_crossed = effective_address > 0xFF;
+    bool     page_boundary_is_crossed = (fixture.hiByteOf(effective_address) - fixture.hiByteOf(original_address)) > 0x00;
     uint32_t extra_cycle_count = (page_boundary_is_crossed) ? 1 : 0; // If the page is crossed
 
     EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count + extra_cycle_count));
