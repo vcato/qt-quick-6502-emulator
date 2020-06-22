@@ -530,6 +530,6 @@ TEST_P(ADCAbsoluteYIndexedMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(LoadAbsoluteXIndexedAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadAbsoluteYIndexedAtVariousAddresses,
                          ADCAbsoluteYIndexedMode,
                          testing::ValuesIn(ADCAbsoluteXIndexedModeTestValues) );
