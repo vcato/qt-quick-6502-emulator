@@ -33,9 +33,7 @@ public:
 
     /** Calculates the resulting address via the index offset from that address.
      *
-     *  The page number remains unchanged, while the result of the index added
-     *  to @p zp_address is what it should be (i.e. theer is no carry into the page number
-     *  when a page crossing occurs).
+     *  This adds the @p index to @p zp_address, without a carry into the upper byte.`
      *
      *  @param zp_address The originating address
      *  @param index      The offset from the address
