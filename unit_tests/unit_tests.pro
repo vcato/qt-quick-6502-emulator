@@ -21,6 +21,7 @@ SOURCES += \
         6502_tests.cpp \
         absolute_indexed_with_x_mode_ADC.cpp \
         absolute_indexed_with_x_mode_AND.cpp \
+        absolute_indexed_with_x_mode_ASL.cpp \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_y_mode_ADC.cpp \
@@ -29,10 +30,11 @@ SOURCES += \
         absolute_indexed_with_y_mode_LDX.cpp \
         absolute_mode_ADC.cpp \
         absolute_mode_AND.cpp \
+        absolute_mode_ASL.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
-        accumulator_mode.cpp \
+        accumulator_mode_ASL.cpp \
         immediate_mode_ADC.cpp \
         immediate_mode_AND.cpp \
         immediate_mode_LDA.cpp \
@@ -50,12 +52,14 @@ SOURCES += \
         x_indexed_indirect_LDA.cpp \
         zero_page_indexed_with_x_mode_ADC.cpp \
         zero_page_indexed_with_x_mode_AND.cpp \
+        zero_page_indexed_with_x_mode_ASL.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
         zero_page_indexed_with_y_mode_LDX.cpp \
         zero_page_mode_ADC.cpp \
         zero_page_mode_AND.cpp \
+        zero_page_mode_ASL.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp

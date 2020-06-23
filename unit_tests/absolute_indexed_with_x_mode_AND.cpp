@@ -9,7 +9,7 @@ struct AND_AbsoluteXIndexed_Expectations
 
     uint8_t a;
     uint8_t x;
-    NZCVFlags flags;
+    NZFlags flags;
 
     uint8_t   operand;
 };

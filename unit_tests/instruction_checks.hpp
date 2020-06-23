@@ -22,6 +22,14 @@ template<class TInstructionAndAddressingMode>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
                                        const TInstructionAndAddressingMode  &instruction);
 
+template<class TInstructionAndAddressingMode>
+void MemoryContainsExpectedResult(const InstructionExecutorTestFixture &,
+                                  const TInstructionAndAddressingMode  &)
+{
+    // Default empty for everything.
+    // Only specialize for memory-affecting operations!
+}
+
 template<typename TInstructionAndAddressingMode>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const TInstructionAndAddressingMode  &instruction_param);
@@ -79,6 +87,7 @@ void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
     EXPECT_THAT(fixture.executor.complete(), Eq(true));
     InstructionExecutedInExpectedClockTicks(fixture, instruction);
     RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.final);
+    MemoryContainsExpectedResult(fixture, instruction);
 }
 
 

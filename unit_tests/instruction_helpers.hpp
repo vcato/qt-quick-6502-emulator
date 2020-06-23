@@ -40,6 +40,13 @@ struct Address
     uint16_t instruction_address;
 };
 
+struct Accumulator : Address
+{
+    constexpr Accumulator &address(uint16_t a) { instruction_address = a; return *this; }
+
+    static constexpr uint16_t operand_byte_count = 0;
+};
+
 struct Absolute : Address
 {
     constexpr Absolute &address(uint16_t a) { instruction_address = a; return *this; }
