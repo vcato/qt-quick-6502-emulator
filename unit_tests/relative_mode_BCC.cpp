@@ -79,14 +79,14 @@ void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixtur
                                         instruction.address.operand_byte_count + 1;
     uint16_t calculated_offset = InstructionExecutorTestFixture::SignedOffsetFromAddress(next_instruction_address,
                                                                                          instruction.address.offset);
-    bool     page_boundary_is_crossed = (fixture.hiByteOf(calculated_offset) - fixture.hiByteOf(next_instruction_address)) > 0x00;
+
+    // A page boundary is crossed if the two addresses are on different pages.
+    bool     page_boundary_is_crossed = (calculated_offset & 0xFF00) != (next_instruction_address & 0xFF00);
     bool     branch_taken = !fixture.executor.registers().GetFlag(FLAGS6502::C);
-    //bool     instruction_and_next_instruction_are_on_separate_pages = (fixture.loByteOf(instruction.address.instruction_address) == 0xFE);
     uint32_t extra_cycle_count = 0;
 
     extra_cycle_count += page_boundary_is_crossed;
     extra_cycle_count += branch_taken;
-    //extra_cycle_count += instruction_and_next_instruction_are_on_separate_pages;
 
     EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count + extra_cycle_count));
 }
