@@ -48,11 +48,13 @@ bool ProgramCounterIsSetToInstructionAddress(const InstructionExecutor          
     return executor.registers().program_counter == instruction.address.instruction_address;
 }
 
+// NOTE: There are specializations in other files.
 template<AbstractInstruction_e TOperation,
          typename TAddressingMode>
-bool ProgramCounterIsSetToOnePastTheEntireInstruction(const InstructionExecutor                      &executor,
-                                                      const Instruction<TOperation, TAddressingMode> &instruction)
+bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor                      &executor,
+                                       const Instruction<TOperation, TAddressingMode> &instruction)
 {
+    // One past the instruction, for typical instructions.
     return executor.registers().program_counter == (instruction.address.instruction_address +
                                                     instruction.address.operand_byte_count  + 1);
 }
@@ -83,7 +85,7 @@ template<class TInstructionAndAddressingMode>
 void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
                                   const TInstructionAndAddressingMode  &instruction)
 {
-    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(fixture.executor, instruction));
+    EXPECT_TRUE(ProgramCounterIsSetToCorrectValue(fixture.executor, instruction));
     EXPECT_THAT(fixture.executor.complete(), Eq(true));
     InstructionExecutedInExpectedClockTicks(fixture, instruction);
     RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.final);

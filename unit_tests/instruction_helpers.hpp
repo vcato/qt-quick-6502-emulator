@@ -116,6 +116,9 @@ struct IndirectYIndexed : Indirect
 
 struct Relative : Address
 {
+    constexpr Relative &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr Relative &signed_offset(uint8_t a) { offset = a; return *this; }
+
     uint8_t offset;
 
     static constexpr uint16_t operand_byte_count = 1;

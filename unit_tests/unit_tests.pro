@@ -46,7 +46,7 @@ SOURCES += \
         indirect_y_indexed_LDA.cpp \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
-        relative_mode.cpp \
+        relative_mode_BCC.cpp \
         x_indexed_indirect_ADC.cpp \
         x_indexed_indirect_AND.cpp \
         x_indexed_indirect_LDA.cpp \
