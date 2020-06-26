@@ -53,6 +53,8 @@ SOURCES += \
         relative_mode_BMI.cpp \
         relative_mode_BNE.cpp \
         relative_mode_BPL.cpp \
+        relative_mode_BVC.cpp \
+        relative_mode_BVS.cpp \
         x_indexed_indirect_ADC.cpp \
         x_indexed_indirect_AND.cpp \
         x_indexed_indirect_LDA.cpp \

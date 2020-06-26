@@ -126,8 +126,10 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
     case AbstractInstruction_e::BRK:
         break;
     case AbstractInstruction_e::BVC:
+        return 0x50;
         break;
     case AbstractInstruction_e::BVS:
+        return 0x70;
         break;
     case AbstractInstruction_e::CLC:
         break;
