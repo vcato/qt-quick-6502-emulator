@@ -47,6 +47,11 @@ SOURCES += \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
         relative_mode_BCC.cpp \
+        relative_mode_BCS.cpp \
+        relative_mode_BEQ.cpp \
+        relative_mode_BMI.cpp \
+        relative_mode_BNE.cpp \
+        relative_mode_BPL.cpp \
         x_indexed_indirect_ADC.cpp \
         x_indexed_indirect_AND.cpp \
         x_indexed_indirect_LDA.cpp \

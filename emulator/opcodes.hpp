@@ -96,16 +96,21 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0x90;
         break;
     case AbstractInstruction_e::BCS:
+        return 0xB0;
         break;
     case AbstractInstruction_e::BEQ:
+        return 0xF0;
         break;
     case AbstractInstruction_e::BIT:
         break;
     case AbstractInstruction_e::BMI:
+        return 0x30;
         break;
     case AbstractInstruction_e::BNE:
+        return 0xD0;
         break;
     case AbstractInstruction_e::BPL:
+        return 0x10;
         break;
     case AbstractInstruction_e::BRK:
         break;

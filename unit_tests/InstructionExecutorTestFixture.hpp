@@ -68,6 +68,11 @@ public:
         return (offset & 0x80) ? MakeWord( loByteOf(final), hiByteOf(final) - 1) : final;
     }
 
+    static bool AddressesAreOnDifferentPages(uint16_t address1, uint16_t address2)
+    {
+        return (address1 & 0xFF00) != (address2 & 0xFF00);
+    }
+
     Registers r;
     InstructionExecutor executor{ r,
                                   std::bind(&InstructionExecutorTestFixture::addressBusReadSignaled,        this, _1, _2),

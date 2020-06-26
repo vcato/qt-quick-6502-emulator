@@ -3,19 +3,19 @@
 
 
 
-struct BCC_Relative_Expectations
+struct BNE_Relative_Expectations
 {
-    StatusExpectation carry_flag;
+    StatusExpectation zero_flag;
     uint16_t          program_counter;
 };
 
-using BCCRelative     = BCC<Relative, BCC_Relative_Expectations, 2>;
-using BCCRelativeMode = ParameterizedInstructionExecutorTestFixture<BCCRelative>;
+using BNERelative     = BNE<Relative, BNE_Relative_Expectations, 2>;
+using BNERelativeMode = ParameterizedInstructionExecutorTestFixture<BNERelative>;
 
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const BCCRelative                    &instruction_param)
+                                                            const BNERelative                    &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
                                  AddressMode_e::Relative,
@@ -23,36 +23,36 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
 
     //fixture.r.program_counter = instruction_param.requirements.initial.a;
-    fixture.r.SetFlag(instruction_param.requirements.initial.carry_flag.status_flag,
-                      instruction_param.requirements.initial.carry_flag.expected_value);
+    fixture.r.SetFlag(instruction_param.requirements.initial.zero_flag.status_flag,
+                      instruction_param.requirements.initial.zero_flag.expected_value);
 }
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const BCC_Relative_Expectations &expectations)
+                                 const BNE_Relative_Expectations &expectations)
 {
     EXPECT_THAT(registers.program_counter, Eq(expectations.program_counter));
-    EXPECT_THAT(registers.GetFlag(expectations.carry_flag.status_flag), Eq(expectations.carry_flag.expected_value));
+    EXPECT_THAT(registers.GetFlag(expectations.zero_flag.status_flag), Eq(expectations.zero_flag.expected_value));
 }
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::BCC, Relative> &instruction)
+                               const Instruction<AbstractInstruction_e::BNE, Relative> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::BCC, AddressMode_e::Relative) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::BNE, AddressMode_e::Relative) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq( instruction.address.offset ));
 }
 
 template<>
 void MemoryContainsExpectedResult(const InstructionExecutorTestFixture &,
-                                  const BCCRelative                    &)
+                                  const BNERelative                    &)
 {
     // No memory affected.
 }
 
 template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &,
-                                       const BCCRelative                    &)
+                                       const BNERelative                    &)
 {
     // No memory affected
 }
@@ -72,7 +72,7 @@ bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor               &
 
 template<>
 void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
-                                             const BCCRelative                    &instruction)
+                                             const BNERelative                    &instruction)
 {
     // Account for a clock tick one greater if a page is crossed
     uint16_t next_instruction_address = instruction.address.instruction_address +
@@ -82,7 +82,7 @@ void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixtur
 
     // A page boundary is crossed if the two addresses are on different pages.
     bool     page_boundary_is_crossed = InstructionExecutorTestFixture::AddressesAreOnDifferentPages(calculated_offset, next_instruction_address);
-    bool     branch_taken = !fixture.executor.registers().GetFlag(FLAGS6502::C);
+    bool     branch_taken = !fixture.executor.registers().GetFlag(FLAGS6502::Z);
     uint32_t extra_cycle_count = 0;
 
     extra_cycle_count += page_boundary_is_crossed;
@@ -91,108 +91,108 @@ void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixtur
     EXPECT_THAT(fixture.executor.clock_ticks, Eq(instruction.requirements.cycle_count + extra_cycle_count));
 }
 
-static const std::vector<BCCRelative> BCCRelativeModeTestValues {
-BCCRelative{
+static const std::vector<BNERelative> BNERelativeModeTestValues {
+BNERelative{
     // Beginning of a page.
-    // No branching (C is set).
+    // No branching (Z is set).
     Relative().address(0x4000).signed_offset(0x00),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x4000},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x4002
         }}
 },
-BCCRelative{
+BNERelative{
     // End of a page.
-    // No branching (C is set).
+    // No branching (Z is set).
     Relative().address(0x40FE).signed_offset(0x00),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x40FE},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x4100
         }}
 },
-BCCRelative{
+BNERelative{
     // Crossing over a page.
-    // No branching (C is set).
+    // No branching (Z is set).
     Relative().address(0x40FF).signed_offset(0x00),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x40FF},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x4101
         }}
 },
-BCCRelative{
+BNERelative{
     // Beginning of a page.
-    // Branching (C is clear).
+    // Branching (Z is clear).
     // No offset
     Relative().address(0x4000).signed_offset(0x00),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x4000},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
             .program_counter = 0x4002
         }}
 },
-BCCRelative{
+BNERelative{
     // Beginning of a page.
-    // Branching (C is clear).
+    // Branching (Z is clear).
     // -1 offset
     Relative().address(0x4000).signed_offset(0xFF),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
             .program_counter = 0x4000},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
             .program_counter = 0x4001
         }}
 },
-BCCRelative{
+BNERelative{
     // End of a page
-    // Branching (C is clear).
+    // Branching (Z is clear).
     // Offset goes back to the previous page.
     Relative().address(0x40FE).signed_offset(0xFE),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
             .program_counter = 0x40FE},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
             .program_counter = 0x40FE
         }}
 },
-BCCRelative{
+BNERelative{
     // Crossing over a page.
-    // Branching (C is clear).
+    // Branching (Z is clear).
     Relative().address(0x40FF).signed_offset(0x7F),
-    BCCRelative::Requirements{
+    BNERelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
             .program_counter = 0x40FF},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
             .program_counter = 0x4180
         }}
 }
 };
 
-TEST_P(BCCRelativeMode, TypicalInstructionExecution)
+TEST_P(BNERelativeMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(BranchOnCarryClearRelativeAtVariousAddresses,
-                         BCCRelativeMode,
-                         testing::ValuesIn(BCCRelativeModeTestValues) );
+INSTANTIATE_TEST_SUITE_P(BranchOnNotEqualToZeroRelativeAtVariousAddresses,
+                         BNERelativeMode,
+                         testing::ValuesIn(BNERelativeModeTestValues) );
