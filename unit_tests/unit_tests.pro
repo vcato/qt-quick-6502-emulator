@@ -41,7 +41,10 @@ SOURCES += \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
-        implied_mode.cpp \
+        implied_mode_CLC.cpp \
+        implied_mode_CLD.cpp \
+        implied_mode_CLI.cpp \
+        implied_mode_CLV.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_LDA.cpp \

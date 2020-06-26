@@ -5,8 +5,8 @@
 
 struct BCS_Relative_Expectations
 {
-    StatusExpectation carry_flag;
-    uint16_t          program_counter;
+    bool     carry_flag;
+    uint16_t program_counter;
 };
 
 using BCSRelative     = BCS<Relative, BCS_Relative_Expectations, 2>;
@@ -22,9 +22,7 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
                                  instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
 
-    //fixture.r.program_counter = instruction_param.requirements.initial.a;
-    fixture.r.SetFlag(instruction_param.requirements.initial.carry_flag.status_flag,
-                      instruction_param.requirements.initial.carry_flag.expected_value);
+    fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.carry_flag);
 }
 
 template<>
@@ -32,7 +30,7 @@ void RegistersAreInExpectedState(const Registers &registers,
                                  const BCS_Relative_Expectations &expectations)
 {
     EXPECT_THAT(registers.program_counter, Eq(expectations.program_counter));
-    EXPECT_THAT(registers.GetFlag(expectations.carry_flag.status_flag), Eq(expectations.carry_flag.expected_value));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::C), Eq(expectations.carry_flag));
 }
 
 template<>
@@ -98,10 +96,10 @@ BCSRelative{
     Relative().address(0x4000).signed_offset(0x00),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .carry_flag = false,
             .program_counter = 0x4000},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .carry_flag = false,
             .program_counter = 0x4002
         }}
 },
@@ -111,10 +109,10 @@ BCSRelative{
     Relative().address(0x40FE).signed_offset(0x00),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .carry_flag = false,
             .program_counter = 0x40FE},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .carry_flag = false,
             .program_counter = 0x4100
         }}
 },
@@ -124,10 +122,10 @@ BCSRelative{
     Relative().address(0x40FF).signed_offset(0x00),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .carry_flag = false,
             .program_counter = 0x40FF},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(false),
+            .carry_flag = false,
             .program_counter = 0x4101
         }}
 },
@@ -138,10 +136,10 @@ BCSRelative{
     Relative().address(0x4000).signed_offset(0x00),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = false,
             .program_counter = 0x4000},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = false,
             .program_counter = 0x4002
         }}
 },
@@ -152,10 +150,10 @@ BCSRelative{
     Relative().address(0x4000).signed_offset(0xFF),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = true,
             .program_counter = 0x4000},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = true,
             .program_counter = 0x4001
         }}
 },
@@ -166,10 +164,10 @@ BCSRelative{
     Relative().address(0x40FE).signed_offset(0xFE),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = true,
             .program_counter = 0x40FE},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = true,
             .program_counter = 0x40FE
         }}
 },
@@ -179,10 +177,10 @@ BCSRelative{
     Relative().address(0x40FF).signed_offset(0x7F),
     BCSRelative::Requirements{
         .initial = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = true,
             .program_counter = 0x40FF},
         .final = {
-            .carry_flag = StatusExpectation().flag(FLAGS6502::C).value(true),
+            .carry_flag = true,
             .program_counter = 0x4180
         }}
 }

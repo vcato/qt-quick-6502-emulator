@@ -5,8 +5,8 @@
 
 struct BPL_Relative_Expectations
 {
-    StatusExpectation negative_flag;
-    uint16_t          program_counter;
+    bool     negative_flag;
+    uint16_t program_counter;
 };
 
 using BPLRelative     = BPL<Relative, BPL_Relative_Expectations, 2>;
@@ -23,8 +23,7 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
 
     //fixture.r.program_counter = instruction_param.requirements.initial.a;
-    fixture.r.SetFlag(instruction_param.requirements.initial.negative_flag.status_flag,
-                      instruction_param.requirements.initial.negative_flag.expected_value);
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.negative_flag);
 }
 
 template<>
@@ -32,7 +31,7 @@ void RegistersAreInExpectedState(const Registers &registers,
                                  const BPL_Relative_Expectations &expectations)
 {
     EXPECT_THAT(registers.program_counter, Eq(expectations.program_counter));
-    EXPECT_THAT(registers.GetFlag(expectations.negative_flag.status_flag), Eq(expectations.negative_flag.expected_value));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.negative_flag));
 }
 
 template<>
@@ -98,10 +97,10 @@ BPLRelative{
     Relative().address(0x4000).signed_offset(0x00),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(true),
+            .negative_flag = true,
             .program_counter = 0x4000},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(true),
+            .negative_flag = true,
             .program_counter = 0x4002
         }}
 },
@@ -111,10 +110,10 @@ BPLRelative{
     Relative().address(0x40FE).signed_offset(0x00),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(true),
+            .negative_flag = true,
             .program_counter = 0x40FE},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(true),
+            .negative_flag = true,
             .program_counter = 0x4100
         }}
 },
@@ -124,10 +123,10 @@ BPLRelative{
     Relative().address(0x40FF).signed_offset(0x00),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(true),
+            .negative_flag = true,
             .program_counter = 0x40FF},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(true),
+            .negative_flag = true,
             .program_counter = 0x4101
         }}
 },
@@ -138,10 +137,10 @@ BPLRelative{
     Relative().address(0x4000).signed_offset(0x00),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x4000},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x4002
         }}
 },
@@ -152,10 +151,10 @@ BPLRelative{
     Relative().address(0x4000).signed_offset(0xFF),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x4000},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x4001
         }}
 },
@@ -166,10 +165,10 @@ BPLRelative{
     Relative().address(0x40FE).signed_offset(0xFE),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x40FE},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x40FE
         }}
 },
@@ -179,10 +178,10 @@ BPLRelative{
     Relative().address(0x40FF).signed_offset(0x7F),
     BPLRelative::Requirements{
         .initial = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x40FF},
         .final = {
-            .negative_flag = StatusExpectation().flag(FLAGS6502::N).value(false),
+            .negative_flag = false,
             .program_counter = 0x4180
         }}
 }

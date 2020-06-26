@@ -94,6 +94,9 @@ struct Immediate : Address
 
 struct Implied : Address
 {
+    constexpr Implied &address(uint16_t a) { instruction_address = a; return *this; }
+
+    static constexpr uint16_t operand_byte_count = 0;
 };
 
 struct Indirect : Address

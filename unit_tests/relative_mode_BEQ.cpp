@@ -5,8 +5,8 @@
 
 struct BEQ_Relative_Expectations
 {
-    StatusExpectation zero_flag;
-    uint16_t          program_counter;
+    bool     zero_flag;
+    uint16_t program_counter;
 };
 
 using BEQRelative     = BEQ<Relative, BEQ_Relative_Expectations, 2>;
@@ -22,9 +22,7 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
                                  instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
 
-    //fixture.r.program_counter = instruction_param.requirements.initial.a;
-    fixture.r.SetFlag(instruction_param.requirements.initial.zero_flag.status_flag,
-                      instruction_param.requirements.initial.zero_flag.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.zero_flag);
 }
 
 template<>
@@ -32,7 +30,7 @@ void RegistersAreInExpectedState(const Registers &registers,
                                  const BEQ_Relative_Expectations &expectations)
 {
     EXPECT_THAT(registers.program_counter, Eq(expectations.program_counter));
-    EXPECT_THAT(registers.GetFlag(expectations.zero_flag.status_flag), Eq(expectations.zero_flag.expected_value));
+    EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.zero_flag));
 }
 
 template<>
@@ -98,10 +96,10 @@ BEQRelative{
     Relative().address(0x4000).signed_offset(0x00),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
+            .zero_flag = false,
             .program_counter = 0x4000},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
+            .zero_flag = false,
             .program_counter = 0x4002
         }}
 },
@@ -111,10 +109,10 @@ BEQRelative{
     Relative().address(0x40FE).signed_offset(0x00),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
+            .zero_flag = false,
             .program_counter = 0x40FE},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
+            .zero_flag = false,
             .program_counter = 0x4100
         }}
 },
@@ -124,10 +122,10 @@ BEQRelative{
     Relative().address(0x40FF).signed_offset(0x00),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
+            .zero_flag = false,
             .program_counter = 0x40FF},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(false),
+            .zero_flag = false,
             .program_counter = 0x4101
         }}
 },
@@ -138,10 +136,10 @@ BEQRelative{
     Relative().address(0x4000).signed_offset(0x00),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = false,
             .program_counter = 0x4000},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = false,
             .program_counter = 0x4002
         }}
 },
@@ -152,10 +150,10 @@ BEQRelative{
     Relative().address(0x4000).signed_offset(0xFF),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = true,
             .program_counter = 0x4000},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = true,
             .program_counter = 0x4001
         }}
 },
@@ -166,10 +164,10 @@ BEQRelative{
     Relative().address(0x40FE).signed_offset(0xFE),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = true,
             .program_counter = 0x40FE},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = true,
             .program_counter = 0x40FE
         }}
 },
@@ -179,10 +177,10 @@ BEQRelative{
     Relative().address(0x40FF).signed_offset(0x7F),
     BEQRelative::Requirements{
         .initial = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = true,
             .program_counter = 0x40FF},
         .final = {
-            .zero_flag = StatusExpectation().flag(FLAGS6502::Z).value(true),
+            .zero_flag = true,
             .program_counter = 0x4180
         }}
 }

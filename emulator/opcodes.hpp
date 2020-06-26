@@ -132,12 +132,16 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0x70;
         break;
     case AbstractInstruction_e::CLC:
+        return 0x18;
         break;
     case AbstractInstruction_e::CLD:
+        return 0xD8;
         break;
     case AbstractInstruction_e::CLI:
+        return 0x58;
         break;
     case AbstractInstruction_e::CLV:
+        return 0xB8;
         break;
     case AbstractInstruction_e::CMP:
         break;
