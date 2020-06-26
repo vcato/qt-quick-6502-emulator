@@ -27,6 +27,13 @@ struct NZCFlags
     StatusExpectation c_value { .status_flag = FLAGS6502::C, .expected_value = false };
 };
 
+struct NZVFlags
+{
+    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
+    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
+    StatusExpectation v_value { .status_flag = FLAGS6502::V, .expected_value = false };
+};
+
 struct NZCVFlags
 {
     StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };

@@ -31,6 +31,7 @@ SOURCES += \
         absolute_mode_ADC.cpp \
         absolute_mode_AND.cpp \
         absolute_mode_ASL.cpp \
+        absolute_mode_BIT.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
@@ -65,6 +66,7 @@ SOURCES += \
         zero_page_mode_ADC.cpp \
         zero_page_mode_AND.cpp \
         zero_page_mode_ASL.cpp \
+        zero_page_mode_BIT.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp
