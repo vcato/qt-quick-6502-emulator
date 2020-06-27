@@ -61,7 +61,7 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
 }
 
 
-static const std::vector<ANDZeroPageXIndexed> LDAZeroPageXIndexedModeTestValues {
+static const std::vector<ANDZeroPageXIndexed> ANDZeroPageXIndexedModeTestValues {
 ANDZeroPageXIndexed{
     // Beginning of a page
     ZeroPageXIndexed().address(0x1000).zp_address(6),
@@ -246,4 +246,4 @@ TEST_P(ANDZeroPageXIndexedMode, TypicalInstructionExecution)
 
 INSTANTIATE_TEST_SUITE_P(AndZeroPageXIndexedAtVariousAddresses,
                          ANDZeroPageXIndexedMode,
-                         testing::ValuesIn(LDAZeroPageXIndexedModeTestValues) );
+                         testing::ValuesIn(ANDZeroPageXIndexedModeTestValues) );
