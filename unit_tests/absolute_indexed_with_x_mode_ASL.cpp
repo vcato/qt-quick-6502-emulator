@@ -71,12 +71,6 @@ void MemoryContainsExpectedResult(const InstructionExecutorTestFixture &fixture,
     EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address + instruction.requirements.final.x ), Eq(instruction.requirements.final.operand));
 }
 
-template<>
-void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &,
-                                             const ASLAbsoluteXIndexed            &)
-{
-    // No extra clock ticks expected
-}
 
 static const std::vector<ASLAbsoluteXIndexed> ASLAbsoluteXIndexedModeTestValues {
 ASLAbsoluteXIndexed{
