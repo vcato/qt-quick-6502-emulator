@@ -22,22 +22,26 @@ SOURCES += \
         absolute_indexed_with_x_mode_ADC.cpp \
         absolute_indexed_with_x_mode_AND.cpp \
         absolute_indexed_with_x_mode_ASL.cpp \
+        absolute_indexed_with_x_mode_CMP.cpp \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_y_mode_ADC.cpp \
         absolute_indexed_with_y_mode_AND.cpp \
+        absolute_indexed_with_y_mode_CMP.cpp \
         absolute_indexed_with_y_mode_LDA.cpp \
         absolute_indexed_with_y_mode_LDX.cpp \
         absolute_mode_ADC.cpp \
         absolute_mode_AND.cpp \
         absolute_mode_ASL.cpp \
         absolute_mode_BIT.cpp \
+        absolute_mode_CMP.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
         accumulator_mode_ASL.cpp \
         immediate_mode_ADC.cpp \
         immediate_mode_AND.cpp \
+        immediate_mode_CMP.cpp \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
@@ -47,6 +51,7 @@ SOURCES += \
         implied_mode_CLV.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
+        indirect_y_indexed_CMP.cpp \
         indirect_y_indexed_LDA.cpp \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
@@ -60,10 +65,12 @@ SOURCES += \
         relative_mode_BVS.cpp \
         x_indexed_indirect_ADC.cpp \
         x_indexed_indirect_AND.cpp \
+        x_indexed_indirect_CMP.cpp \
         x_indexed_indirect_LDA.cpp \
         zero_page_indexed_with_x_mode_ADC.cpp \
         zero_page_indexed_with_x_mode_AND.cpp \
         zero_page_indexed_with_x_mode_ASL.cpp \
+        zero_page_indexed_with_x_mode_CMP.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
@@ -72,6 +79,7 @@ SOURCES += \
         zero_page_mode_AND.cpp \
         zero_page_mode_ASL.cpp \
         zero_page_mode_BIT.cpp \
+        zero_page_mode_CMP.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp
