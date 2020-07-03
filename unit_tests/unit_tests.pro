@@ -35,6 +35,8 @@ SOURCES += \
         absolute_mode_ASL.cpp \
         absolute_mode_BIT.cpp \
         absolute_mode_CMP.cpp \
+        absolute_mode_CPX.cpp \
+        absolute_mode_CPY.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
@@ -42,6 +44,8 @@ SOURCES += \
         immediate_mode_ADC.cpp \
         immediate_mode_AND.cpp \
         immediate_mode_CMP.cpp \
+        immediate_mode_CPX.cpp \
+        immediate_mode_CPY.cpp \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
@@ -80,6 +84,8 @@ SOURCES += \
         zero_page_mode_ASL.cpp \
         zero_page_mode_BIT.cpp \
         zero_page_mode_CMP.cpp \
+        zero_page_mode_CPX.cpp \
+        zero_page_mode_CPY.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp
