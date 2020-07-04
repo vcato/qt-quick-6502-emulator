@@ -207,6 +207,22 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::DEC:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0xCE;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0xDE;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0xC6;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0xD6;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::DEX:
         break;
