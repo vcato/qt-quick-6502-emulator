@@ -225,8 +225,10 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::DEX:
+        return 0xCA;
         break;
     case AbstractInstruction_e::DEY:
+        return 0x88;
         break;
     case AbstractInstruction_e::EOR:
         break;
