@@ -24,11 +24,13 @@ SOURCES += \
         absolute_indexed_with_x_mode_ASL.cpp \
         absolute_indexed_with_x_mode_CMP.cpp \
         absolute_indexed_with_x_mode_DEC.cpp \
+        absolute_indexed_with_x_mode_EOR.cpp \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_y_mode_ADC.cpp \
         absolute_indexed_with_y_mode_AND.cpp \
         absolute_indexed_with_y_mode_CMP.cpp \
+        absolute_indexed_with_y_mode_EOR.cpp \
         absolute_indexed_with_y_mode_LDA.cpp \
         absolute_indexed_with_y_mode_LDX.cpp \
         absolute_mode_ADC.cpp \
@@ -39,6 +41,7 @@ SOURCES += \
         absolute_mode_CPX.cpp \
         absolute_mode_CPY.cpp \
         absolute_mode_DEC.cpp \
+        absolute_mode_EOR.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
@@ -48,6 +51,7 @@ SOURCES += \
         immediate_mode_CMP.cpp \
         immediate_mode_CPX.cpp \
         immediate_mode_CPY.cpp \
+        immediate_mode_EOR.cpp \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
@@ -60,6 +64,7 @@ SOURCES += \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \
+        indirect_y_indexed_EOR.cpp \
         indirect_y_indexed_LDA.cpp \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
@@ -74,12 +79,14 @@ SOURCES += \
         x_indexed_indirect_ADC.cpp \
         x_indexed_indirect_AND.cpp \
         x_indexed_indirect_CMP.cpp \
+        x_indexed_indirect_EOR.cpp \
         x_indexed_indirect_LDA.cpp \
         zero_page_indexed_with_x_mode_ADC.cpp \
         zero_page_indexed_with_x_mode_AND.cpp \
         zero_page_indexed_with_x_mode_ASL.cpp \
         zero_page_indexed_with_x_mode_CMP.cpp \
         zero_page_indexed_with_x_mode_DEC.cpp \
+        zero_page_indexed_with_x_mode_EOR.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
@@ -92,6 +99,7 @@ SOURCES += \
         zero_page_mode_CPX.cpp \
         zero_page_mode_CPY.cpp \
         zero_page_mode_DEC.cpp \
+        zero_page_mode_EOR.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp

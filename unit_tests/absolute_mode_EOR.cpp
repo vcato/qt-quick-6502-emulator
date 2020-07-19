@@ -3,23 +3,23 @@
 
 
 
-struct ASL_Absolute_Expectations
+struct EOR_Absolute_Expectations
 {
-    constexpr ASL_Absolute_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
+    constexpr EOR_Absolute_Expectations &accumulator(const uint8_t v) { a = v; return *this; }
 
-    uint8_t  a;
-    NZCFlags flags;
+    uint8_t a;
+    NZFlags flags;
 
-    uint8_t   operand;
+    uint8_t operand;
 };
 
-using ASLAbsolute     = ASL<Absolute, ASL_Absolute_Expectations, 6>;
-using ASLAbsoluteMode = ParameterizedInstructionExecutorTestFixture<ASLAbsolute>;
+using EORAbsolute     = EOR<Absolute, EOR_Absolute_Expectations, 4>;
+using EORAbsoluteMode = ParameterizedInstructionExecutorTestFixture<EORAbsolute>;
 
 
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const ASLAbsolute                    &instruction_param)
+                                                            const EORAbsolute                    &instruction_param)
 {
     fixture.loadOpcodeIntoMemory(instruction_param.operation,
                                  AddressMode_e::Absolute,
@@ -32,51 +32,43 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
     fixture.r.a = instruction_param.requirements.initial.a;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
-    fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.flags.c_value.expected_value);
 }
 
 template<>
 void RegistersAreInExpectedState(const Registers &registers,
-                                 const ASL_Absolute_Expectations &expectations)
+                                 const EOR_Absolute_Expectations &expectations)
 {
     EXPECT_THAT(registers.a, Eq(expectations.a));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
-    EXPECT_THAT(registers.GetFlag(FLAGS6502::C), Eq(expectations.flags.c_value.expected_value));
 }
 
 template<>
 void MemoryContainsInstruction(const InstructionExecutorTestFixture &fixture,
-                               const Instruction<AbstractInstruction_e::ASL, Absolute> &instruction)
+                               const Instruction<AbstractInstruction_e::EOR, Absolute> &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::ASL, AddressMode_e::Absolute) ));
+    EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter ), Eq( OpcodeFor(AbstractInstruction_e::EOR, AddressMode_e::Absolute) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 1), Eq( fixture.loByteOf(instruction.address.absolute_address) ));
     EXPECT_THAT(fixture.fakeMemory.at( fixture.executor.registers().program_counter + 2), Eq( fixture.hiByteOf(instruction.address.absolute_address) ));
 }
 
 template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
-                                       const ASLAbsolute                    &instruction)
+                                       const EORAbsolute                    &instruction)
 {
     EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address ), Eq( instruction.requirements.initial.operand ));
 }
 
-template<>
-void MemoryContainsExpectedResult(const InstructionExecutorTestFixture &fixture,
-                                  const ASLAbsolute                    &instruction)
-{
-    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address ), Eq(instruction.requirements.final.operand));
-}
 
-static const std::vector<ASLAbsolute> ASLAbsoluteModeTestValues {
-ASLAbsolute{
+static const std::vector<EORAbsolute> EORAbsoluteModeTestValues {
+EORAbsolute{
     // Beginning of a page
-    Absolute().address(0x4000).value(0xA000),
-    ASLAbsolute::Requirements{
+    Absolute().address(0x1000).value(0xA000),
+    EORAbsolute::Requirements{
         .initial = {
             .a = 0,
             .flags = { },
-            .operand = 0},
+            .operand = 0x00 },
         .final = {
             .a = 0,
             .flags = {
@@ -85,181 +77,157 @@ ASLAbsolute{
                     .expected_value = false },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false } },
-            .operand = 0
+                    .expected_value = true } },
+            .operand = 0x00
         }}
 },
-ASLAbsolute{
+EORAbsolute{
     // Middle of a page
-    Absolute().address(0x4088).value(0xA000),
-    ASLAbsolute::Requirements{
+    Absolute().address(0x1080).value(0xA000),
+    EORAbsolute::Requirements{
         .initial = {
-            .a = 0,
+            .a = 0xFF,
             .flags = { },
-            .operand = 0},
+            .operand = 0x00 },
         .final = {
-            .a = 0,
+            .a = 0xFF,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
-                    .expected_value = false },
+                    .expected_value = true },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
                     .expected_value = false } },
-            .operand = 0
+            .operand = 0x00
         }}
 },
-ASLAbsolute{
+EORAbsolute{
     // End of a page
-    Absolute().address(0x40FD).value(0xA000),
-    ASLAbsolute::Requirements{
+    Absolute().address(0x10FD).value(0xA000),
+    EORAbsolute::Requirements{
         .initial = {
-            .a = 0,
+            .a = 0xFF,
             .flags = { },
-            .operand = 0},
+            .operand = 0x00 },
         .final = {
-            .a = 0,
+            .a = 0xFF,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
-                    .expected_value = false },
+                    .expected_value = true },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
                     .expected_value = false } },
-            .operand = 0
+            .operand = 0x00
         }}
 },
-ASLAbsolute{
+EORAbsolute{
     // Crossing a page (partial absolute address)
-    Absolute().address(0x40FE).value(0xA000),
-    ASLAbsolute::Requirements{
+    Absolute().address(0x10FE).value(0xA000),
+    EORAbsolute::Requirements{
         .initial = {
-            .a = 0,
+            .a = 0x00,
             .flags = { },
-            .operand = 0},
+            .operand = 0xFF },
         .final = {
-            .a = 0,
+            .a = 0xFF,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
-                    .expected_value = false },
+                    .expected_value = true },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
                     .expected_value = false } },
-            .operand = 0
+            .operand = 0xFF
         }}
 },
-ASLAbsolute{
+EORAbsolute{
     // Crossing a page (entire absolute address)
-    Absolute().address(0x40FF).value(0xA000),
-    ASLAbsolute::Requirements{
+    Absolute().address(0x10FF).value(0xA000),
+    EORAbsolute::Requirements{
         .initial = {
-            .a = 0,
+            .a = 0x00,
             .flags = { },
-            .operand = 0},
+            .operand = 0xFF },
         .final = {
-            .a = 0,
+            .a = 0xFF,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
-                    .expected_value = false },
+                    .expected_value = true },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
                     .expected_value = false } },
-            .operand = 0
+            .operand = 0xFF
         }}
 },
-ASLAbsolute{
-    // Check for High bit going into carry
+EORAbsolute{
+    // Test individual bits are EOR'd.
     Absolute().address(0x8000).value(0xA000),
-    ASLAbsolute::Requirements{
+    EORAbsolute::Requirements{
         .initial = {
-            .a = 1,
+            .a = 0b10101010,
             .flags = { },
             .operand = 0b10101010 },
         .final = {
-            .a = 1,
+            .a = 0b00000000,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
                     .expected_value = false },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
                     .expected_value = true } },
-            .operand = 0b01010100
+            .operand = 0b10101010
         }}
 },
-ASLAbsolute{
-    // Check for N flag
+EORAbsolute{
+    // Test individual bits are EOR'd.
     Absolute().address(0x8000).value(0xA000),
-    ASLAbsolute::Requirements{
+    EORAbsolute::Requirements{
         .initial = {
-            .a = 0xFF,
+            .a = 0b01010101,
             .flags = { },
-            .operand = 0b11101010 },
+            .operand = 0b01010101 },
         .final = {
-            .a = 0xFF,
+            .a = 0b00000000,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true } },
+            .operand = 0b01010101
+        }}
+},
+EORAbsolute{
+    // Test individual bits are EOR'd.
+    Absolute().address(0x8000).value(0xA000),
+    EORAbsolute::Requirements{
+        .initial = {
+            .a = 0b10101010,
+            .flags = { },
+            .operand = 0b01010101 },
+        .final = {
+            .a = 0b11111111,
             .flags = {
                 .n_value = {
                     .status_flag = FLAGS6502::N,
                     .expected_value = true },
                 .z_value = {
                     .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true } },
-            .operand = 0b11010100
-        }}
-},
-ASLAbsolute{
-    // Zero is set in lowest bit
-    Absolute().address(0x8000).value(0xA000),
-    ASLAbsolute::Requirements{
-        .initial = {
-            .a = 0x00,
-            .flags = { },
-            .operand = 0b00000001 },
-        .final = {
-            .a = 0x00,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
                     .expected_value = false } },
-            .operand = 0b00000010
+            .operand = 0b01010101
         }}
 }
 };
 
-TEST_P(ASLAbsoluteMode, TypicalInstructionExecution)
+TEST_P(EORAbsoluteMode, TypicalInstructionExecution)
 {
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(ArithmeticShiftLeftAbsoluteAtVariousAddresses,
-                         ASLAbsoluteMode,
-                         testing::ValuesIn(ASLAbsoluteModeTestValues) );
+INSTANTIATE_TEST_SUITE_P(ExclusiveOrAbsoluteAtVariousAddresses,
+                         EORAbsoluteMode,
+                         testing::ValuesIn(EORAbsoluteModeTestValues) );
