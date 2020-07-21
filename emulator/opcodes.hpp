@@ -280,8 +280,10 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::INX:
+        return 0xE8;
         break;
     case AbstractInstruction_e::INY:
+        return 0xC8;
         break;
     case AbstractInstruction_e::JMP:
         break;

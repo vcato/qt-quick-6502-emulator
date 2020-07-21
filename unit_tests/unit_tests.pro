@@ -63,6 +63,8 @@ SOURCES += \
         implied_mode_CLV.cpp \
         implied_mode_DEX.cpp \
         implied_mode_DEY.cpp \
+        implied_mode_INX.cpp \
+        implied_mode_INY.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \
