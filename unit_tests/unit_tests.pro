@@ -25,6 +25,7 @@ SOURCES += \
         absolute_indexed_with_x_mode_CMP.cpp \
         absolute_indexed_with_x_mode_DEC.cpp \
         absolute_indexed_with_x_mode_EOR.cpp \
+        absolute_indexed_with_x_mode_INC.cpp \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_y_mode_ADC.cpp \
@@ -42,6 +43,7 @@ SOURCES += \
         absolute_mode_CPY.cpp \
         absolute_mode_DEC.cpp \
         absolute_mode_EOR.cpp \
+        absolute_mode_INC.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
@@ -87,6 +89,7 @@ SOURCES += \
         zero_page_indexed_with_x_mode_CMP.cpp \
         zero_page_indexed_with_x_mode_DEC.cpp \
         zero_page_indexed_with_x_mode_EOR.cpp \
+        zero_page_indexed_with_x_mode_INC.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
@@ -100,6 +103,7 @@ SOURCES += \
         zero_page_mode_CPY.cpp \
         zero_page_mode_DEC.cpp \
         zero_page_mode_EOR.cpp \
+        zero_page_mode_INC.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp
