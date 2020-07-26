@@ -49,10 +49,9 @@ bool ProgramCounterIsSetToInstructionAddress(const InstructionExecutor          
 }
 
 // NOTE: There are specializations in other files.
-template<AbstractInstruction_e TOperation,
-         typename TAddressingMode>
-bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor                      &executor,
-                                       const Instruction<TOperation, TAddressingMode> &instruction)
+template<class TInstructionAndAddressingMode>
+bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor           &executor,
+                                       const TInstructionAndAddressingMode &instruction)
 {
     // One past the instruction, for typical instructions.
     return executor.registers().program_counter == (instruction.address.instruction_address +

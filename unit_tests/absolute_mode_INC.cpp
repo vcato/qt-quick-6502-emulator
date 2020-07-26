@@ -235,7 +235,7 @@ INCAbsolute{
                     .expected_value = false } },
             .operand = 0x81
         }}
-},
+}
 };
 
 TEST_P(INCAbsoluteMode, TypicalInstructionExecution)

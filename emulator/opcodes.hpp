@@ -286,6 +286,17 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0xC8;
         break;
     case AbstractInstruction_e::JMP:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0x4C;
+            break;
+        case AddressMode_e::Indirect:
+            return 0x6C;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::JSR:
         break;

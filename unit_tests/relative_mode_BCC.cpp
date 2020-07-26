@@ -55,9 +55,9 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &,
     // No memory affected
 }
 
-template<AbstractInstruction_e TOperation>
-bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor               &executor,
-                                       const Instruction<TOperation, Relative> &instruction)
+template<>
+bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor &executor,
+                                       const BCCRelative         &instruction)
 {
     // To an offset value from the FOLLOWING instruction!
     uint16_t next_instruction_address = instruction.address.instruction_address +
