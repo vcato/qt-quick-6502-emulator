@@ -182,6 +182,6 @@ TEST_P(LDAIndirectYIndexedMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadIndirectYIndexedAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadIndirectYIndexedAtVariousAddresses,
                          LDAIndirectYIndexedMode,
                          testing::ValuesIn(LDAIndirectYIndexedModeTestValues) );

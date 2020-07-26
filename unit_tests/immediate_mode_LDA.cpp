@@ -135,7 +135,7 @@ TEST_P(LDAImmediateMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadImmediateAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadImmediateAtVariousAddresses,
                          LDAImmediateMode,
                          testing::ValuesIn(LDAImmediateModeTestValues) );
 

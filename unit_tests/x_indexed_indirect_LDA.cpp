@@ -170,6 +170,6 @@ TEST_P(LDAXIndexedIndirectMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadXIndexedIndirectAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadXIndexedIndirectAtVariousAddresses,
                          LDAXIndexedIndirectMode,
                          testing::ValuesIn(LDAXIndexedIndirectModeTestValues) );

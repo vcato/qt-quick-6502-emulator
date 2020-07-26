@@ -136,6 +136,6 @@ TEST_P(LDAZeroPageMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadZeroPageAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadZeroPageAtVariousAddresses,
                          LDAZeroPageMode,
                          testing::ValuesIn(LDAZeroPageModeTestValues) );

@@ -192,6 +192,6 @@ TEST_P(LDAAbsoluteXIndexedMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LoadAbsoluteAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(LoadAbsoluteAtVariousAddresses,
                          LDAAbsoluteXIndexedMode,
                          testing::ValuesIn(LDAAbsoluteXIndexedModeTestValues) );
