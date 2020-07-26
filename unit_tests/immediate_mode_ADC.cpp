@@ -143,31 +143,6 @@ ADCImmediate{
                     .expected_value = false } }
         }}
 },
-ADCImmediate{
-    // Rolling over affects the Z and C flags
-    Immediate().address(0x8000).value(0x01),
-    ADCImmediate::Requirements{
-        .initial = {
-            .a = 0xFF,
-            .flags = { }},
-        .final = {
-            .a = 0x00,
-            .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } }
-        }}
-},
-
 // Carry flag
 ADCImmediate{
     // 1 + 1 = 2, C = 0, V=0

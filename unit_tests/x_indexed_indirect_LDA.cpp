@@ -23,8 +23,11 @@ void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExe
                                  AddressMode_e::XIndexedIndirect,
                                  instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x    ] = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
-    fixture.fakeMemory[instruction_param.address.zero_page_address + instruction_param.requirements.initial.x + 1] = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
+
+    auto effective_address = fixture.calculateZeroPageIndexedAddress(instruction_param.address.zero_page_address, instruction_param.requirements.initial.x);
+
+    fixture.fakeMemory[ effective_address      ] = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
+    fixture.fakeMemory[ effective_address  + 1 ] = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
     fixture.fakeMemory[instruction_param.requirements.initial.address_to_indirect_to] = instruction_param.requirements.final.a;
 
     // Load appropriate registers
@@ -57,13 +60,13 @@ void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fix
                                        const LDAXIndexedIndirect            &instruction)
 {
     const auto    address_stored_in_zero_page    = instruction.requirements.initial.address_to_indirect_to;
-    const uint8_t zero_page_address_to_load_from = instruction.address.zero_page_address;
-    const uint8_t value_to_load = instruction.requirements.final.a;
     const uint8_t x_register    = instruction.requirements.initial.x;
+    const uint8_t zero_page_address_to_load_from = fixture.calculateZeroPageIndexedAddress(instruction.address.zero_page_address, x_register);
+    const uint8_t value         = instruction.requirements.final.a;
 
-    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + x_register),     Eq( fixture.loByteOf(address_stored_in_zero_page) ));
-    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + x_register + 1), Eq( fixture.hiByteOf(address_stored_in_zero_page) ));
-    EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page ), Eq(value_to_load));
+    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from    ), Eq( fixture.loByteOf(address_stored_in_zero_page) ));
+    EXPECT_THAT(fixture.fakeMemory.at( zero_page_address_to_load_from + 1), Eq( fixture.hiByteOf(address_stored_in_zero_page) ));
+    EXPECT_THAT(fixture.fakeMemory.at( address_stored_in_zero_page ), Eq(value));
 }
 
 
@@ -82,6 +85,82 @@ LDAXIndexedIndirect{
             .a = 6,
             .x = 12,
             .flags = { }
+        }}
+},
+LDAXIndexedIndirect{
+    // The end of a page
+    XIndexedIndirect().address(0x80FE).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 6,
+            .x = 12,
+            .flags = { }
+        }}
+},
+LDAXIndexedIndirect{
+    // Crossing a page
+    XIndexedIndirect().address(0x80FF).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 6,
+            .x = 12,
+            .flags = { }
+        }}
+},
+LDAXIndexedIndirect{
+    // Loading a zero affects the Z flag
+    XIndexedIndirect().address(0x8000).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = false },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = true } }
+        }}
+},
+LDAXIndexedIndirect{
+    // Loading a negative affects the N flag
+    XIndexedIndirect().address(0x8000).zp_address(0xA0),
+    LDAXIndexedIndirect::Requirements{
+        .initial = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0,
+            .x = 12,
+            .flags = { }},
+        .final = {
+            .address_to_indirect_to = 0xC000,
+            .a = 0x80,
+            .x = 12,
+            .flags = {
+                .n_value = {
+                    .status_flag = FLAGS6502::N,
+                    .expected_value = true },
+                .z_value = {
+                    .status_flag = FLAGS6502::Z,
+                    .expected_value = false } }
         }}
 }
 };

@@ -258,6 +258,7 @@ ADCZeroPage{
         }}
 },
 ADCZeroPage{
+    // V Flag
     // 7F + 1 = 80, C = 0, V = 1
     ZeroPage().address(0x8000).zp_address(6),
     ADCZeroPage::Requirements{
@@ -296,6 +297,7 @@ ADCZeroPage{
         }}
 },
 ADCZeroPage{
+    // V Flag
     // 7F + 1 = 81 (C initially set), C = 0, V = 1
     ZeroPage().address(0x8000).zp_address(6),
     ADCZeroPage::Requirements{
@@ -334,6 +336,7 @@ ADCZeroPage{
         }}
 },
 ADCZeroPage{
+    // V Flag
     // 0x80 + 0x01 = 0x81 (-128 + 1 = -127), C = 0, V = 0
     ZeroPage().address(0x8000).zp_address(6),
     ADCZeroPage::Requirements{
@@ -372,6 +375,7 @@ ADCZeroPage{
         }}
 },
 ADCZeroPage{
+    // V Flag
     // 0x80 + 0x7F = 0xFF (-128 + 127 = -1), C = 0, V = 0
     ZeroPage().address(0x8000).zp_address(6),
     ADCZeroPage::Requirements{
@@ -410,6 +414,7 @@ ADCZeroPage{
         }}
 },
 ADCZeroPage{
+    // V Flag
     // 0x80 + 0x80 = 0x00 (-128 + -128 = -256), C = 1, V = 1
     ZeroPage().address(0x8000).zp_address(6),
     ADCZeroPage::Requirements{
@@ -448,6 +453,7 @@ ADCZeroPage{
         }}
 },
 ADCZeroPage{
+    // V Flag
     // 0x80 + 0xFF = -129,  V = 1
     ZeroPage().address(0x8000).zp_address(6),
     ADCZeroPage::Requirements{

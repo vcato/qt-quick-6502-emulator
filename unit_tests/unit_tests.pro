@@ -19,29 +19,94 @@ HEADERS += \
 
 SOURCES += \
         6502_tests.cpp \
+        absolute_indexed_with_x_mode_ADC.cpp \
+        absolute_indexed_with_x_mode_AND.cpp \
+        absolute_indexed_with_x_mode_ASL.cpp \
+        absolute_indexed_with_x_mode_CMP.cpp \
+        absolute_indexed_with_x_mode_DEC.cpp \
+        absolute_indexed_with_x_mode_EOR.cpp \
+        absolute_indexed_with_x_mode_INC.cpp \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
+        absolute_indexed_with_y_mode_ADC.cpp \
+        absolute_indexed_with_y_mode_AND.cpp \
+        absolute_indexed_with_y_mode_CMP.cpp \
+        absolute_indexed_with_y_mode_EOR.cpp \
         absolute_indexed_with_y_mode_LDA.cpp \
         absolute_indexed_with_y_mode_LDX.cpp \
+        absolute_mode_ADC.cpp \
+        absolute_mode_AND.cpp \
+        absolute_mode_ASL.cpp \
+        absolute_mode_BIT.cpp \
+        absolute_mode_CMP.cpp \
+        absolute_mode_CPX.cpp \
+        absolute_mode_CPY.cpp \
+        absolute_mode_DEC.cpp \
+        absolute_mode_EOR.cpp \
+        absolute_mode_INC.cpp \
+        absolute_mode_JMP.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
-        accumulator_mode.cpp \
+        accumulator_mode_ASL.cpp \
         immediate_mode_ADC.cpp \
+        immediate_mode_AND.cpp \
+        immediate_mode_CMP.cpp \
+        immediate_mode_CPX.cpp \
+        immediate_mode_CPY.cpp \
+        immediate_mode_EOR.cpp \
         immediate_mode_LDA.cpp \
         immediate_mode_LDX.cpp \
         immediate_mode_LDY.cpp \
-        implied_mode.cpp \
+        implied_mode_CLC.cpp \
+        implied_mode_CLD.cpp \
+        implied_mode_CLI.cpp \
+        implied_mode_CLV.cpp \
+        implied_mode_DEX.cpp \
+        implied_mode_DEY.cpp \
+        implied_mode_INX.cpp \
+        implied_mode_INY.cpp \
+        indirect_y_indexed_ADC.cpp \
+        indirect_y_indexed_AND.cpp \
+        indirect_y_indexed_CMP.cpp \
+        indirect_y_indexed_EOR.cpp \
         indirect_y_indexed_LDA.cpp \
         instruction_executor_tests.cpp \
         registers_tests.cpp \
-        relative_mode.cpp \
+        relative_mode_BCC.cpp \
+        relative_mode_BCS.cpp \
+        relative_mode_BEQ.cpp \
+        relative_mode_BMI.cpp \
+        relative_mode_BNE.cpp \
+        relative_mode_BPL.cpp \
+        relative_mode_BVC.cpp \
+        relative_mode_BVS.cpp \
+        x_indexed_indirect_ADC.cpp \
+        x_indexed_indirect_AND.cpp \
+        x_indexed_indirect_CMP.cpp \
+        x_indexed_indirect_EOR.cpp \
         x_indexed_indirect_LDA.cpp \
+        zero_page_indexed_with_x_mode_ADC.cpp \
+        zero_page_indexed_with_x_mode_AND.cpp \
+        zero_page_indexed_with_x_mode_ASL.cpp \
+        zero_page_indexed_with_x_mode_CMP.cpp \
+        zero_page_indexed_with_x_mode_DEC.cpp \
+        zero_page_indexed_with_x_mode_EOR.cpp \
+        zero_page_indexed_with_x_mode_INC.cpp \
         zero_page_indexed_with_x_mode_LDA.cpp \
         main.cpp \
         zero_page_indexed_with_x_mode_LDY.cpp \
         zero_page_indexed_with_y_mode_LDX.cpp \
         zero_page_mode_ADC.cpp \
+        zero_page_mode_AND.cpp \
+        zero_page_mode_ASL.cpp \
+        zero_page_mode_BIT.cpp \
+        zero_page_mode_CMP.cpp \
+        zero_page_mode_CPX.cpp \
+        zero_page_mode_CPY.cpp \
+        zero_page_mode_DEC.cpp \
+        zero_page_mode_EOR.cpp \
+        zero_page_mode_INC.cpp \
         zero_page_mode_LDA.cpp \
         zero_page_mode_LDX.cpp \
         zero_page_mode_LDY.cpp

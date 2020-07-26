@@ -27,6 +27,13 @@ struct NZCFlags
     StatusExpectation c_value { .status_flag = FLAGS6502::C, .expected_value = false };
 };
 
+struct NZVFlags
+{
+    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
+    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
+    StatusExpectation v_value { .status_flag = FLAGS6502::V, .expected_value = false };
+};
+
 struct NZCVFlags
 {
     StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
@@ -38,6 +45,13 @@ struct NZCVFlags
 struct Address
 {
     uint16_t instruction_address;
+};
+
+struct Accumulator : Address
+{
+    constexpr Accumulator &address(uint16_t a) { instruction_address = a; return *this; }
+
+    static constexpr uint16_t operand_byte_count = 0;
 };
 
 struct Absolute : Address
@@ -80,6 +94,9 @@ struct Immediate : Address
 
 struct Implied : Address
 {
+    constexpr Implied &address(uint16_t a) { instruction_address = a; return *this; }
+
+    static constexpr uint16_t operand_byte_count = 0;
 };
 
 struct Indirect : Address
@@ -109,6 +126,9 @@ struct IndirectYIndexed : Indirect
 
 struct Relative : Address
 {
+    constexpr Relative &address(uint16_t a) { instruction_address = a; return *this; }
+    constexpr Relative &signed_offset(uint8_t a) { offset = a; return *this; }
+
     uint8_t offset;
 
     static constexpr uint16_t operand_byte_count = 1;

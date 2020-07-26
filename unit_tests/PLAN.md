@@ -21,7 +21,8 @@ This file is mainly for keeping track of ideas for an overall Unit Testing plan.
         * Arithmetic operations
         * Shifting
     * V
-        * Only a few instructions use this.  Happens when instruction causes wrap-around of a number.
+        * Only a few instructions use this.  Happens when instruction causes wrap-around of a number at 0x80.
+          It's basically a carry for two's complement arithmetic.
 
 ## Simplifying Tests
 

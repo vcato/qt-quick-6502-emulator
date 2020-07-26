@@ -40,58 +40,263 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::AND:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0x2D;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0x3D;
+            break;
+        case AddressMode_e::AbsoluteYIndexed:
+            return 0x39;
+            break;
+        case AddressMode_e::Immediate:
+            return 0x29;
+            break;
+        case AddressMode_e::XIndexedIndirect:
+            return 0x21;
+            break;
+        case AddressMode_e::IndirectYIndexed:
+            return 0x31;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0x25;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0x35;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::ASL:
+        switch (address_mode)
+        {
+        case AddressMode_e::Accumulator:
+            return 0x0A;
+            break;
+        case AddressMode_e::Absolute:
+            return 0x0E;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0x1E;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0x06;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0x16;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::BCC:
+        return 0x90;
         break;
     case AbstractInstruction_e::BCS:
+        return 0xB0;
         break;
     case AbstractInstruction_e::BEQ:
+        return 0xF0;
         break;
     case AbstractInstruction_e::BIT:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0x2C;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0x24;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::BMI:
+        return 0x30;
         break;
     case AbstractInstruction_e::BNE:
+        return 0xD0;
         break;
     case AbstractInstruction_e::BPL:
+        return 0x10;
         break;
     case AbstractInstruction_e::BRK:
         break;
     case AbstractInstruction_e::BVC:
+        return 0x50;
         break;
     case AbstractInstruction_e::BVS:
+        return 0x70;
         break;
     case AbstractInstruction_e::CLC:
+        return 0x18;
         break;
     case AbstractInstruction_e::CLD:
+        return 0xD8;
         break;
     case AbstractInstruction_e::CLI:
+        return 0x58;
         break;
     case AbstractInstruction_e::CLV:
+        return 0xB8;
         break;
     case AbstractInstruction_e::CMP:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0xCD;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0xDD;
+            break;
+        case AddressMode_e::AbsoluteYIndexed:
+            return 0xD9;
+            break;
+        case AddressMode_e::Immediate:
+            return 0xC9;
+            break;
+        case AddressMode_e::XIndexedIndirect:
+            return 0xC1;
+            break;
+        case AddressMode_e::IndirectYIndexed:
+            return 0xD1;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0xC5;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0xD5;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::CPX:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0xEC;
+            break;
+        case AddressMode_e::Immediate:
+            return 0xE0;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0xE4;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::CPY:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0xCC;
+            break;
+        case AddressMode_e::Immediate:
+            return 0xC0;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0xC4;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::DEC:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0xCE;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0xDE;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0xC6;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0xD6;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::DEX:
+        return 0xCA;
         break;
     case AbstractInstruction_e::DEY:
+        return 0x88;
         break;
     case AbstractInstruction_e::EOR:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0x4D;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0x5D;
+            break;
+        case AddressMode_e::AbsoluteYIndexed:
+            return 0x59;
+            break;
+        case AddressMode_e::Immediate:
+            return 0x49;
+            break;
+        case AddressMode_e::XIndexedIndirect:
+            return 0x41;
+            break;
+        case AddressMode_e::IndirectYIndexed:
+            return 0x51;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0x45;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0x55;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::INC:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0xEE;
+            break;
+        case AddressMode_e::AbsoluteXIndexed:
+            return 0xFE;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0xE6;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0xF6;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::INX:
+        return 0xE8;
         break;
     case AbstractInstruction_e::INY:
+        return 0xC8;
         break;
     case AbstractInstruction_e::JMP:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0x4C;
+            break;
+        case AddressMode_e::Indirect:
+            return 0x6C;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::JSR:
         break;

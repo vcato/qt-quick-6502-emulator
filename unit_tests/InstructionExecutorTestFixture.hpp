@@ -31,14 +31,46 @@ public:
         uint8_t     data;
     };
 
-    uint8_t loByteOf(addressType address) const
+    /** Calculates the resulting address via the index offset from that address.
+     *
+     *  This adds the @p index to @p zp_address, without a carry into the upper byte.`
+     *
+     *  @param zp_address The originating address
+     *  @param index      The offset from the address
+     *
+     *  @return The final address with offset, within the originating page.
+     */
+    addressType calculateZeroPageIndexedAddress(uint8_t zp_address, uint8_t index) const
+    {
+        return (zp_address + index) & 0x00FF;
+    }
+
+    static uint8_t loByteOf(addressType address)
     {
         return address & 0xFF;
     }
 
-    uint8_t hiByteOf(addressType address) const
+    static uint8_t hiByteOf(addressType address)
     {
         return address >> 8;
+    }
+
+    static uint16_t MakeWord(uint8_t lo_byte, uint8_t hi_byte)
+    {
+        return (hi_byte << 8) + lo_byte;
+    }
+
+    static uint16_t SignedOffsetFromAddress(uint16_t input_address, uint8_t offset)
+    {
+        uint16_t final = input_address + offset;
+
+        // If the high bit is set in offset, then decrement the resulting page number.
+        return (offset & 0x80) ? MakeWord( loByteOf(final), hiByteOf(final) - 1) : final;
+    }
+
+    static bool AddressesAreOnDifferentPages(uint16_t address1, uint16_t address2)
+    {
+        return (address1 & 0xFF00) != (address2 & 0xFF00);
     }
 
     Registers r;

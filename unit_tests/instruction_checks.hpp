@@ -22,6 +22,14 @@ template<class TInstructionAndAddressingMode>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
                                        const TInstructionAndAddressingMode  &instruction);
 
+template<class TInstructionAndAddressingMode>
+void MemoryContainsExpectedResult(const InstructionExecutorTestFixture &,
+                                  const TInstructionAndAddressingMode  &)
+{
+    // Default empty for everything.
+    // Only specialize for memory-affecting operations!
+}
+
 template<typename TInstructionAndAddressingMode>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const TInstructionAndAddressingMode  &instruction_param);
@@ -40,15 +48,17 @@ bool ProgramCounterIsSetToInstructionAddress(const InstructionExecutor          
     return executor.registers().program_counter == instruction.address.instruction_address;
 }
 
-template<AbstractInstruction_e TOperation,
-         typename TAddressingMode>
-bool ProgramCounterIsSetToOnePastTheEntireInstruction(const InstructionExecutor                      &executor,
-                                                      const Instruction<TOperation, TAddressingMode> &instruction)
+// NOTE: There are specializations in other files.
+template<class TInstructionAndAddressingMode>
+bool ProgramCounterIsSetToCorrectValue(const InstructionExecutor           &executor,
+                                       const TInstructionAndAddressingMode &instruction)
 {
+    // One past the instruction, for typical instructions.
     return executor.registers().program_counter == (instruction.address.instruction_address +
                                                     instruction.address.operand_byte_count  + 1);
 }
 
+// This will be redefined for certain addressing modes
 template<class TInstructionAndAddressingMode>
 void InstructionExecutedInExpectedClockTicks(const InstructionExecutorTestFixture &fixture,
                                              const TInstructionAndAddressingMode  &instruction)
@@ -74,10 +84,11 @@ template<class TInstructionAndAddressingMode>
 void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
                                   const TInstructionAndAddressingMode  &instruction)
 {
-    EXPECT_TRUE(ProgramCounterIsSetToOnePastTheEntireInstruction(fixture.executor, instruction));
+    EXPECT_TRUE(ProgramCounterIsSetToCorrectValue(fixture.executor, instruction));
     EXPECT_THAT(fixture.executor.complete(), Eq(true));
     InstructionExecutedInExpectedClockTicks(fixture, instruction);
     RegistersAreInExpectedState(fixture.executor.registers(), instruction.requirements.final);
+    MemoryContainsExpectedResult(fixture, instruction);
 }
 
 
