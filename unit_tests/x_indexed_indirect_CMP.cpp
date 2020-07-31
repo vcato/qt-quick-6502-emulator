@@ -91,15 +91,9 @@ CMPXIndexedIndirect{
             .a = 0,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -119,15 +113,9 @@ CMPXIndexedIndirect{
             .a = 0,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -147,15 +135,9 @@ CMPXIndexedIndirect{
             .a = 0,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -174,15 +156,9 @@ CMPXIndexedIndirect{
             .a = 0,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -202,15 +178,9 @@ CMPXIndexedIndirect{
             .a = 2,
             .x = 0x10,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false } },
             .operand = 3
         }}
 },
@@ -230,15 +200,9 @@ CMPXIndexedIndirect{
             .a = 3,
             .x = 0x10,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true } },
             .operand = 2
         }}
 }

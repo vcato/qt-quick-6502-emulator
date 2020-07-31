@@ -99,12 +99,8 @@ LDYImmediate{
         .final = {
             .y = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } }
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } }
         }}
 },
 LDYImmediate{
@@ -117,12 +113,8 @@ LDYImmediate{
         .final = {
             .y = 0x80,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } }
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } }
         }}
 }
 };

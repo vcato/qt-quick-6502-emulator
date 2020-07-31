@@ -73,15 +73,9 @@ BITZeroPage{
         .final = {
             .a = 0b00000000,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .operand = 0b10000000
         }}
 },
@@ -97,15 +91,9 @@ BITZeroPage{
         .final = {
             .a = 0b00000000,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .v_value = { .expected_value = true } },
             .operand = 0b01000000
         }}
 },
@@ -121,15 +109,9 @@ BITZeroPage{
         .final = {
             .a = 0b10000000,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .operand = 0b00000000
         }}
 },
@@ -144,15 +126,9 @@ BITZeroPage{
         .final = {
             .a = 0b00100000,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .operand = 0b00000000
         }}
 },
@@ -167,15 +143,9 @@ BITZeroPage{
         .final = {
             .a = 0b00100000,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .operand = 0b00100000
         }}
 }

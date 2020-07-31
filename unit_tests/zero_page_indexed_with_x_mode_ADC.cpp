@@ -122,35 +122,19 @@ ADCZeroPageXIndexed{
             .a = 0,
             .x = 0x80,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x80 },
         .final = {
             .a = 0x80,
             .x = 0x80,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x80
         }}
 },
@@ -162,35 +146,19 @@ ADCZeroPageXIndexed{
             .a = 0,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0 },
         .final = {
             .a = 0,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0
         }}
 },
@@ -202,35 +170,19 @@ ADCZeroPageXIndexed{
             .a = 0xFF,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x01 },
         .final = {
             .a = 0x00,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 0x01
         }}
 },
@@ -242,35 +194,19 @@ ADCZeroPageXIndexed{
             .a = 0xFF,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 0x01 },
         .final = {
             .a = 0x01,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 0x01
         }}
 },
@@ -283,35 +219,19 @@ ADCZeroPageXIndexed{
             .a = 0x7F,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x01 },
         .final = {
             .a = 0x80,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = true } },
             .addend = 0x01
         }}
 },
@@ -324,35 +244,19 @@ ADCZeroPageXIndexed{
             .a = 0x7F,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 0x01 },
         .final = {
             .a = 0x81,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = true } },
             .addend = 0x01
         }}
 },
@@ -365,35 +269,19 @@ ADCZeroPageXIndexed{
             .a = 0x80,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x01 },
         .final = {
             .a = 0x81,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x01
         }}
 },
@@ -406,35 +294,19 @@ ADCZeroPageXIndexed{
             .a = 0x80,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x7F },
         .final = {
             .a = 0xFF,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x01
         }}
 },
@@ -447,35 +319,19 @@ ADCZeroPageXIndexed{
             .a = 0x80,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x80 },
         .final = {
             .a = 0x00,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = true } },
             .addend = 0x01
         }}
 },
@@ -488,35 +344,19 @@ ADCZeroPageXIndexed{
             .a = 0x80,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0xFF },
         .final = {
             .a = 0x7F,
             .x = 1,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = true } },
             .addend = 0x01
         }}
 }

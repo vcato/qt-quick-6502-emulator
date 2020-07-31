@@ -78,12 +78,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0xFF
         }}
 },
@@ -98,12 +94,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0xFF
         }}
 },
@@ -118,12 +110,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0xFF
         }}
 },
@@ -138,12 +126,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0xFF
         }}
 },
@@ -158,12 +142,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0xFF
         }}
 },
@@ -178,12 +158,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0x80,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -198,12 +174,8 @@ INCAbsoluteXIndexed{
         .final = {
             .x = 0xFF,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 1
         }}
 },
@@ -215,22 +187,14 @@ INCAbsoluteXIndexed{
         .initial = {
             .x = 0xFF,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0x7F },
         .final = {
             .x = 0xFF,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0x80
         }}
 }

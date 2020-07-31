@@ -92,18 +92,10 @@ ADCXIndexedIndirect{
             .a = 6,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 2
         }}
 },
@@ -122,18 +114,10 @@ ADCXIndexedIndirect{
             .a = 6,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 2
         }}
 },
@@ -152,18 +136,10 @@ ADCXIndexedIndirect{
             .a = 6,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 2
         }}
 },
@@ -182,18 +158,10 @@ ADCXIndexedIndirect{
             .a = 0,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0
         }}
 },
@@ -212,18 +180,10 @@ ADCXIndexedIndirect{
             .a = 0x80,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x80
         }}
 },
@@ -243,18 +203,10 @@ ADCXIndexedIndirect{
             .a = 2,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x80
         }}
 },
@@ -273,18 +225,10 @@ ADCXIndexedIndirect{
             .a = 0,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 1
         }}
 },
@@ -303,18 +247,10 @@ ADCXIndexedIndirect{
             .a = 0,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 0xFF
         }}
 },
@@ -333,18 +269,10 @@ ADCXIndexedIndirect{
             .a = 0x80,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = true } },
             .addend = 1
         }}
 },
@@ -363,18 +291,10 @@ ADCXIndexedIndirect{
             .a = 0x81,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 1
         }}
 },
@@ -393,18 +313,10 @@ ADCXIndexedIndirect{
             .a = 0xFF,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x7F
         }}
 },
@@ -423,18 +335,10 @@ ADCXIndexedIndirect{
             .a = 0x00,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = true } },
             .addend = 0x7F
         }}
 },
@@ -453,18 +357,10 @@ ADCXIndexedIndirect{
             .a = 0x7F,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = true } },
             .addend = 0x7F
         }}
 },
@@ -477,36 +373,20 @@ ADCXIndexedIndirect{
             .a = 0x00,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 2},
         .final = {
             .address_to_indirect_to = 0xC000,
             .a = 3,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = false },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
             .addend = 0x7F
         }}
 },
@@ -519,36 +399,20 @@ ADCXIndexedIndirect{
             .a = 0xFF,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 1},
         .final = {
             .address_to_indirect_to = 0xC000,
             .a = 1,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false },
-                .c_value = {
-                    .status_flag = FLAGS6502::C,
-                    .expected_value = true },
-                .v_value = {
-                    .status_flag = FLAGS6502::V,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .addend = 1
         }}
 }

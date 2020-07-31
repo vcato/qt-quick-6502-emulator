@@ -71,12 +71,8 @@ INCZeroPage{
             .operand = 0x01 },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 0x02
         }}
 },
@@ -89,12 +85,8 @@ INCZeroPage{
             .operand = 0x01 },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 0x02
         }}
 },
@@ -107,12 +99,8 @@ INCZeroPage{
             .operand = 0x01 },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 0x02
         }}
 },
@@ -125,12 +113,8 @@ INCZeroPage{
             .operand = 0x01 },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 0x02
         }}
 },
@@ -143,12 +127,8 @@ INCZeroPage{
             .operand = 0xFF },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -161,12 +141,8 @@ INCZeroPage{
             .operand = 0 },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 1
         }}
 },
@@ -176,21 +152,13 @@ INCZeroPage{
     INCZeroPage::Requirements{
         .initial = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0x7F },
         .final = {
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0x80
         }}
 }

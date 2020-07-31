@@ -75,12 +75,8 @@ ANDZeroPageXIndexed{
             .a = 0,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0x00
         }}
 },
@@ -97,12 +93,8 @@ ANDZeroPageXIndexed{
             .a = 0,
             .x = 2,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0xFF
         }}
 },
@@ -119,12 +111,8 @@ ANDZeroPageXIndexed{
             .a = 0,
             .x = 32,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0
         }}
 },
@@ -140,12 +128,8 @@ ANDZeroPageXIndexed{
             .a = 0xFF,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0xFF
         }}
 },
@@ -162,12 +146,8 @@ ANDZeroPageXIndexed{
             .a = 0x80,
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -184,12 +164,8 @@ ANDZeroPageXIndexed{
             .a = 0x00,
             .x = 16,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } },
             .operand = 0b01010101
         }}
 },
@@ -206,12 +182,8 @@ ANDZeroPageXIndexed{
             .a = 0b10101010,
             .x = 0xFF,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } },
             .operand = 0b10101010
         }}
 },
@@ -228,12 +200,8 @@ ANDZeroPageXIndexed{
             .a = 0b01010101,
             .x = 0xFF,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } },
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false } },
             .operand = 0b01010101
         }}
 }

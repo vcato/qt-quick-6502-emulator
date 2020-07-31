@@ -7,39 +7,37 @@
 
 struct StatusExpectation
 {
-    constexpr StatusExpectation &flag(const FLAGS6502 f) { status_flag = f; return *this; }
     constexpr StatusExpectation &value(const bool v) { expected_value = v; return *this; }
 
-    FLAGS6502 status_flag;
     bool      expected_value;
 };
 
 struct NZFlags
 {
-    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
-    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
+    StatusExpectation n_value { .expected_value = false };
+    StatusExpectation z_value { .expected_value = false };
 };
 
 struct NZCFlags
 {
-    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
-    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
-    StatusExpectation c_value { .status_flag = FLAGS6502::C, .expected_value = false };
+    StatusExpectation n_value { .expected_value = false };
+    StatusExpectation z_value { .expected_value = false };
+    StatusExpectation c_value { .expected_value = false };
 };
 
 struct NZVFlags
 {
-    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
-    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
-    StatusExpectation v_value { .status_flag = FLAGS6502::V, .expected_value = false };
+    StatusExpectation n_value { .expected_value = false };
+    StatusExpectation z_value { .expected_value = false };
+    StatusExpectation v_value { .expected_value = false };
 };
 
 struct NZCVFlags
 {
-    StatusExpectation n_value { .status_flag = FLAGS6502::N, .expected_value = false };
-    StatusExpectation z_value { .status_flag = FLAGS6502::Z, .expected_value = false };
-    StatusExpectation c_value { .status_flag = FLAGS6502::C, .expected_value = false };
-    StatusExpectation v_value { .status_flag = FLAGS6502::V, .expected_value = false };
+    StatusExpectation n_value { .expected_value = false };
+    StatusExpectation z_value { .expected_value = false };
+    StatusExpectation c_value { .expected_value = false };
+    StatusExpectation v_value { .expected_value = false };
 };
 
 struct Address
@@ -52,6 +50,7 @@ struct Accumulator : Address
     constexpr Accumulator &address(uint16_t a) { instruction_address = a; return *this; }
 
     static constexpr uint16_t operand_byte_count = 0;
+    static constexpr AddressMode_e address_mode = AddressMode_e::Accumulator;
 };
 
 struct Absolute : Address
@@ -62,6 +61,7 @@ struct Absolute : Address
     uint16_t absolute_address;
 
     static constexpr uint16_t operand_byte_count = 2;
+    static constexpr AddressMode_e address_mode = AddressMode_e::Absolute;
 };
 
 struct AbsoluteXIndexed : Absolute
@@ -71,6 +71,8 @@ struct AbsoluteXIndexed : Absolute
     constexpr AbsoluteXIndexed &x(uint8_t v) { x_register_value = v; return *this; }
 
     uint8_t x_register_value;
+
+    static constexpr AddressMode_e address_mode = AddressMode_e::AbsoluteXIndexed;
 };
 
 struct AbsoluteYIndexed : Absolute
@@ -80,6 +82,8 @@ struct AbsoluteYIndexed : Absolute
     constexpr AbsoluteYIndexed &y(uint8_t v) { y_register_value = v; return *this; }
 
     uint8_t y_register_value;
+
+    static constexpr AddressMode_e address_mode = AddressMode_e::AbsoluteYIndexed;
 };
 
 struct Immediate : Address
@@ -90,6 +94,7 @@ struct Immediate : Address
     uint8_t immediate_value;
 
     static constexpr uint16_t operand_byte_count = 1;
+    static constexpr AddressMode_e address_mode = AddressMode_e::Immediate;
 };
 
 struct Implied : Address
@@ -97,6 +102,7 @@ struct Implied : Address
     constexpr Implied &address(uint16_t a) { instruction_address = a; return *this; }
 
     static constexpr uint16_t operand_byte_count = 0;
+    static constexpr AddressMode_e address_mode = AddressMode_e::Implied;
 };
 
 struct Indirect : Address
@@ -104,6 +110,7 @@ struct Indirect : Address
     uint8_t zero_page_address;
 
     static constexpr uint16_t operand_byte_count = 1;
+    static constexpr AddressMode_e address_mode = AddressMode_e::Indirect;
 };
 
 struct XIndexedIndirect : Indirect
@@ -113,6 +120,8 @@ struct XIndexedIndirect : Indirect
     constexpr XIndexedIndirect &x(uint8_t v) { x_register_value = v; return *this; }
 
     uint8_t x_register_value;
+
+    static constexpr AddressMode_e address_mode = AddressMode_e::XIndexedIndirect;
 };
 
 struct IndirectYIndexed : Indirect
@@ -122,6 +131,8 @@ struct IndirectYIndexed : Indirect
     constexpr IndirectYIndexed &y(uint8_t v) { y_register_value = v; return *this; }
 
     uint8_t y_register_value;
+
+    static constexpr AddressMode_e address_mode = AddressMode_e::IndirectYIndexed;
 };
 
 struct Relative : Address
@@ -132,6 +143,7 @@ struct Relative : Address
     uint8_t offset;
 
     static constexpr uint16_t operand_byte_count = 1;
+    static constexpr AddressMode_e address_mode = AddressMode_e::Relative;
 };
 
 struct ZeroPage : Address
@@ -142,6 +154,7 @@ struct ZeroPage : Address
     uint8_t zero_page_address;
 
     static constexpr uint16_t operand_byte_count = 1;
+    static constexpr AddressMode_e address_mode = AddressMode_e::ZeroPage;
 };
 
 struct ZeroPageXIndexed : Address
@@ -152,6 +165,7 @@ struct ZeroPageXIndexed : Address
     uint8_t zero_page_address;
 
     static constexpr uint16_t operand_byte_count = 1;
+    static constexpr AddressMode_e address_mode = AddressMode_e::ZeroPageXIndexed;
 };
 
 struct ZeroPageYIndexed : Address
@@ -162,6 +176,7 @@ struct ZeroPageYIndexed : Address
     uint8_t zero_page_address;
 
     static constexpr uint16_t operand_byte_count = 1;
+    static constexpr AddressMode_e address_mode = AddressMode_e::ZeroPageYIndexed;
 };
 
 template<AbstractInstruction_e TOperation, typename TAddress>
