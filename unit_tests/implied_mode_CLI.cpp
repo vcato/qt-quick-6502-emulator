@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -12,16 +11,17 @@ using CLIImplied     = CLI<Implied, CLI_Implied_Expectations, 2>;
 using CLIImpliedMode = ParameterizedInstructionExecutorTestFixture<CLIImplied>;
 
 
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const CLIImplied &instruction_param)
+{
+    fixture.r.SetFlag(FLAGS6502::I, instruction_param.requirements.initial.interrupt_flag);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const CLIImplied                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Implied,
-                                 instruction_param.address.instruction_address);
-
-    // Load appropriate registers
-    fixture.r.SetFlag(FLAGS6502::I, instruction_param.requirements.initial.interrupt_flag);
+    SetupRAMForInstructionsThatHaveImpliedValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

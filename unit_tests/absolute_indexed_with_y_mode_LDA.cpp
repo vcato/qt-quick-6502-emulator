@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -16,22 +15,25 @@ using LDAAbsoluteYIndexed     = LDA<AbsoluteYIndexed, LDA_AbsoluteYIndexed_Expec
 using LDAAbsoluteYIndexedMode = ParameterizedInstructionExecutorTestFixture<LDAAbsoluteYIndexed>;
 
 
-template<>
-void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const LDAAbsoluteYIndexed            &instruction_param)
+static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const LDAAbsoluteYIndexed &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::AbsoluteYIndexed,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = fixture.loByteOf(instruction_param.address.absolute_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 2] = fixture.hiByteOf(instruction_param.address.absolute_address);
     fixture.fakeMemory[instruction_param.address.absolute_address + instruction_param.requirements.final.y ] = instruction_param.requirements.final.a;
+}
 
-    // Load appropriate registers
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDAAbsoluteYIndexed &instruction_param)
+{
     fixture.r.a = instruction_param.requirements.initial.a;
     fixture.r.y = instruction_param.requirements.initial.y;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const LDAAbsoluteYIndexed            &instruction_param)
+{
+    SetupRAMForInstructionsThatHaveAnEffectiveAddress(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

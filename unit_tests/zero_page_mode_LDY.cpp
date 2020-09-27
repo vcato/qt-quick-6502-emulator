@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,22 +12,24 @@ using LDYZeroPage     = LDY<ZeroPage, LDY_ZeroPage_Expectations, 3>;
 using LDYZeroPageMode = ParameterizedInstructionExecutorTestFixture<LDYZeroPage>;
 
 
+static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const LDYZeroPage &instruction_param)
+{
+    fixture.fakeMemory[instruction_param.address.zero_page_address] = instruction_param.requirements.final.y;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDYZeroPage &instruction_param)
+{
+    fixture.r.y = instruction_param.requirements.initial.y;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const LDYZeroPage                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::ZeroPage,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-
-    // Load expected data into memory
-    fixture.fakeMemory[instruction_param.address.zero_page_address] = instruction_param.requirements.final.y;
-
-    // Load appropriate registers
-    fixture.r.y = instruction_param.requirements.initial.y;
-    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
-    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+    SetupRAMForInstructionsThatHaveAnEffectiveAddress(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

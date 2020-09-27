@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -17,23 +16,25 @@ using ANDIndirectYIndexed     = AND<IndirectYIndexed, AND_IndirectYIndexed_Expec
 using ANDIndirectYIndexedMode = ParameterizedInstructionExecutorTestFixture<ANDIndirectYIndexed>;
 
 
-template<>
-void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const ANDIndirectYIndexed            &instruction_param)
+static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const ANDIndirectYIndexed &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::IndirectYIndexed,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-    fixture.fakeMemory[instruction_param.address.zero_page_address    ]   = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
-    fixture.fakeMemory[instruction_param.address.zero_page_address + 1]   = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
     fixture.fakeMemory[instruction_param.requirements.initial.address_to_indirect_to + instruction_param.requirements.initial.y ] = instruction_param.requirements.initial.operand;
+}
 
-    // Load appropriate registers
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const ANDIndirectYIndexed &instruction_param)
+{
     fixture.r.a = instruction_param.requirements.initial.a;
     fixture.r.y = instruction_param.requirements.initial.y;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const ANDIndirectYIndexed            &instruction_param)
+{
+    SetupRAMForInstructionsThatHaveAnIndirectedEffectiveAddress(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

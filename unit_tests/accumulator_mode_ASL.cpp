@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -15,19 +14,20 @@ using ASLAccumulator     = ASL<Accumulator, ASL_Accumulator_Expectations, 2>;
 using ASLAccumulatorMode = ParameterizedInstructionExecutorTestFixture<ASLAccumulator>;
 
 
-template<>
-void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const ASLAccumulator                    &instruction_param)
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const ASLAccumulator &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Accumulator,
-                                 instruction_param.address.instruction_address);
-
-    // Load appropriate registers
     fixture.r.a = instruction_param.requirements.initial.a;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.flags.c_value.expected_value);
+}
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const ASLAccumulator                 &instruction_param)
+{
+    SetupRAMForInstructionsThatHaveNoEffectiveAddress(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

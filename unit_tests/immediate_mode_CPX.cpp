@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,20 +12,25 @@ using CPXImmediate     = CPX<Immediate, CPX_Immediate_Expectations, 2>;
 using CPXImmediateMode = ParameterizedInstructionExecutorTestFixture<CPXImmediate>;
 
 
-template<>
-void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const CPXImmediate                   &instruction_param)
+static void StoreTestValueAtImmediateAddress(InstructionExecutorTestFixture &fixture, const CPXImmediate &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Immediate,
-                                 instruction_param.address.instruction_address);
     fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
+}
 
-    // Load appropriate registers
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const CPXImmediate &instruction_param)
+{
     fixture.r.x = instruction_param.requirements.initial.x;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.flags.c_value.expected_value);
+}
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const CPXImmediate                   &instruction_param)
+{
+    SetupRAMForInstructionsThatHaveImmediateValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

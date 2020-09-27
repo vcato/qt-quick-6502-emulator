@@ -33,7 +33,7 @@ public:
 
     /** Calculates the resulting address via the index offset from that address.
      *
-     *  This adds the @p index to @p zp_address, without a carry into the upper byte.`
+     *  This adds the @p index to @p zp_address, without a carry into the upper byte.
      *
      *  @param zp_address The originating address
      *  @param index      The offset from the address

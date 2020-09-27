@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,18 +12,19 @@ using DEXImplied     = DEX<Implied, DEX_Implied_Expectations, 2>;
 using DEXImpliedMode = ParameterizedInstructionExecutorTestFixture<DEXImplied>;
 
 
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const DEXImplied &instruction_param)
+{
+    fixture.r.x = instruction_param.requirements.initial.x;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const DEXImplied                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Implied,
-                                 instruction_param.address.instruction_address);
-
-    // Load appropriate register
-    fixture.r.x = instruction_param.requirements.initial.x;
-    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
-    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+    SetupRAMForInstructionsThatHaveImpliedValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

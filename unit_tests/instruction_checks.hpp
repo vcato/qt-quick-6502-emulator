@@ -91,17 +91,6 @@ void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
     MemoryContainsExpectedResult(fixture, instruction);
 }
 
-template <typename InstructionParam>
-void StoreOpcode(InstructionExecutorTestFixture &fixture, const InstructionParam &instruction_param)
-{
-    fixture.loadOpcodeIntoMemory(
-        instruction_param.operation,
-        instruction_param.address.address_mode,
-        instruction_param.address.instruction_address
-        );
-}
-
-
 /** Tests the execution of an instruction.
  *
  *  @param fixture The test fixture to use for the test

@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,16 +12,22 @@ using BVSRelative     = BVS<Relative, BVS_Relative_Expectations, 2>;
 using BVSRelativeMode = ParameterizedInstructionExecutorTestFixture<BVSRelative>;
 
 
+void StoreTestValueRelativeAddress(InstructionExecutorTestFixture &fixture, const BVSRelative &instruction_param)
+{
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const BVSRelative &instruction_param)
+{
+    fixture.r.SetFlag(FLAGS6502::V, instruction_param.requirements.initial.overflow_flag);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const BVSRelative                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Relative,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
-
-    fixture.r.SetFlag(FLAGS6502::V, instruction_param.requirements.initial.overflow_flag);
+    SetupRAMForInstructionsThatHaveRelativeValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

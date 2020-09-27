@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,21 +12,24 @@ using LDYAbsolute     = LDY<Absolute, LDY_Absolute_Expectations, 4>;
 using LDYAbsoluteMode = ParameterizedInstructionExecutorTestFixture<LDYAbsolute>;
 
 
+static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const LDYAbsolute &instruction_param)
+{
+    fixture.fakeMemory[instruction_param.address.absolute_address       ] = instruction_param.requirements.final.y;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDYAbsolute &instruction_param)
+{
+    fixture.r.y = instruction_param.requirements.initial.y;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const LDYAbsolute                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Absolute,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = fixture.loByteOf(instruction_param.address.absolute_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 2] = fixture.hiByteOf(instruction_param.address.absolute_address);
-    fixture.fakeMemory[instruction_param.address.absolute_address       ] = instruction_param.requirements.final.y;
-
-    // Load appropriate registers
-    fixture.r.y = instruction_param.requirements.initial.y;
-    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
-    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+    SetupRAMForInstructionsThatHaveAnEffectiveAddress(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

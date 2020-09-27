@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,19 +12,24 @@ using LDYImmediate     = LDY<Immediate, LDY_Immediate_Expectations, 2>;
 using LDYImmediateMode = ParameterizedInstructionExecutorTestFixture<LDYImmediate>;
 
 
+static void StoreTestValueAtImmediateAddress(InstructionExecutorTestFixture &fixture, const LDYImmediate &instruction_param)
+{
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDYImmediate &instruction_param)
+{
+    fixture.r.y = instruction_param.requirements.initial.y;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const LDYImmediate                   &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Immediate,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
-
-    // Load appropriate registers
-    fixture.r.y = instruction_param.requirements.initial.y;
-    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
-    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+    SetupRAMForInstructionsThatHaveImmediateValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -18,11 +17,6 @@ using ADCAbsoluteXIndexed     = ADC<AbsoluteXIndexed, ADC_AbsoluteXIndexed_Expec
 using ADCAbsoluteXIndexedMode = ParameterizedInstructionExecutorTestFixture<ADCAbsoluteXIndexed>;
 
 
-static void StoreOperand(InstructionExecutorTestFixture &fixture, const ADCAbsoluteXIndexed &instruction_param)
-{
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = fixture.loByteOf(instruction_param.address.absolute_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 2] = fixture.hiByteOf(instruction_param.address.absolute_address);
-}
 
 static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const ADCAbsoluteXIndexed &instruction_param)
 {
@@ -37,14 +31,6 @@ static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.flags.c_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::V, instruction_param.requirements.initial.flags.v_value.expected_value);
-}
-
-static void SetupRAMForInstructionsThatHaveAnEffectiveAddress(InstructionExecutorTestFixture &fixture,
-                                                              const ADCAbsoluteXIndexed      &instruction_param)
-{
-    StoreOpcode(fixture, instruction_param);
-    StoreOperand(fixture, instruction_param);
-    StoreTestValueAtEffectiveAddress(fixture, instruction_param);
 }
 
 template<>

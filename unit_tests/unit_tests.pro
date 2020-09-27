@@ -13,6 +13,7 @@ QT += quick
 
 HEADERS += \
     InstructionExecutorTestFixture.hpp \
+    addressing_mode_helpers.hpp \
     instruction_checks.hpp \
     instruction_definitions.hpp \
     instruction_helpers.hpp
@@ -49,6 +50,7 @@ SOURCES += \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
         accumulator_mode_ASL.cpp \
+        addressing_mode_helpers.cpp \
         immediate_mode_ADC.cpp \
         immediate_mode_AND.cpp \
         immediate_mode_CMP.cpp \
