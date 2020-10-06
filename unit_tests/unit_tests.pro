@@ -46,6 +46,7 @@ SOURCES += \
         absolute_mode_EOR.cpp \
         absolute_mode_INC.cpp \
         absolute_mode_JMP.cpp \
+        absolute_mode_JSR.cpp \
         absolute_mode_LDA.cpp \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \

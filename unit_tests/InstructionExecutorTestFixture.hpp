@@ -73,6 +73,10 @@ public:
         return (address1 & 0xFF00) != (address2 & 0xFF00);
     }
 
+    static constexpr uint16_t baseStackAddress() { return 0x0100; }
+
+    uint16_t addressUsingStackPointer(uint8_t stack_offset) const { return baseStackAddress() + stack_offset; }
+
     Registers r;
     InstructionExecutor executor{ r,
                                   std::bind(&InstructionExecutorTestFixture::addressBusReadSignaled,        this, _1, _2),

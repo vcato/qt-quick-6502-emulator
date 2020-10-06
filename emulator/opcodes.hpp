@@ -299,6 +299,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::JSR:
+        return 0x20;
         break;
     case AbstractInstruction_e::LDA:
         switch (address_mode)
