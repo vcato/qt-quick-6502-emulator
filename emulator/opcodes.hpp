@@ -399,6 +399,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::NOP:
+        return 0xEA;
         break;
     case AbstractInstruction_e::ORA:
         break;
