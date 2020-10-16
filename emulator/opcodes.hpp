@@ -407,6 +407,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0x48;
         break;
     case AbstractInstruction_e::PHP:
+        return 0x08;
         break;
     case AbstractInstruction_e::PLA:
         break;
