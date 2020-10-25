@@ -79,6 +79,7 @@ void MemoryContainsExpectedResult(const InstructionExecutorTestFixture &fixture,
 // NOTE: OLC emulator always sets U flag to true when executing each instruction.
 static const std::vector<PHPImplied> PHPImpliedModeTestValues {
 PHPImplied{
+// Page ABOVE the stack (beginning)
     Implied().address(0x1000),
     PHPImplied::Requirements{
         .initial = {
@@ -90,6 +91,8 @@ PHPImplied{
             .stack_pointer = 0xFE
         }}
 },
+
+// Page ABOVE the stack (end)
 PHPImplied{
     Implied().address(0x10FF),
     PHPImplied::Requirements{
@@ -102,6 +105,8 @@ PHPImplied{
             .stack_pointer = 0x00
         }}
 },
+
+// Page ABOVE the stack (middle)
 PHPImplied{
     Implied().address(0x1080),
     PHPImplied::Requirements{
@@ -114,6 +119,8 @@ PHPImplied{
             .stack_pointer = 0xFF
         }}
 },
+
+// Somewhere else in the page
 PHPImplied{
     Implied().address(0x1070),
     PHPImplied::Requirements{
@@ -133,6 +140,6 @@ TEST_P(PHPImpliedMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(PushStatusImpliedAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(PushStatusOntoStackImpliedAtVariousAddresses,
                          PHPImpliedMode,
                          testing::ValuesIn(PHPImpliedModeTestValues) );
