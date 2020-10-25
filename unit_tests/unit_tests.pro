@@ -75,6 +75,7 @@ SOURCES += \
         implied_mode_NOP.cpp \
         implied_mode_PHA.cpp \
         implied_mode_PHP.cpp \
+        implied_mode_PLA.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \

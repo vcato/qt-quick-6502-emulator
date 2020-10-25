@@ -410,6 +410,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0x08;
         break;
     case AbstractInstruction_e::PLA:
+        return 0x68;
         break;
     case AbstractInstruction_e::PLP:
         break;
