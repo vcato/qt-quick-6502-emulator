@@ -2,8 +2,8 @@ This project is GREATLY inspired by OneLoneCoder's olcNES project
 and is an attempt to see what it would be like to write it in a
 Qt friendly way.
 
-# olcNES
-NES Emulator, and Tutorial Video Code
+qt-quick-6502-emulator
+6502 emulator written in a Qt friendly way.
 
 # License (OLC-3)
 Copyright 2018, 2019 OneLoneCoder.com
