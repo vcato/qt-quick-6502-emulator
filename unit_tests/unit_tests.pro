@@ -30,6 +30,7 @@ SOURCES += \
         absolute_indexed_with_x_mode_LDA.cpp \
         absolute_indexed_with_x_mode_LDY.cpp \
         absolute_indexed_with_x_mode_LSR.cpp \
+        absolute_indexed_with_x_mode_ROL.cpp \
         absolute_indexed_with_y_mode_ADC.cpp \
         absolute_indexed_with_y_mode_AND.cpp \
         absolute_indexed_with_y_mode_CMP.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
         absolute_mode_LDX.cpp \
         absolute_mode_LDY.cpp \
         absolute_mode_LSR.cpp \
+        absolute_mode_ROL.cpp \
         accumulator_mode_ASL.cpp \
         accumulator_mode_LSR.cpp \
         accumulator_mode_ROL.cpp \
