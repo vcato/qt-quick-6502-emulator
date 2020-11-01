@@ -54,6 +54,7 @@ SOURCES += \
         absolute_mode_LSR.cpp \
         accumulator_mode_ASL.cpp \
         accumulator_mode_LSR.cpp \
+        accumulator_mode_ROL.cpp \
         addressing_mode_helpers.cpp \
         immediate_mode_ADC.cpp \
         immediate_mode_AND.cpp \
