@@ -248,7 +248,7 @@ ROLAbsolute{
             .operand = 0b01000000 },
         .final = {
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false } },
             .operand = 0b10000000
