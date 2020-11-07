@@ -56,7 +56,6 @@ void RegistersAreInExpectedState(const Registers &registers,
 
     EXPECT_THAT(register_status, Eq(expectation_status));
     EXPECT_THAT(registers.stack_pointer, Eq(expectations.stack_pointer));
-    //EXPECT_THAT(registers.program_counter, Eq());
 }
 
 template<>
