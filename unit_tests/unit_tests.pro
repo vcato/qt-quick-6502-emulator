@@ -84,6 +84,7 @@ SOURCES += \
         implied_mode_PLA.cpp \
         implied_mode_PLP.cpp \
         implied_mode_RTI.cpp \
+        implied_mode_RTS.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \
