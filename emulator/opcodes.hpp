@@ -468,6 +468,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
     case AbstractInstruction_e::SBC:
         break;
     case AbstractInstruction_e::SEC:
+        return 0x38;
         break;
     case AbstractInstruction_e::SED:
         break;
