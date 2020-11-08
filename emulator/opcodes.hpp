@@ -474,6 +474,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0xF8;
         break;
     case AbstractInstruction_e::SEI:
+        return 0x78;
         break;
     case AbstractInstruction_e::STA:
         break;
