@@ -368,6 +368,6 @@ TEST_P(ADCZeroPageXIndexedMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(LoadZeroPageXIndexedAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(AddZeroPageXIndexedAtVariousAddresses,
                          ADCZeroPageXIndexedMode,
                          testing::ValuesIn(ADCZeroPageXIndexedModeTestValues) );

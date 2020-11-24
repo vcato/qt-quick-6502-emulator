@@ -421,6 +421,6 @@ TEST_P(ADCIndirectYIndexedMode, TypicalInstructionExecution)
     TypicalInstructionExecution(*this, GetParam());
 }
 
-INSTANTIATE_TEST_SUITE_P(LoadIndirectYIndexedAtVariousAddresses,
+INSTANTIATE_TEST_SUITE_P(AddIndirectYIndexedAtVariousAddresses,
                          ADCIndirectYIndexedMode,
                          testing::ValuesIn(ADCIndirectYIndexedModeTestValues) );
