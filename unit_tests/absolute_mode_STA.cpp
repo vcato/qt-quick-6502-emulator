@@ -13,7 +13,7 @@ using STAAbsoluteMode = ParameterizedInstructionExecutorTestFixture<STAAbsolute>
 
 static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const STAAbsolute &instruction_param)
 {
-    fixture.fakeMemory[instruction_param.address.absolute_address       ] = instruction_param.requirements.final.a;
+    fixture.fakeMemory[instruction_param.address.absolute_address       ] = instruction_param.requirements.initial.a;
 }
 
 static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const STAAbsolute &instruction_param)
@@ -49,7 +49,7 @@ template<>
 void MemoryContainsExpectedComputation(const InstructionExecutorTestFixture &fixture,
                                        const STAAbsolute                    &instruction)
 {
-    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address ), Eq( instruction.requirements.final.a ));
+    EXPECT_THAT(fixture.fakeMemory.at( instruction.address.absolute_address ), Eq( instruction.requirements.initial.a ));
 }
 
 
