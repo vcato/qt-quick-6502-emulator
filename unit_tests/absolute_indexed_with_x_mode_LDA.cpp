@@ -41,6 +41,7 @@ void RegistersAreInExpectedState(const Registers &registers,
                                  const LDA_AbsoluteXIndexed_Expectations &expectations)
 {
     EXPECT_THAT(registers.a, Eq(expectations.a));
+    EXPECT_THAT(registers.x, Eq(expectations.x));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::N), Eq(expectations.flags.n_value.expected_value));
     EXPECT_THAT(registers.GetFlag(FLAGS6502::Z), Eq(expectations.flags.z_value.expected_value));
 }
