@@ -97,6 +97,7 @@ SOURCES += \
         implied_mode_SEC.cpp \
         implied_mode_SED.cpp \
         implied_mode_SEI.cpp \
+        implied_mode_TAX.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \
