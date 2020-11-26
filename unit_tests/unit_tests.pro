@@ -101,6 +101,7 @@ SOURCES += \
         implied_mode_TAY.cpp \
         implied_mode_TSX.cpp \
         implied_mode_TXA.cpp \
+        implied_mode_TXS.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \
