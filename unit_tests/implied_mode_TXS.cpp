@@ -60,17 +60,11 @@ TXSImplied{
     TXSImplied::Requirements{
         .initial = {
             .s = 0xFF,
-            .x = 0,
-            .flags = {
-                    .n_value = { .expected_value = false },
-                    .z_value = { .expected_value = false } }
+            .x = 0
         },
         .final = {
             .s = 0,
-            .x = 0,
-            .flags = {
-                    .n_value = { .expected_value = false },
-                    .z_value = { .expected_value = true } }
+            .x = 0
         }}
 },
 TXSImplied{
@@ -78,17 +72,11 @@ TXSImplied{
     TXSImplied::Requirements{
         .initial = {
             .s = 0x00,
-            .x = 0xFF,
-            .flags = {
-                    .n_value = { .expected_value = false },
-                    .z_value = { .expected_value = false } }
+            .x = 0xFF
         },
         .final = {
             .s = 0xFF,
-            .x = 0xFF,
-            .flags = {
-                    .n_value = { .expected_value = true },
-                    .z_value = { .expected_value = false } }
+            .x = 0xFF
         }}
 }
 };
