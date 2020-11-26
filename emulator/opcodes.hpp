@@ -553,6 +553,20 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         }
         break;
     case AbstractInstruction_e::STY:
+        switch (address_mode)
+        {
+        case AddressMode_e::Absolute:
+            return 0x8C;
+            break;
+        case AddressMode_e::ZeroPage:
+            return 0x84;
+            break;
+        case AddressMode_e::ZeroPageXIndexed:
+            return 0x94;
+            break;
+        default:
+            break;
+        }
         break;
     case AbstractInstruction_e::TAX:
         break;
