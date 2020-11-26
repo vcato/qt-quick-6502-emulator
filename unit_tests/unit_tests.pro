@@ -99,6 +99,7 @@ SOURCES += \
         implied_mode_SEI.cpp \
         implied_mode_TAX.cpp \
         implied_mode_TAY.cpp \
+        implied_mode_TSX.cpp \
         indirect_y_indexed_ADC.cpp \
         indirect_y_indexed_AND.cpp \
         indirect_y_indexed_CMP.cpp \
