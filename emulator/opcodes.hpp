@@ -572,6 +572,7 @@ constexpr uint8_t OpcodeFor(const AbstractInstruction_e instruction, const Addre
         return 0xAA;
         break;
     case AbstractInstruction_e::TAY:
+        return 0xA8;
         break;
     case AbstractInstruction_e::TSX:
         break;
