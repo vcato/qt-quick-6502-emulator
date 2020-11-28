@@ -234,7 +234,7 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false }, // Borrow occurred`
+                .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
@@ -394,7 +394,7 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false }, // Carry should be set because we wrapped around
+                .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 }
