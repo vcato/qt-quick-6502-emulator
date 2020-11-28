@@ -67,10 +67,18 @@ SBCImmediate{
     SBCImmediate::Requirements{
         .initial = {
             .a = 6,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 6,
-            .flags = { }
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
@@ -79,10 +87,18 @@ SBCImmediate{
     SBCImmediate::Requirements{
         .initial = {
             .a = 6,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 6,
-            .flags = { }
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
@@ -91,30 +107,40 @@ SBCImmediate{
     SBCImmediate::Requirements{
         .initial = {
             .a = 6,
-            .flags = { }},
-        .final = {
-            .a = 6,
-            .flags = { }
-        }}
-},
-SBCImmediate{
-    // Subtracting a zero does not affect the Z flag
-    Immediate().address(0x8000).value(0x00),
-    SBCImmediate::Requirements{
-        .initial = {
-            .a = 6,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 6,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
                 .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
-    // Subtracting a zero does not affect the Z flag
+    Immediate().address(0x8000).value(0x00),
+    SBCImmediate::Requirements{
+        .initial = {
+            .a = 6,
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false }, // Previous overflow occured.  Simulate borrow.
+                .v_value = { .expected_value = false } } },
+        .final = {
+            .a = 5,
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow generated
+                .v_value = { .expected_value = false } }
+        }}
+},
+SBCImmediate{
     Immediate().address(0x8000).value(0x00),
     SBCImmediate::Requirements{
         .initial = {
@@ -122,47 +148,73 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
-    // Subtracting a negative affects the N flag
+    Immediate().address(0x8000).value(0x00),
+    SBCImmediate::Requirements{
+        .initial = {
+            .a = 0,
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Previous borrow
+                .v_value = { .expected_value = false } } },
+        .final = {
+            .a = 0xFF,
+            .flags = {
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false }, // Borrow occurred
+                .v_value = { .expected_value = false } }
+        }}
+},
+SBCImmediate{
     Immediate().address(0x8000).value(0x80),
     SBCImmediate::Requirements{
         .initial = {
             .a = 0,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true }, // No previous borrow
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x80,
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = false } }
+                .c_value = { .expected_value = false }, // Borrow occurred
+                .v_value = { .expected_value = true } }
         }}
 },
 // Carry flag
 SBCImmediate{
-    // 2 - 1 = 1, C = 0, V=0
+    // 2 - 1 = 1, C = 1, V=0
     Immediate().address(0x8000).value(0x01),
     SBCImmediate::Requirements{
         .initial = {
             .a = 0x02,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x01,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
@@ -172,13 +224,17 @@ SBCImmediate{
     SBCImmediate::Requirements{
         .initial = {
             .a = 0x00,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 0xFF,
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Borrow occurred`
                 .v_value = { .expected_value = false } }
         }}
 },
@@ -188,18 +244,22 @@ SBCImmediate{
     SBCImmediate::Requirements{
         .initial = {
             .a = 0x00,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x01,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
-    // 80 - 1 = 7F, C = 0, V = 1
+    // 80 - 1 = 7F, C = 1, V = 1
     Immediate().address(0x8000).value(0x01),
     SBCImmediate::Requirements{
         .initial = {
@@ -207,19 +267,19 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x7f,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = true } }
+                .c_value = { .expected_value = true }, // No borrow occurred
+                .v_value = { .expected_value = true } } // Overflow
         }}
 },
 SBCImmediate{
-    // 0x81 - 0x01 = 0x80 (-127 - 1 = -128), C = 0, V = 0
+    // 0x81 - 0x01 = 0x80 (-127 - 1 = -128), C = 1, V = 0
     Immediate().address(0x8000).value(0x01),
     SBCImmediate::Requirements{
         .initial = {
@@ -227,19 +287,19 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x80,
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
-    // 0xFF - 0x7F = 0x80 (-1 - 127 = -128), C = 0, V = 0
+    // 0xFF - 0x7F = 0x80 (-1 - 127 = -128), C = 1, V = 0
     Immediate().address(0x8000).value(0x7F),
     SBCImmediate::Requirements{
         .initial = {
@@ -247,14 +307,14 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x80,
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
@@ -264,14 +324,18 @@ SBCImmediate{
     SBCImmediate::Requirements{
         .initial = {
             .a = 0x80,
-            .flags = { }},
+            .flags = {
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
+                .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x00,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = true },
-                .v_value = { .expected_value = true } }
+                .c_value = { .expected_value = true }, // No Borrow occurred
+                .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
@@ -283,15 +347,15 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x7F,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = true } }
+                .c_value = { .expected_value = true }, // No borrow occurred
+                .v_value = { .expected_value = false } }
         }}
 },
 SBCImmediate{
@@ -303,14 +367,14 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Previous borrow occurred
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0x00,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No Borrow occurred
                 .v_value = { .expected_value = false } }
         }}
 },
@@ -323,14 +387,14 @@ SBCImmediate{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Previous borrow occurred
                 .v_value = { .expected_value = false } } },
         .final = {
             .a = 0xFF,
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true }, // Carry should be set because we wrapped around
+                .c_value = { .expected_value = false }, // Carry should be set because we wrapped around
                 .v_value = { .expected_value = false } }
         }}
 }
