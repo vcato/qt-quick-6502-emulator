@@ -219,7 +219,6 @@ SBCAbsolute{
         }}
 },
 SBCAbsolute{
-    // Subtracting a negative affects the N flag
     Absolute().address(0x8000).value(0xA000),
     SBCAbsolute::Requirements{
         .initial = {
@@ -303,7 +302,7 @@ SBCAbsolute{
                 .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } },
-            .operand = 0xFF
+            .operand = 0x01
         }}
 },
 SBCAbsolute{
