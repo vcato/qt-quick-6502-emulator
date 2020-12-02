@@ -70,11 +70,19 @@ SBCZeroPage{
     SBCZeroPage::Requirements{
         .initial = {
             .a = 6,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .a = 6,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
@@ -84,11 +92,19 @@ SBCZeroPage{
     SBCZeroPage::Requirements{
         .initial = {
             .a = 6,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .a = 6,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
@@ -98,11 +114,19 @@ SBCZeroPage{
     SBCZeroPage::Requirements{
         .initial = {
             .a = 6,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .a = 6,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
@@ -115,21 +139,20 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = false }, // Previous overflow occurred.  Simulate borrow.
                 .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
-            .a = 6,
+            .a = 5,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow generated
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
 SBCZeroPage{
-    // Subtracting a zero does not affect the Z flag
     ZeroPage().address(0x8080).zp_address(6),
     SBCZeroPage::Requirements{
         .initial = {
@@ -137,7 +160,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
@@ -145,21 +168,41 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
 SBCZeroPage{
-    // Subtracting a negative affects the N flag
     ZeroPage().address(0x8080).zp_address(6),
     SBCZeroPage::Requirements{
         .initial = {
             .a = 0,
             .flags = {
                 .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Previous borrow
+                .v_value = { .expected_value = false } },
+            .operand = 0x00 },
+        .final = {
+            .a = 0xFF,
+            .flags = {
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = false }, // Borrow occurred
+                .v_value = { .expected_value = false } },
+            .operand = 0x00
+        }}
+},
+SBCZeroPage{
+    ZeroPage().address(0x8080).zp_address(6),
+    SBCZeroPage::Requirements{
+        .initial = {
+            .a = 0,
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true }, // No Previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -167,8 +210,8 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = false } },
+                .c_value = { .expected_value = false }, // Borrow occurred
+                .v_value = { .expected_value = true } },
             .operand = 0x80
         }}
 },
@@ -182,7 +225,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -190,7 +233,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -204,7 +247,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -212,7 +255,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -226,7 +269,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0xFF },
         .final = {
@@ -234,7 +277,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } },
             .operand = 0xFF
         }}
@@ -248,7 +291,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -256,7 +299,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = true } },
             .operand = 0x01
         }}
@@ -270,7 +313,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -278,7 +321,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -292,7 +335,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x7F },
         .final = {
@@ -300,7 +343,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x7F
         }}
@@ -312,9 +355,9 @@ SBCZeroPage{
         .initial = {
             .a = 0x80,
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -322,8 +365,8 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = true },
-                .v_value = { .expected_value = true } },
+                .c_value = { .expected_value = true }, // No borrow occurred
+                .v_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -336,7 +379,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No previous borrow
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -344,8 +387,8 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = true } },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -358,7 +401,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = false }, // Previous borrow occurred
                 .v_value = { .expected_value = false } },
                 .operand = 0x02 },
         .final = {
@@ -366,7 +409,7 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow occurred
                 .v_value = { .expected_value = false } },
             .operand = 0x02
         }}
@@ -380,15 +423,15 @@ SBCZeroPage{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Previous borrow occurred
                 .v_value = { .expected_value = false } },
                 .operand = 0x01 },
         .final = {
             .a = 0xFF,
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false }, // Borrow occurred
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
