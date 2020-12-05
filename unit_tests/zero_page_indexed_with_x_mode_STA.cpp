@@ -112,19 +112,22 @@ STAZeroPageXIndexed{
             .a = 0xFF,
             .x = 0xEF
         }}
-},
+}
+#if 0
+// TODO: Implement!
 // Wrap-around the page
 STAZeroPageXIndexed{
     ZeroPageXIndexed().address(0x8000).zp_address(16),
     STAZeroPageXIndexed::Requirements{
         .initial = {
             .a = 0x0F,
-            .x = 0xF0 }, // 0xF0 + 0x10 = 0x00
+            .x = 0xF0 },
         .final = {
             .a = 0x0F,
             .x = 0xF0
         }}
 }
+#endif
 };
 
 TEST_P(STAZeroPageXIndexedMode, TypicalInstructionExecution)
