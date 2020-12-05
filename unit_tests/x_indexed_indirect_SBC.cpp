@@ -82,17 +82,21 @@ SBCXIndexedIndirect{
         .initial = {
             .address_to_indirect_to = 0xC000,
             .a = 6,
-            .x = 12,
-            .flags = { },
+            .x = 0,
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .address_to_indirect_to = 0xC000,
             .a = 6,
-            .x = 12,
+            .x = 0,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
@@ -105,7 +109,11 @@ SBCXIndexedIndirect{
             .address_to_indirect_to = 0xC000,
             .a = 6,
             .x = 12,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .address_to_indirect_to = 0xC000,
@@ -114,7 +122,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
@@ -127,16 +135,20 @@ SBCXIndexedIndirect{
             .address_to_indirect_to = 0xC000,
             .a = 6,
             .x = 12,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = false }, // Previous overflow occurred.  Simulate borrow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .address_to_indirect_to = 0xC000,
-            .a = 6,
+            .a = 5,
             .x = 12,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
@@ -151,8 +163,8 @@ SBCXIndexedIndirect{
             .x = 0x80,
             .flags = {
                 .n_value = { .expected_value = false },
-                .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
@@ -162,7 +174,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
@@ -177,17 +189,17 @@ SBCXIndexedIndirect{
             .x = 1,
             .flags = {
                 .n_value = { .expected_value = false },
-                .z_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
                 .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x00 },
         .final = {
             .address_to_indirect_to = 0xC000,
-            .a = 0x00,
+            .a = 0xFF,
             .x = 1,
             .flags = {
-                .n_value = { .expected_value = false },
-                .z_value = { .expected_value = true },
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x00
@@ -200,26 +212,25 @@ SBCXIndexedIndirect{
         .initial = {
             .address_to_indirect_to = 0xC000,
             .a = 0,
-            .x = 1,
+            .x = 0,
             .flags = {
                 .n_value = { .expected_value = false },
-                .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
             .address_to_indirect_to = 0xC000,
             .a = 0x80,
-            .x = 1,
+            .x = 0,
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false },
-                .v_value = { .expected_value = false } },
+                .v_value = { .expected_value = true } },
             .operand = 0x80
         }}
 },
-// Carry flag
 SBCXIndexedIndirect{
     // 2 - 1 = 1, C = 0, V=0
     XIndexedIndirect().address(0x8080).zp_address(0xA0),
@@ -231,7 +242,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -241,7 +252,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -257,7 +268,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -267,7 +278,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -283,7 +294,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0xFF },
         .final = {
@@ -293,7 +304,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0xFF
         }}
@@ -309,7 +320,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -319,7 +330,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = true } },
             .operand = 0x01
         }}
@@ -335,7 +346,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -345,7 +356,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -361,7 +372,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x7F },
         .final = {
@@ -371,7 +382,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x7F
         }}
@@ -385,9 +396,9 @@ SBCXIndexedIndirect{
             .a = 0x80,
             .x = 12,
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -398,7 +409,7 @@ SBCXIndexedIndirect{
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
                 .c_value = { .expected_value = true },
-                .v_value = { .expected_value = true } },
+                .v_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -413,7 +424,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -423,8 +434,8 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = true } },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -449,7 +460,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x02
         }}
@@ -465,7 +476,7 @@ SBCXIndexedIndirect{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -473,9 +484,9 @@ SBCXIndexedIndirect{
             .a = 0xFF,
             .x = 12,
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
