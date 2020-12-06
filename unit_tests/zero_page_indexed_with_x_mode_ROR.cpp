@@ -272,7 +272,7 @@ RORZeroPageXIndexed{
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false } },
-            .operand = 0b01000010 },
+            .operand = 0b00000010 },
         .final = {
             .x = 0,
             .flags = {
