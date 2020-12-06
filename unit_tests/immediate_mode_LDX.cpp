@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -15,19 +14,24 @@ using LDXImmediate     = LDX<Immediate, LDX_Immediate_Expectations, 2>;
 using LDXImmediateMode = ParameterizedInstructionExecutorTestFixture<LDXImmediate>;
 
 
+static void StoreTestValueAtImmediateAddress(InstructionExecutorTestFixture &fixture, const LDXImmediate &instruction_param)
+{
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDXImmediate &instruction_param)
+{
+    fixture.r.x = instruction_param.requirements.initial.x;
+    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
+    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const LDXImmediate                   &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Immediate,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.immediate_value;
-
-    // Load appropriate registers
-    fixture.r.x = instruction_param.requirements.initial.x;
-    fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
-    fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+    SetupRAMForInstructionsThatHaveImmediateValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>
@@ -101,12 +105,8 @@ LDXImmediate{
         .final = {
             .x = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } }
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } }
         }}
 },
 LDXImmediate{
@@ -119,12 +119,8 @@ LDXImmediate{
         .final = {
             .x = 0x80,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } }
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } }
         }}
 }
 };

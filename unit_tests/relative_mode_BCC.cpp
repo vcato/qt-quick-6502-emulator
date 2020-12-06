@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -13,16 +12,22 @@ using BCCRelative     = BCC<Relative, BCC_Relative_Expectations, 2>;
 using BCCRelativeMode = ParameterizedInstructionExecutorTestFixture<BCCRelative>;
 
 
+void StoreTestValueRelativeAddress(InstructionExecutorTestFixture &fixture, const BCCRelative &instruction_param)
+{
+    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const BCCRelative &instruction_param)
+{
+    fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.carry_flag);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const BCCRelative                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Relative,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.offset;
-
-    fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.carry_flag);
+    SetupRAMForInstructionsThatHaveRelativeValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

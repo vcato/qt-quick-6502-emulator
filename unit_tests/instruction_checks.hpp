@@ -91,7 +91,6 @@ void CheckTypicalExecutionResults(const InstructionExecutorTestFixture &fixture,
     MemoryContainsExpectedResult(fixture, instruction);
 }
 
-
 /** Tests the execution of an instruction.
  *
  *  @param fixture The test fixture to use for the test

@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -12,18 +11,22 @@ using JMPAbsolute     = JMP<Absolute, JMP_Absolute_Expectations, 3>;
 using JMPAbsoluteMode = ParameterizedInstructionExecutorTestFixture<JMPAbsolute>;
 
 
+static void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture & /* fixture */, const JMPAbsolute & /* instruction_param */)
+{
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture & /* fixture */, const JMPAbsolute & /* instruction_param */)
+{
+    // Load appropriate registers
+    // None to load...
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const JMPAbsolute                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Absolute,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = fixture.loByteOf(instruction_param.address.absolute_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 2] = fixture.hiByteOf(instruction_param.address.absolute_address);
-
-    // Load appropriate registers
-    // None to load...
+    SetupRAMForInstructionsThatHaveAnEffectiveAddress(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

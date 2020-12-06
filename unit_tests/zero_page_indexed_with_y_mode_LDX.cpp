@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -14,23 +13,33 @@ using LDXZeroPageYIndexed     = LDX<ZeroPageYIndexed, LDX_ZeroPageYIndexed_Expec
 using LDXZeroPageYIndexedMode = ParameterizedInstructionExecutorTestFixture<LDXZeroPageYIndexed>;
 
 
-template<>
-void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const LDXZeroPageYIndexed            &instruction_param)
+void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const LDXZeroPageYIndexed &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::ZeroPageYIndexed,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-
-    // Load expected data into memory
     fixture.fakeMemory[ fixture.calculateZeroPageIndexedAddress(instruction_param.address.zero_page_address, instruction_param.requirements.initial.y) ] = instruction_param.requirements.final.x;
+}
 
-    // Load appropriate registers
+template <>
+void StoreEffectiveAddressWithNoCarryZeroPage(InstructionExecutorTestFixture      &fixture,
+                                              const ZeroPageYIndexed              &address,
+                                              const LDXZeroPageYIndexed::Requirements &requirements)
+{
+    fixture.fakeMemory[ fixture.calculateZeroPageIndexedAddress(address.zero_page_address, requirements.initial.x) ] = requirements.final.y;
+}
+
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDXZeroPageYIndexed &instruction_param)
+{
     fixture.r.x = instruction_param.requirements.initial.x;
     fixture.r.y = instruction_param.requirements.initial.y;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const LDXZeroPageYIndexed            &instruction_param)
+{
+    SetupRAMForInstructionsThatHaveAnIndirectedEffectiveAddressWithNoCarryZeroPage(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>
@@ -114,12 +123,8 @@ LDXZeroPageYIndexed{
             .x = 0,
             .y = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } }
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } }
         }}
 },
 LDXZeroPageYIndexed{
@@ -134,12 +139,8 @@ LDXZeroPageYIndexed{
             .x = 0x80,
             .y = 0,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } }
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } }
         }}
 }
 };

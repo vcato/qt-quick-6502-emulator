@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -15,26 +14,25 @@ using LDAXIndexedIndirect     = LDA<XIndexedIndirect, LDA_XIndexedIndirect_Expec
 using LDAXIndexedIndirectMode = ParameterizedInstructionExecutorTestFixture<LDAXIndexedIndirect>;
 
 
-template<>
-void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
-                                                            const LDAXIndexedIndirect            &instruction_param)
+void StoreTestValueAtEffectiveAddress(InstructionExecutorTestFixture &fixture, const LDAXIndexedIndirect &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::XIndexedIndirect,
-                                 instruction_param.address.instruction_address);
-    fixture.fakeMemory[instruction_param.address.instruction_address + 1] = instruction_param.address.zero_page_address;
-
-    auto effective_address = fixture.calculateZeroPageIndexedAddress(instruction_param.address.zero_page_address, instruction_param.requirements.initial.x);
-
-    fixture.fakeMemory[ effective_address      ] = fixture.loByteOf(instruction_param.requirements.initial.address_to_indirect_to);
-    fixture.fakeMemory[ effective_address  + 1 ] = fixture.hiByteOf(instruction_param.requirements.initial.address_to_indirect_to);
     fixture.fakeMemory[instruction_param.requirements.initial.address_to_indirect_to] = instruction_param.requirements.final.a;
+}
 
-    // Load appropriate registers
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const LDAXIndexedIndirect &instruction_param)
+{
     fixture.r.a = instruction_param.requirements.initial.a;
     fixture.r.x = instruction_param.requirements.initial.x;
     fixture.r.SetFlag(FLAGS6502::N, instruction_param.requirements.initial.flags.n_value.expected_value);
     fixture.r.SetFlag(FLAGS6502::Z, instruction_param.requirements.initial.flags.z_value.expected_value);
+}
+
+template<>
+void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
+                                                            const LDAXIndexedIndirect            &instruction_param)
+{
+    SetupRAMForInstructionsThatHaveAnIndirectedEffectiveAddressWithNoCarry(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>
@@ -133,12 +131,8 @@ LDAXIndexedIndirect{
             .a = 0,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = false },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = true } }
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true } }
         }}
 },
 LDAXIndexedIndirect{
@@ -155,12 +149,8 @@ LDAXIndexedIndirect{
             .a = 0x80,
             .x = 12,
             .flags = {
-                .n_value = {
-                    .status_flag = FLAGS6502::N,
-                    .expected_value = true },
-                .z_value = {
-                    .status_flag = FLAGS6502::Z,
-                    .expected_value = false } }
+                .n_value = { .expected_value = true },
+                .z_value = { .expected_value = false } }
         }}
 }
 };

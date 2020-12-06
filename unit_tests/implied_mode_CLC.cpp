@@ -1,5 +1,4 @@
-#include <gmock/gmock.h>
-#include "instruction_checks.hpp"
+#include "addressing_mode_helpers.hpp"
 
 
 
@@ -12,16 +11,17 @@ using CLCImplied     = CLC<Implied, CLC_Implied_Expectations, 2>;
 using CLCImpliedMode = ParameterizedInstructionExecutorTestFixture<CLCImplied>;
 
 
+static void SetupAffectedOrUsedRegisters(InstructionExecutorTestFixture &fixture, const CLCImplied &instruction_param)
+{
+    fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.carry_flag);
+}
+
 template<>
 void LoadInstructionIntoMemoryAndSetRegistersToInitialState(      InstructionExecutorTestFixture &fixture,
                                                             const CLCImplied                    &instruction_param)
 {
-    fixture.loadOpcodeIntoMemory(instruction_param.operation,
-                                 AddressMode_e::Implied,
-                                 instruction_param.address.instruction_address);
-
-    // Load appropriate registers
-    fixture.r.SetFlag(FLAGS6502::C, instruction_param.requirements.initial.carry_flag);
+    SetupRAMForInstructionsThatHaveImpliedValue(fixture, instruction_param);
+    SetupAffectedOrUsedRegisters(fixture, instruction_param);
 }
 
 template<>

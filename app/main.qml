@@ -157,8 +157,9 @@ Window {
                 Label {
                     id: disassembly_label
                     text: disassembly_model.visibleDisassembly
-                    font.family: "Lucida Console"
-                    font.pointSize: 12
+                    //font.family: "Lucida Console"
+                    font.family: "Emulogic"
+                    font.pointSize: 10
                     color: "white"
                     anchors.fill: parent
                     horizontalAlignment: Text.AlignLeft

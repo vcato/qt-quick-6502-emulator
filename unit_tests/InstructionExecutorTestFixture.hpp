@@ -33,7 +33,7 @@ public:
 
     /** Calculates the resulting address via the index offset from that address.
      *
-     *  This adds the @p index to @p zp_address, without a carry into the upper byte.`
+     *  This adds the @p index to @p zp_address, without a carry into the upper byte.
      *
      *  @param zp_address The originating address
      *  @param index      The offset from the address
@@ -72,6 +72,10 @@ public:
     {
         return (address1 & 0xFF00) != (address2 & 0xFF00);
     }
+
+    static constexpr uint16_t baseStackAddress() { return 0x0100; }
+
+    uint16_t addressUsingStackPointer(uint8_t stack_offset) const { return baseStackAddress() + stack_offset; }
 
     Registers r;
     InstructionExecutor executor{ r,
