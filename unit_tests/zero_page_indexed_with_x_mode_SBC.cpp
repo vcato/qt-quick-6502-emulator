@@ -74,12 +74,20 @@ SBCZeroPageXIndexed{
         .initial = {
             .a = 6,
             .x = 0,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .a = 6,
             .x = 0,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
@@ -90,12 +98,20 @@ SBCZeroPageXIndexed{
         .initial = {
             .a = 6,
             .x = 3,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .a = 6,
             .x = 3,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
@@ -106,12 +122,20 @@ SBCZeroPageXIndexed{
         .initial = {
             .a = 6,
             .x = 22,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // Carry bit is clear on overflow. So, simulate no overflow.
+                .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
             .a = 6,
             .x = 22,
-            .flags = { },
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = false },
+                .c_value = { .expected_value = true }, // No borrow!
+                .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
@@ -129,18 +153,17 @@ SBCZeroPageXIndexed{
                 .v_value = { .expected_value = false } },
             .operand = 0x00 },
         .final = {
-            .a = 0x06,
+            .a = 5,
             .x = 0x80,
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x00
         }}
 },
 SBCZeroPageXIndexed{
-    // Subtracting a zero does not affect the Z flag
     ZeroPageXIndexed().address(0x8080).zp_address(6),
     SBCZeroPageXIndexed::Requirements{
         .initial = {
@@ -149,7 +172,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0 },
         .final = {
@@ -158,13 +181,12 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0
         }}
 },
 SBCZeroPageXIndexed{
-    // Subtracting a negative affects the N flag
     ZeroPageXIndexed().address(0x8080).zp_address(6),
     SBCZeroPageXIndexed::Requirements{
         .initial = {
@@ -172,8 +194,31 @@ SBCZeroPageXIndexed{
             .x = 1,
             .flags = {
                 .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
+            .operand = 0x00 },
+        .final = {
+            .a = 0xFF,
+            .x = 1,
+            .flags = {
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false },
+                .v_value = { .expected_value = false } },
+            .operand = 0x00
+        }}
+},
+SBCZeroPageXIndexed{
+    ZeroPageXIndexed().address(0x8080).zp_address(6),
+    SBCZeroPageXIndexed::Requirements{
+        .initial = {
+            .a = 0,
+            .x = 1,
+            .flags = {
+                .n_value = { .expected_value = false },
+                .z_value = { .expected_value = true },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -183,11 +228,10 @@ SBCZeroPageXIndexed{
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
                 .c_value = { .expected_value = false },
-                .v_value = { .expected_value = false } },
+                .v_value = { .expected_value = true } },
             .operand = 0x80
         }}
 },
-// Carry flag
 SBCZeroPageXIndexed{
     // 2 - 1 = 1, C = 0, V=0
     ZeroPageXIndexed().address(0x8080).zp_address(6),
@@ -198,7 +242,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -207,7 +251,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -222,7 +266,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -231,7 +275,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -255,7 +299,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0xFF
         }}
@@ -270,7 +314,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -279,7 +323,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = true } },
             .operand = 0x01
         }}
@@ -294,7 +338,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
@@ -303,7 +347,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
@@ -318,7 +362,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x7F },
         .final = {
@@ -327,7 +371,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x7F
         }}
@@ -342,7 +386,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -352,7 +396,7 @@ SBCZeroPageXIndexed{
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
                 .c_value = { .expected_value = true },
-                .v_value = { .expected_value = true } },
+                .v_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -366,7 +410,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x80 },
         .final = {
@@ -375,8 +419,8 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = false },
-                .v_value = { .expected_value = true } },
+                .c_value = { .expected_value = true },
+                .v_value = { .expected_value = false } },
             .operand = 0x80
         }}
 },
@@ -399,7 +443,7 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = true },
-                .c_value = { .expected_value = false },
+                .c_value = { .expected_value = true },
                 .v_value = { .expected_value = false } },
             .operand = 0x02
         }}
@@ -414,16 +458,16 @@ SBCZeroPageXIndexed{
             .flags = {
                 .n_value = { .expected_value = false },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x01 },
         .final = {
             .a = 0xFF,
             .x = 1,
             .flags = {
-                .n_value = { .expected_value = false },
+                .n_value = { .expected_value = true },
                 .z_value = { .expected_value = false },
-                .c_value = { .expected_value = true },
+                .c_value = { .expected_value = false },
                 .v_value = { .expected_value = false } },
             .operand = 0x01
         }}
