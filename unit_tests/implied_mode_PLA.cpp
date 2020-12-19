@@ -2,7 +2,7 @@
 
 static inline uint8_t IgnoreCertainBitsInStatus(uint8_t input)
 {
-        return input | FLAGS6502::B | FLAGS6502::U; // Set this always so we can effectively ignore it during comnparisons
+        return input | FLAGS6502::U; // Set this always so we can effectively ignore it during comnparisons
 }
 
 struct PLA_Implied_Expectations
